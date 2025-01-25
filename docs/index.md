@@ -4,6 +4,7 @@ hide:
   - toc
 ---
 
+
 <h1 style="text-align: center; margin-bottom: 5px; font-weight: bold">OneSecondTrader</h1>
 <p style="text-align: center; font-size: 2em; color: gray; margin-top: 0;">
     Decode Trends. Discover Your Edge. Define Success.

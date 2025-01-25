@@ -18,6 +18,7 @@ nav:
     - Overview: documentation/overview.md
     - Architectural Conception:
       - The Basics of Event-driven Infrastructure: documentation/architectural-conception/the-basics-of-event-driven-infrastructure.md
+      - Multi-Producer Multi-Consumer Systems and the Event Loop: documentation/architectural-conception/multi-producer-multi-consumer-systems-and-the-event-loop.md
 theme:
   icon:
     logo: material/distribute-horizontal-center
@@ -25,18 +26,18 @@ theme:
     text: Robot Serif
   name: material
   palette:
-    # Light mode
-    - scheme: default
-      primary: white
-      toggle:
-        icon: material/toggle-switch
-        name: Switch to dark mode
     # Dark mode
     - scheme: slate
       primary: black
       toggle:
         icon: material/toggle-switch-off-outline
         name: Switch to light mode
+    # Light mode
+    - scheme: default
+      primary: white
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
   features:
     - navigation.tabs
     - content.code.copy
@@ -46,7 +47,7 @@ theme:
     - navigation.top
 plugins:
   - search
-#  - git-revision-date-localized
+  - git-revision-date-localized
   - glightbox:
        touchNavigation: true
        loop: false

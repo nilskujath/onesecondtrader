@@ -59,7 +59,7 @@ def consumer():
 
 def main():
     setup_logging()
-    logger.info("Starting MWE-3_logger")
+    logger.info("Starting MWE-1_logger")
 
     producer_thread = threading.Thread(target=producer)
     consumer_thread = threading.Thread(target=consumer)
