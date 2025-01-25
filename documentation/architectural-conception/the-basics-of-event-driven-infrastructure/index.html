@@ -14,6 +14,8 @@
         <link rel="prev" href="../../overview/">
       
       
+        <link rel="next" href="../multi-producer-multi-consumer-systems-and-the-event-loop/">
+      
       
       <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.50">
@@ -74,7 +76,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo">
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -130,20 +132,20 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
     
-      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
       </label>
     
   
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
     
-      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
       </label>
     
   
@@ -618,6 +620,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi-producer-multi-consumer-systems-and-the-event-loop/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Multi-Producer Multi-Consumer Systems and the Event Loop
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -708,12 +731,21 @@
 <h2 id="event-driven-infrastructure">Event-driven Infrastructure</h2>
 <p>In an event-driven infrastructure, the components of the system communicate via event messages and thus have the advantage of being loosely coupled. 
 Loose coupling enables components of the system to evolve independently, thereby allowing developers to work in parallel on different components of the system without interfering with each other.</p>
-<p>In general, an event represents a state change that is of significance to the system. Within the context of trading infrastructure, events may include the reception of a new OHLC (Open, High, Low, Close) bar, the generation of a buy signal by a trading strategy, or a broker's notification indicating that a specific order has been filled.</p>
-<p>The occurrence of an event is conveyed within the system via an event message, which is placed into a queue. The system continuously monitors this queue for newly arriving events and subsequently dispatches them to the appropriate components.</p>
-<p>In a trading environment, for instance, upon the receipt of new market data in the form of an OHLC bar, the system creates a <code>BarEventMessage</code> and puts it into the event queue. The system then dispatches this event message to the strategy component. The strategy component updates its indicator calculations and, if a trading signal is generated, places a <code>SignalEventMessage</code> into the queue. This message is then dispatched to an execution component, responsible for sending the corresponding order to the broker. Upon order fulfillment, the execution component generates a <code>FillEventMessage</code>, which it places into the queue, and so on. </p>
-<p>If a risk management layer were to be introduced, it could consume a <code>SignalEventMessage</code> and, upon approval based on predefined risk parameters, generate an <code>OrderEventMessage</code>. This addition would be straightforward to implement, as the new component could be integrated without requiring modifications to existing modules. The only necessary adjustment would be in the execution component, which would now process <code>OrderEventMessages</code> instead of <code>SignalEventMessages</code>.</p>
+<p>In general, an event represents a state change that is of significance to the system.
+Within the context of trading infrastructure, events may include the reception of a new OHLC (Open, High, Low, Close) bar, the generation of a buy signal by a trading strategy, or a broker's notification indicating that a specific order has been filled.</p>
+<p>The occurrence of an event is conveyed within the system via an event message, which is placed into a queue.
+The system continuously monitors this queue for newly arriving events and subsequently dispatches them to the appropriate components.</p>
+<p>In a trading environment, for instance, upon the receipt of new market data in the form of an OHLC bar, the system creates a <code>BarEventMessage</code> and puts it into the event queue.
+The system then dispatches this event message to the strategy component.
+The strategy component updates its indicator calculations and, if a trading signal is generated, places a <code>SignalEventMessage</code> into the queue.
+This message is then dispatched to an execution component, responsible for sending the corresponding order to the broker.
+Upon order fulfillment, the execution component generates a <code>FillEventMessage</code>, which it places into the queue, and so on. </p>
+<p>If a risk management layer were to be introduced, it could consume a <code>SignalEventMessage</code> and, upon approval based on predefined risk parameters, generate an <code>OrderEventMessage</code>.
+This addition would be straightforward to implement, as the new component could be integrated without requiring modifications to existing modules.
+The only necessary adjustment would be in the execution component, which would now process <code>OrderEventMessages</code> instead of <code>SignalEventMessages</code>.</p>
 <h2 id="a-first-minimal-working-example">A First Minimal Working Example</h2>
-<p>To gain a deeper understanding of how <strong>OneSecondTrader</strong> implements an event-driven architecture, we will examine a series of Minimal Working Examples (MWEs) that progressively illustrate key implementation decisions. <strong>These MWEs are designed to isolate and clarify the fundamental architectural decisions while intentionally abstracting away the complexities that real-world trading functionality would introduce.</strong> </p>
+<p>To gain a deeper understanding of how <strong>OneSecondTrader</strong> implements an event-driven architecture, we will examine a series of Minimal Working Examples (MWEs) that progressively illustrate key implementation decisions.
+<strong>These MWEs are designed to isolate and clarify the fundamental architectural decisions while intentionally abstracting away the complexities that real-world trading functionality would introduce.</strong> </p>
 <p>The implementation of event messages as <code>@dataclasses</code> serves to enforce structure and type safety, while at the same time reducing boilerplate code and enhancing readability.
 For our first MWE, we will implement a <code>DummyEventMessage</code> with a single field, <code>message_id</code>, which is simply an integer (and unrelated to any trading functionality.</p>
 <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
@@ -864,31 +896,62 @@ For our first MWE, we will implement a <code>DummyEventMessage</code> with a sin
 </span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13"></a>
 </span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14"></a>Process finished with exit code 0
 </span></code></pre></div></td></tr></table></div>
-<p>The <code>producer</code> function generates <code>DummyEventMessage</code> instances with incrementing <code>message_id</code> values, enqueues them into <code>event_message_queue</code>, and prints the queue size after each insertion. It sleeps for one second between iterations to simulate some kind of real-time event generation. After producing five events, it places a <code>None</code> sentinel value in the queue to signal termination to the consumer.</p>
-<p>The <code>consumer</code> function continuously retrieves events from <code>event_message_queue</code>. If the retrieved event is <code>None</code>, it prints a termination message and exits the loop. Otherwise, it prints the <code>message_id</code> of the consumed event along with the current queue size, ensuring all events are processed sequentially.</p>
-<p>In <code>main</code>, <code>producer</code> is called before <code>consumer</code>, meaning the <code>consumer</code> function will only execute after <code>producer</code> has fully completed. This is evident in the output: first, <code>producer</code> fills the queue with <code>DummyEventMessage</code> objects until its loop completes and enqueues the sentinel value <code>None</code>. Only then does <code>consumer</code> begin retrieving the messages in the order they were enqueued.</p>
-<p>Of course, this is not the desired behavior in our trading architecture. Ideally, the consumer should be able to process events as soon as they are enqueued by the producer, rather than waiting for the producer to finish completely. To achieve this, we need to implement threading, allowing both the producer and consumer to run concurrently.</p>
+<p>The <code>producer</code> function generates <code>DummyEventMessage</code> instances with incrementing <code>message_id</code> values, enqueues them into <code>event_message_queue</code>, and prints the queue size after each insertion.
+It sleeps for one second between iterations to simulate some kind of real-time event generation.
+After producing five events, it places a <code>None</code> sentinel value in the queue to signal termination to the consumer.</p>
+<p>The <code>consumer</code> function continuously retrieves events from <code>event_message_queue</code>. If the retrieved event is <code>None</code>, it prints a termination message and exits the loop.
+Otherwise, it prints the <code>message_id</code> of the consumed event along with the current queue size, ensuring all events are processed sequentially.</p>
+<p>In <code>main</code>, <code>producer</code> is called before <code>consumer</code>, meaning the <code>consumer</code> function will only execute after <code>producer</code> has fully completed.
+This is evident in the output: first, <code>producer</code> fills the queue with <code>DummyEventMessage</code> objects until its loop completes and enqueues the sentinel value <code>None</code>.
+Only then does <code>consumer</code> begin retrieving the messages in the order they were enqueued.</p>
+<p>Of course, this is not the desired behavior in our trading architecture.
+Ideally, the consumer should be able to process events as soon as they are enqueued by the producer, rather than waiting for the producer to finish completely.
+To achieve this, we need to implement threading, allowing both the producer and consumer to run concurrently.</p>
 <h2 id="concurrent-processing-of-events">Concurrent Processing of Events</h2>
-<p>We use Python’s <code>threading</code> module for concurrent execution, as it efficiently handles I/O-bound tasks. Additionally, some NumPy and Pandas operations can release the Global Interpreter Lock (GIL), enabling true parallel execution in specific cases. In multithreaded Python, true parallel execution is generally not possible due to the GIL. However, certain C-implemented operations in NumPy and Pandas can release the GIL, allowing multiple threads to run in parallel rather than just concurrently. Because these operations can leverage multiple CPU cores within a single process, using the <code>multiprocessing</code> module is often unnecessary for performance gains in such cases.  </p>
-<p>To enhance log clarity in a multi-threaded environment, we will replace all <code>print()</code> statements with structured logging using Python's <code>logging</code> module. The logging configuration will be loaded from the external YAML file <code>logger-config-MWW-1.yaml</code>.</p>
-<div class="language-yaml highlight"><span class="filename">logger-config-MWE-2.yaml</span><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nt">disable_existing_loggers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nt">formatters</span><span class="p">:</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">simple</span><span class="p">:</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="nt">format</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;%(asctime)s</span><span class="nv"> </span><span class="s">%(levelname)s</span><span class="nv"> </span><span class="s">[%(threadName)s]</span><span class="nv"> </span><span class="s">%(name)s</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">%(message)s&quot;</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="nt">datefmt</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;%Y-%m-%d</span><span class="nv"> </span><span class="s">%H:%M:%S</span><span class="nv"> </span><span class="s">%z&quot;</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="nt">handlers</span><span class="p">:</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">  </span><span class="nt">stdout</span><span class="p">:</span>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">    </span><span class="nt">class</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logging.StreamHandler</span>
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="nt">formatter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">simple</span>
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="nt">stream</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ext://sys.stdout</span>
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="nt">loggers</span><span class="p">:</span>
-</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">  </span><span class="nt">root</span><span class="p">:</span>
-</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEBUG</span>
-</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">    </span><span class="nt">handlers</span><span class="p">:</span>
-</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stdout</span>
-</span></code></pre></div>
-<p>Using <code>print()</code> in multi-threaded applications can lead to interleaved output when multiple threads write to the console simultaneously, making debugging difficult. The <code>logging</code> module mitigates this issue by handling log messages in a thread-safe manner, ensuring that messages remain intact and properly formatted. It also provides structured logging levels (<code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>, <code>CRITICAL</code>), enabling effective filtering of messages based on severity. Additionally, logging supports timestamps, thread names, and output redirection to files or other storage, improving debugging and monitoring workflows. Apart from the code necessary to set up logging, the code that introduces threading is highlighted in blue</p>
+<p>We use Python’s <code>threading</code> module for concurrent execution, as it efficiently handles I/O-bound tasks.
+Additionally, some NumPy and Pandas operations can release the Global Interpreter Lock (GIL), enabling true parallel execution in specific cases.
+In multithreaded Python, true parallel execution is generally not possible due to the GIL.
+However, certain C-implemented operations in NumPy and Pandas can release the GIL, allowing multiple threads to run in parallel rather than just concurrently.
+Because these operations can leverage multiple CPU cores within a single process, using the <code>multiprocessing</code> module is often unnecessary for performance gains in such cases.  </p>
+<p>To enhance log clarity in a multi-threaded environment, we will replace all <code>print()</code> statements with structured logging using Python's <code>logging</code> module.
+The logging configuration will be loaded from the external YAML file <code>logger-config-MWW-1.yaml</code>.</p>
+<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">logger-config-MWE-2.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span>
+<span class="normal"><a href="#__codelineno-4-12">12</a></span>
+<span class="normal"><a href="#__codelineno-4-13">13</a></span>
+<span class="normal"><a href="#__codelineno-4-14">14</a></span>
+<span class="normal"><a href="#__codelineno-4-15">15</a></span>
+<span class="normal"><a href="#__codelineno-4-16">16</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="nt">disable_existing_loggers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="nt">formatters</span><span class="p">:</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="w">  </span><span class="nt">simple</span><span class="p">:</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">    </span><span class="nt">format</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;%(asctime)s</span><span class="nv"> </span><span class="s">%(levelname)s</span><span class="nv"> </span><span class="s">[%(threadName)s]</span><span class="nv"> </span><span class="s">%(name)s</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">%(message)s&quot;</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="w">    </span><span class="nt">datefmt</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;%Y-%m-%d</span><span class="nv"> </span><span class="s">%H:%M:%S</span><span class="nv"> </span><span class="s">%z&quot;</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="nt">handlers</span><span class="p">:</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">  </span><span class="nt">stdout</span><span class="p">:</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">    </span><span class="nt">class</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logging.StreamHandler</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">    </span><span class="nt">formatter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">simple</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="w">    </span><span class="nt">stream</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ext://sys.stdout</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="nt">loggers</span><span class="p">:</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13"></a><span class="w">  </span><span class="nt">root</span><span class="p">:</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEBUG</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="w">    </span><span class="nt">handlers</span><span class="p">:</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stdout</span>
+</span></code></pre></div></td></tr></table></div>
+<p>Using <code>print()</code> in multi-threaded applications can lead to interleaved output when multiple threads write to the console simultaneously, making debugging difficult.
+The <code>logging</code> module mitigates this issue by handling log messages in a thread-safe manner, ensuring that messages remain intact and properly formatted.
+It also provides structured logging levels (<code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>, <code>CRITICAL</code>), enabling effective filtering of messages based on severity.
+Additionally, logging supports timestamps, thread names, and output redirection to files or other storage, improving debugging and monitoring workflows.
+Apart from the code necessary to set up logging, the code that introduces threading is highlighted in blue</p>
 <div class="language-py highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">architectural-conception-MWE-2.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-5-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-5-3"> 3</a></span>
@@ -1026,7 +1089,7 @@ For our first MWE, we will implement a <code>DummyEventMessage</code> with a sin
 </span><span id="__span-5-59"><a id="__codelineno-5-59" name="__codelineno-5-59"></a>
 </span><span id="__span-5-60"><a id="__codelineno-5-60" name="__codelineno-5-60"></a><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 </span><span id="__span-5-61"><a id="__codelineno-5-61" name="__codelineno-5-61"></a>    <span class="n">setup_logging</span><span class="p">()</span>
-</span><span id="__span-5-62"><a id="__codelineno-5-62" name="__codelineno-5-62"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting MWE-3_logger&quot;</span><span class="p">)</span>
+</span><span id="__span-5-62"><a id="__codelineno-5-62" name="__codelineno-5-62"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting MWE-1_logger&quot;</span><span class="p">)</span>
 </span><span id="__span-5-63"><a id="__codelineno-5-63" name="__codelineno-5-63"></a>
 </span><span id="__span-5-64"><a id="__codelineno-5-64" name="__codelineno-5-64"></a><span class="hll">    <span class="n">producer_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">producer</span><span class="p">)</span>
 </span></span><span id="__span-5-65"><a id="__codelineno-5-65" name="__codelineno-5-65"></a><span class="hll">    <span class="n">consumer_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">consumer</span><span class="p">)</span>
@@ -1058,7 +1121,7 @@ For our first MWE, we will implement a <code>DummyEventMessage</code> with a sin
 <span class="normal"><a href="#__codelineno-6-13">13</a></span>
 <span class="normal"><a href="#__codelineno-6-14">14</a></span>
 <span class="normal"><a href="#__codelineno-6-15">15</a></span>
-<span class="normal"><a href="#__codelineno-6-16">16</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1"></a>2025-01-24 18:34:25 +0100 INFO [MainThread] MWE-3_logger - Starting MWE-3_logger
+<span class="normal"><a href="#__codelineno-6-16">16</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1"></a>2025-01-24 18:34:25 +0100 INFO [MainThread] MWE-1_logger - Starting MWE-3_logger
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2"></a>2025-01-24 18:34:25 +0100 INFO [Thread-1 (producer)] MWE-3_logger - Producer put event message 1 in queue | Queue Size: 1
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3"></a>2025-01-24 18:34:25 +0100 INFO [Thread-2 (consumer)] MWE-3_logger - Consumed event message 1 from queue | Queue Size: 0
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4"></a>2025-01-24 18:34:26 +0100 INFO [Thread-1 (producer)] MWE-3_logger - Producer put event message 2 in queue | Queue Size: 1
@@ -1075,7 +1138,10 @@ For our first MWE, we will implement a <code>DummyEventMessage</code> with a sin
 </span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15"></a>
 </span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16"></a>Process finished with exit code 0
 </span></code></pre></div></td></tr></table></div>
-<p>In this MWE, threading enables the producer and consumer to run concurrently, ensuring that events are processed as soon as they are enqueued. The <code>threading.Thread</code> class is used to create separate threads for <code>producer</code> and <code>consumer</code>, which are then started with <code>.start()</code>. The <code>.join()</code> method ensures the main thread waits for both to complete before exiting. This allows real-time event handling, where the consumer retrieves and processes messages immediately as they arrive in the queue, rather than waiting for the producer to finish, as is evident from the output.</p>
+<p>In this MWE, threading enables the producer and consumer to run concurrently, ensuring that events are processed as soon as they are enqueued.
+The <code>threading.Thread</code> class is used to create separate threads for <code>producer</code> and <code>consumer</code>, which are then started with <code>.start()</code>.
+The <code>.join()</code> method ensures the main thread waits for both to complete before exiting.
+This allows real-time event handling, where the consumer retrieves and processes messages immediately as they arrive in the queue, rather than waiting for the producer to finish, as is evident from the output.</p>
 
 
 
@@ -1083,6 +1149,27 @@ For our first MWE, we will implement a <code>DummyEventMessage</code> with a sin
 
 
 
+  
+    
+  
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 25, 2025</span>
+  </span>
+
+    
+    
+    
+    
+  </aside>
 
 
 
