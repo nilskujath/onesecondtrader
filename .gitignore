@@ -1,0 +1,18 @@
+# Ignore all .env files globally
+**/.env
+**/.env.*
+
+# Ignore all Jupyter Notebook checkpoint directories globally
+**/.ipynb_checkpoints/
+
+# Ignore all .DS_Store files (MacOS)
+**/.DS_Store
+
+# Ignore all PyCharm settings
+.idea/
+
+# Ignore all my_data directories
+**/my_data
+
+# Ignore all __pycache__ directories recursively
+**/__pycache__/

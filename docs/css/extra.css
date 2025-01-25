@@ -1,0 +1,12 @@
+/* Change the font size of the body text */
+.md-typeset {
+    font-size: 16px; /* Change this value to the desired font size */
+}
+code {
+    white-space: pre-wrap; /* Allows code to wrap and keeps indentation */
+}
+
+code, pre {
+    tab-size: 4;  /* Ensures tabs are displayed as 4 spaces */
+    white-space: pre;  /* Makes sure code preserves indentation and spaces */
+}

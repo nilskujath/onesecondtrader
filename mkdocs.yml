@@ -1,0 +1,97 @@
+site_name: OneSecondTrader
+site_url: https://www.onesecondtrader.com
+copyright: "Copyright © 2024-2025 Nils Kujath.<br><br>
+
+The information provided is for educational and informational purposes only. It does not constitute financial, investment, or trading advice. Trading involves substantial risk, and you may lose more than your initial investment.<br><br>
+
+This software and its documentation pages (hosted on onesecondtrader.com) are provided \"as is,\" without any warranties, express or implied, including but not limited to merchantability or fitness for a particular purpose. The authors and copyright holders assume no liability for any claims, damages, or other liabilities arising from the use or distribution of this software or documentation pages. Use at your own risk. OneSecondTrader and its documentation pages are licensed under the <a href='https://www.gnu.org/licenses/gpl-3.0.html'>GNU General Public License v3.0 (GPL-3.0)</a>. See the GPL-3.0 for details."
+
+
+extra:
+  generator: true
+nav:
+  - Home: index.md
+  - Tutorial:
+    - Overview: tutorial/overview.md
+    - Quickstart Guide: tutorial/quickstart-guide.md
+  - Documentation:
+    - Overview: documentation/overview.md
+    - Architectural Conception:
+      - The Basics of Event-driven Infrastructure: documentation/architectural-conception/the-basics-of-event-driven-infrastructure.md
+theme:
+  icon:
+    logo: material/distribute-horizontal-center
+  font:
+    text: Robot Serif
+  name: material
+  palette:
+    # Light mode
+    - scheme: default
+      primary: white
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+    # Dark mode
+    - scheme: slate
+      primary: black
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.footnote.tooltips
+    - navigation.top
+plugins:
+  - search
+#  - git-revision-date-localized
+  - glightbox:
+       touchNavigation: true
+       loop: false
+       effect: zoom
+       slide_effect: slide
+       width: 100%
+       height: auto
+       zoomable: true
+       draggable: true
+       skip_classes:
+         - custom-skip-class-name
+       auto_caption: false
+       caption_position: bottom
+       background: white
+       shadow: true
+       manual: false
+repo_url: https://github.com/NilsKujath/onesecondtrader
+repo_name: nilskujath/onesecondtrader
+markdown_extensions:
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - css/extra.css
