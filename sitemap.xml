@@ -2,26 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://www.onesecondtrader.com/</loc>
-         <lastmod>2025-01-25</lastmod>
+         <lastmod>2025-01-31</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/documentation/architecture/</loc>
+         <lastmod>2025-01-31</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/documentation/overview/</loc>
-         <lastmod>2025-01-25</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/documentation/architectural-conception/multi-producer-multi-consumer-systems-and-the-event-loop/</loc>
-         <lastmod>2025-01-25</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/documentation/architectural-conception/the-basics-of-event-driven-infrastructure/</loc>
-         <lastmod>2025-01-25</lastmod>
+         <lastmod>2025-01-31</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/tutorial/overview/</loc>
-         <lastmod>2025-01-25</lastmod>
+         <lastmod>2025-01-31</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/tutorial/quickstart-guide/</loc>
-         <lastmod>2025-01-25</lastmod>
+         <lastmod>2025-01-31</lastmod>
     </url>
 </urlset>
