@@ -8,7 +8,7 @@ This software and its documentation pages (hosted on onesecondtrader.com) are pr
 
 
 extra:
-  generator: true
+  generator: False
 nav:
   - Home: index.md
   - Tutorial:
@@ -16,9 +16,7 @@ nav:
     - Quickstart Guide: tutorial/quickstart-guide.md
   - Documentation:
     - Overview: documentation/overview.md
-    - Architectural Conception:
-      - The Basics of Event-driven Infrastructure: documentation/architectural-conception/the-basics-of-event-driven-infrastructure.md
-      - Multi-Producer Multi-Consumer Systems and the Event Loop: documentation/architectural-conception/multi-producer-multi-consumer-systems-and-the-event-loop.md
+    - Architecture: documentation/architecture.md
 theme:
   icon:
     logo: material/distribute-horizontal-center
@@ -47,7 +45,7 @@ theme:
     - navigation.top
 plugins:
   - search
-  - git-revision-date-localized
+#  - git-revision-date-localized
   - glightbox:
        touchNavigation: true
        loop: false

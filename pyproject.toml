@@ -13,6 +13,7 @@ python-dotenv = "^1.0.1"
 jupyter = "^1.1.1"
 matplotlib = "^3.10.0"
 pyyaml = "^6.0.2"
+quixstreams = "^3.7.0"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["jupyter"], version = "^24.10.0"}

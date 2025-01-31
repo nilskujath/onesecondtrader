@@ -14,5 +14,8 @@
 # Ignore all my_data directories
 **/my_data
 
+# Ignore all my_data directories
+**/site
+
 # Ignore all __pycache__ directories recursively
 **/__pycache__/

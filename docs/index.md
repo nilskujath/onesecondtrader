@@ -4,17 +4,10 @@ hide:
   - toc
 ---
 
+[//]: # (<h1 style="text-align: center; margin-bottom: 5px; font-weight: bold">strategy.make_profits&#40;&#41;</h1>)
 
-<h1 style="text-align: center; margin-bottom: 5px; font-weight: bold">OneSecondTrader</h1>
-<p style="text-align: center; font-size: 2em; color: gray; margin-top: 0;">
-    Decode Trends. Discover Your Edge. Define Success.
-</p>
+[//]: # (<p style="text-align: center; font-size: 2em; color: gray; margin-top: 0;">)
 
-[//]: #TODO (Placeholder: Here should be a banner-like image of a complicated trading chart.)
-
-!!! warning "Under Construction"
-
-    OneSecondTrader is still a work in progress, but don’t worry – a pre-release version is just around the corner. Grab a coffee and hang tight!
 
 <div class="grid cards" markdown>
 
@@ -36,3 +29,9 @@ hide:
 
 </div>
 
+[//]: # (!!! warning "Under Construction")
+
+[//]: # ()
+[//]: # (    OneSecondTrader is still a work in progress, but don’t worry – a pre-release version is just around the corner. Grab a coffee and hang tight!)
+
+# 

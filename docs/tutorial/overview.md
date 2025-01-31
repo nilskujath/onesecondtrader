@@ -6,6 +6,14 @@ hide:
 
 # :material-book-education: Welcome to the **Tutorial**
 
+---
+
+!!! warning "Under Construction"
+
+    This section is under construction! OneSecondTrader is still a work in progress, but don’t worry – a pre-release version is just around the corner. Grab a coffee and hang tight!
+
+---
+
 <div class="grid cards" markdown>
 
 -   :material-run-fast:{ .lg .middle } __Quickstart Guide__
