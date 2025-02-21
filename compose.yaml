@@ -1,0 +1,7 @@
+services:
+  pdengine:
+    build: services/pdengine
+    container_name: pdengine
+    volumes:
+      - ./services/pdengine/:/app
+    command: ["python3", "main.py"]
