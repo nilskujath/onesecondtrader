@@ -1,3 +1,1 @@
-test_message_1: "Hello, World!"
-test_message_2:
-  nested_test_message: "Hello, World!"
+Mode: REPLAY
