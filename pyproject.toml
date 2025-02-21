@@ -3,18 +3,19 @@ name = "onesecondtrader"
 version = "0.1.0"
 description = "Minimalist Trading Engine"
 authors = [
-    {name = "Nils P. Kujath",email = "63961429+NilsKujath@users.noreply.github.com"}
+    {name = "Nils P. Kujath", email = "63961429+NilsKujath@users.noreply.github.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
 ]
 
-
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.poetry]
+package-mode = false
+
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
-
