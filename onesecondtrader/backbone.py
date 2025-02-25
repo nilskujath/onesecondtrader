@@ -130,3 +130,26 @@ class StrategyRegistry:
 
         strategy_registry[strategy_id].extend(symbols_to_register)
         logger.info(f"Registered symbol {symbols_to_register} to Strategy Registry")
+
+
+########################################################################################
+#   Market Data Connection
+########################################################################################
+
+
+class MarketDataConnector(abc.ABC):
+
+    def __init__(self):
+        self._instance_stop_event = threading.Event()
+
+    @abc.abstractmethod
+    def _get_next_bar_event_message(self) -> IncomingBarEventMessage:
+        pass
+
+    @abc.abstractmethod
+    def connect(self):
+        pass
+
+    @abc.abstractmethod
+    def disconnect(self):
+        pass
