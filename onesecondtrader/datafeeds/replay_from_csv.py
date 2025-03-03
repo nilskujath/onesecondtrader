@@ -1,4 +1,5 @@
 from onesecondtrader import *
+from onesecondtrader.datafeeds.base_market_data_connector import MarketDataConnector
 
 
 class ReplayFromCSV(MarketDataConnector):
