@@ -3,10 +3,10 @@ from onesecondtrader.ontology.enum_definitions import Rtype
 from onesecondtrader.ontology.event_messages import (
     IncomingBarEventMessage,
     OHLCV,
+    GLOBAL_STOP_EVENT,
 )
 from onesecondtrader.ontology.global_queues import incoming_bar_event_message_queue
 from onesecondtrader.backbone import (
-    GLOBAL_STOP_EVENT,
     logger,
 )
 import pandas as pd
