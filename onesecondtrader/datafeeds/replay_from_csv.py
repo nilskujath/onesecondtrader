@@ -1,4 +1,4 @@
-from onesecondtrader.datafeeds.base_market_data_connector import MarketDataConnector
+from onesecondtrader.datafeeds.abstract_base_class_datafeeds import MarketDataConnector
 from onesecondtrader.ontology.enum_definitions import Rtype
 from onesecondtrader.ontology.event_messages import (
     IncomingBarEventMessage,
