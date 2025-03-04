@@ -5,7 +5,7 @@ from onesecondtrader.ontology.event_messages import (
 )
 
 
-class MarketDataConnector(abc.ABC):
+class ABCDatafeed(abc.ABC):
 
     def __init__(self):
         self._instance_stop_event = threading.Event()

@@ -1,4 +1,4 @@
-from onesecondtrader.datafeeds.abstract_base_class_datafeeds import MarketDataConnector
+from onesecondtrader.datafeeds.abstract_base_class_datafeeds import ABCDatafeed
 from onesecondtrader.ontology.enum_definitions import Rtype
 from onesecondtrader.ontology.event_messages import (
     IncomingBarEventMessage,
@@ -13,7 +13,7 @@ import pandas as pd
 import threading
 
 
-class ReplayFromCSV(MarketDataConnector):
+class ReplayFromCSV(ABCDatafeed):
 
     def __init__(self, path_to_csv_file: str):
         super().__init__()

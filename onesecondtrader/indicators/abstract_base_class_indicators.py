@@ -2,7 +2,7 @@ import abc
 from onesecondtrader.ontology.event_messages import IncomingBarEventMessage
 
 
-class Indicator(abc.ABC):
+class ABCIndicator(abc.ABC):
     @property
     @abc.abstractmethod
     def name(self) -> str:

@@ -1,5 +1,5 @@
-from onesecondtrader.strategies.abstract_base_class_strategies import Strategy
+from onesecondtrader.strategies.abstract_base_class_strategies import ABCStrategy
 
 
-class DummyStrategy(Strategy):
+class DummyStrategy(ABCStrategy):
     pass

@@ -1,4 +1,4 @@
-from onesecondtrader.indicators import Indicator
+from onesecondtrader.indicators import ABCIndicator
 from onesecondtrader.ontology.event_messages import IncomingBarEventMessage, OHLCV
 from onesecondtrader.backbone import logger
 import sys
@@ -6,7 +6,7 @@ import numpy as np
 import collections
 
 
-class SimpleMovingAverage(Indicator):
+class SimpleMovingAverage(ABCIndicator):
     def __init__(self, period: int, applied_on: str):
         _valid_fields = OHLCV._fields
         if applied_on not in _valid_fields:

@@ -1,5 +1,5 @@
 import abc
 
 
-class Strategy(abc.ABC):
+class ABCStrategy(abc.ABC):
     pass
