@@ -83,12 +83,12 @@ class ReplayFromCSV(ABCDatafeed):
                 incoming_bar_event_message = self._get_next_bar_event_message()
                 if incoming_bar_event_message is None:
                     break
+                self.producer_target_queue.put(incoming_bar_event_message)
                 logger.debug(
                     f"Enqueue bar event message: "
                     f"{incoming_bar_event_message} | Queue size: "
                     f"{self.producer_target_queue.qsize()}"
                 )
-                self.producer_target_queue.put(incoming_bar_event_message)
             except Exception as e:
                 logger.error(f"Error enqueuing bar event: {e}", exc_info=False)
         if GLOBAL_STOP_EVENT.is_set():
