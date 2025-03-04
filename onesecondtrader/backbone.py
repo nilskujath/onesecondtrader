@@ -1,13 +1,7 @@
 import queue
 import sys
 import threading
-import enum
-import dataclasses
-import pandas as pd
-import collections
 import logging
-import typing
-import abc
 
 
 ########################################################################################
@@ -33,49 +27,6 @@ logger = logging.getLogger(__name__)
 ########################################################################################
 #   Event Messages                                                                     #
 ########################################################################################
-
-
-class Rtype(enum.Enum):
-    # Designed for compatibility with DataBento record type (rtype) discriminant
-    # See https://databento.com/docs/standards-and-conventions/common-fields-enums-types
-    OHLCV_1S = 32
-    OHLCV_1M = 33
-    OHLCV_1H = 34
-    OHLCV_1D = 35
-
-
-class OrderType(enum.Enum):
-    MARKET = enum.auto()
-    LIMIT = enum.auto()
-    STOP = enum.auto()
-    STOP_LIMIT = enum.auto()
-    BRACKET = enum.auto()
-
-
-class TradeDirection(enum.Enum):
-    LONG = enum.auto()
-    SHORT = enum.auto()
-
-
-OHLCV = collections.namedtuple("OHLCV", ["open", "high", "low", "close", "volume"])
-
-
-@dataclasses.dataclass
-class IncomingBarEventMessage:
-    ts_event: pd.Timestamp
-    bar_rtype: Rtype
-    symbol: str
-    ohlcv: OHLCV
-
-
-@dataclasses.dataclass
-class ProcessedBarEventMessage:
-    strategy_id: int
-    ts_event: pd.Timestamp
-    bar_rtype: Rtype
-    symbol: str
-    ohlcv: OHLCV
-    indicator_values: dict
 
 
 ########################################################################################

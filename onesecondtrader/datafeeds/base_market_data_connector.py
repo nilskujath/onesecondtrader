@@ -1,6 +1,8 @@
 import abc
 import threading
-from onesecondtrader.backbone import IncomingBarEventMessage
+from onesecondtrader.ontology.event_messages import (
+    IncomingBarEventMessage,
+)
 
 
 class MarketDataConnector(abc.ABC):
