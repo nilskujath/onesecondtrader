@@ -1,4 +1,3 @@
-import queue
 import sys
 import threading
 import logging
@@ -32,10 +31,6 @@ logger = logging.getLogger(__name__)
 ########################################################################################
 #   Event Queues                                                                       #
 ########################################################################################
-
-
-incoming_bar_event_message_queue = queue.Queue()
-processed_bar_event_message_queue = queue.Queue()
 
 
 ########################################################################################
