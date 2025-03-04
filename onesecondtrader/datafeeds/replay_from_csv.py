@@ -5,18 +5,20 @@ from onesecondtrader.ontology.event_messages import (
     OHLCV,
     GLOBAL_STOP_EVENT,
 )
-from onesecondtrader.ontology.global_queues import incoming_bar_event_message_queue
 from onesecondtrader.backbone import (
     logger,
 )
 import pandas as pd
 import threading
+import queue
 
 
 class ReplayFromCSV(ABCDatafeed):
 
-    def __init__(self, path_to_csv_file: str):
-        super().__init__()
+    def __init__(
+        self, path_to_csv_file: str, producer_target_queue: queue.Queue | None = None
+    ):
+        super().__init__(producer_target_queue=producer_target_queue)
         self.path_to_csv_file = path_to_csv_file
         self.data_iterator = pd.read_csv(
             self.path_to_csv_file,
@@ -81,13 +83,12 @@ class ReplayFromCSV(ABCDatafeed):
                 incoming_bar_event_message = self._get_next_bar_event_message()
                 if incoming_bar_event_message is None:
                     break
-
                 logger.debug(
                     f"Enqueue bar event message: "
                     f"{incoming_bar_event_message} | Queue size: "
-                    f"{incoming_bar_event_message_queue.qsize()}"
+                    f"{self.producer_target_queue.qsize()}"
                 )
-                incoming_bar_event_message_queue.put(incoming_bar_event_message)
+                self.producer_target_queue.put(incoming_bar_event_message)
             except Exception as e:
                 logger.error(f"Error enqueuing bar event: {e}", exc_info=False)
         if GLOBAL_STOP_EVENT.is_set():
