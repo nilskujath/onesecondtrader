@@ -13,7 +13,6 @@ class OrderType(enum.Enum):
     LIMIT = enum.auto()
     STOP = enum.auto()
     STOP_LIMIT = enum.auto()
-    BRACKET = enum.auto()
 
 
 class TradeDirection(enum.Enum):
