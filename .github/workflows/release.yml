@@ -33,9 +33,6 @@ jobs:
       - name: Run Tests
         run: poetry run pytest
 
-      - name: Generate API Docs
-        run: poetry run python scripts/generate_api_docs.py
-
       - name: Configure Git for Tagging and Auth
         run: |
           git config user.name "github-actions[bot]"

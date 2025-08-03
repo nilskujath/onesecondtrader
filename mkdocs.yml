@@ -16,6 +16,8 @@ extra:
 nav:
 - Home: index.md
 - "\u2192 Quickstart": quickstart.md
+- Development:
+  - CI/CD Pipeline: development/ci-cd.md
 - API Reference:
   - Overview: api-reference/overview.md
 theme:
@@ -72,8 +74,14 @@ plugins:
       python:
         options:
           docstring_style: google
+repo_url: https://github.com/NilsKujath/onesecondtrader
+repo_name: nilskujath/onesecondtrader
 markdown_extensions:
-- pymdownx.superfences
+- pymdownx.superfences:
+    custom_fences:
+    - name: mermaid
+      class: mermaid
+      format: !!python/name:pymdownx.superfences.fence_code_format ''
 - pymdownx.tabbed:
     alternate_style: true
     slugify: !!python/object/apply:functools.partial
