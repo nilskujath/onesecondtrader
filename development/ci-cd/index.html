@@ -967,7 +967,12 @@
 
 
 <h1 id="cicd-pipeline">CI/CD Pipeline</h1>
-<p>The CI/CD pipeline uses local pre-commit hooks to ensure code quality and GitHub Actions to automate releases. The workflow consists of two main stages: local development with quality gates to prevent problematic commits, and automated deployment to handle versioning, package publishing and documentation deployment.</p>
+<p>The CI/CD pipeline uses local pre-commit hooks to ensure code quality and GitHub Actions to automate releases. The workflow consists of two main stages:</p>
+<ul>
+<li>local development with quality gates to prevent problematic commits, and </li>
+<li>automated deployment to handle versioning, package publishing and documentation deployment.</li>
+</ul>
+<p>The following diagram illustrates this CI/CD pipeline:</p>
 <pre class="mermaid"><code>graph TD
     A[Developer Commits] --&gt; B["Pre-commit Hooks&lt;br/&gt;• Code Quality (Ruff, MyPy)&lt;br/&gt;• Tests &amp; Coverage&lt;br/&gt;• Security (Bandit, Safety)&lt;br/&gt;• Generate API Docs"]
     B --&gt; B2["Commit Message Hook&lt;br/&gt;• Conventional Commits"]
