@@ -1,0 +1,109 @@
+site_name: OneSecondTrader
+site_url: https://www.onesecondtrader.com
+copyright: "Copyright \xA9 2024-2025 Nils Kujath.<br><br>\n<div style='text-align:\
+  \ justify; font-size: 0.8em;'>THE INFORMATION PROVIDED IS FOR EDUCATIONAL AND INFORMATIONAL\
+  \ PURPOSES ONLY. IT DOES NOT CONSTITUTE FINANCIAL, INVESTMENT, OR TRADING ADVICE.\
+  \ TRADING INVOLVES SUBSTANTIAL RISK, AND YOU MAY LOSE MORE THAN YOUR INITIAL INVESTMENT.<br><br>\n\
+  THIS SOFTWARE AND ITS DOCUMENTATION PAGES ARE PROVIDED \"AS IS,\" WITHOUT ANY WARRANTIES,\
+  \ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO MERCHANTABILITY OR FITNESS FOR\
+  \ A PARTICULAR PURPOSE. THE AUTHORS AND COPYRIGHT HOLDERS ASSUME NO LIABILITY FOR\
+  \ ANY CLAIMS, DAMAGES, OR OTHER LIABILITIES ARISING FROM THE USE OR DISTRIBUTION\
+  \ OF THIS SOFTWARE OR DOCUMENTATION PAGES. USE AT YOUR OWN RISK. ONESECONDTRADER\
+  \ AND ITS DOCUMENTATION PAGES ARE LICENSED UNDER THE <a href='https://www.gnu.org/licenses/gpl-3.0.html'>GNU\
+  \ GENERAL PUBLIC LICENSE V3.0 (GPL-3.0)</a>. SEE THE GPL-3.0 FOR DETAILS.</div>"
+extra:
+  generator: false
+nav:
+- Home: index.md
+- "\u2192 Quickstart": quickstart.md
+- API Reference:
+  - Overview: api-reference/overview.md
+theme:
+  icon:
+    logo: material/book-open-page-variant-outline
+  font:
+    text: Robot Serif
+  name: material
+  palette:
+  - media: (prefers-color-scheme)
+    toggle:
+      icon: material/lightbulb-auto-outline
+      name: Switch to light mode
+  - media: '(prefers-color-scheme: light)'
+    scheme: default
+    primary: white
+    toggle:
+      icon: material/theme-light-dark
+      name: Switch to dark mode
+  - media: '(prefers-color-scheme: dark)'
+    scheme: slate
+    primary: black
+    toggle:
+      icon: material/theme-light-dark
+      name: Switch to system preference
+  features:
+  - navigation.tabs
+  - content.code.copy
+  - content.code.select
+  - content.code.annotate
+  - content.footnote.tooltips
+  - content.tabs.linked
+  - navigation.top
+plugins:
+- search
+- glightbox:
+    touchNavigation: true
+    loop: false
+    effect: zoom
+    slide_effect: slide
+    width: 100%
+    height: auto
+    zoomable: true
+    draggable: true
+    skip_classes:
+    - custom-skip-class-name
+    auto_caption: false
+    caption_position: bottom
+    background: white
+    shadow: true
+    manual: false
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          docstring_style: google
+markdown_extensions:
+- pymdownx.superfences
+- pymdownx.tabbed:
+    alternate_style: true
+    slugify: !!python/object/apply:functools.partial
+      args:
+      - &id001 !!python/name:pymdownx.slugs._uslugify ''
+      state: !!python/tuple
+      - *id001
+      - !!python/tuple []
+      - case: lower
+        percent_encode: false
+        normalize: NFC
+      - null
+- admonition
+- pymdownx.details
+- attr_list
+- md_in_html
+- pymdownx.emoji:
+    emoji_index: !!python/name:material.extensions.emoji.twemoji ''
+    emoji_generator: !!python/name:material.extensions.emoji.to_svg ''
+- pymdownx.highlight:
+    anchor_linenums: true
+    line_spans: __span
+    pygments_lang_class: true
+- pymdownx.inlinehilite
+- pymdownx.snippets
+- pymdownx.arithmatex:
+    generic: true
+- footnotes
+extra_javascript:
+- javascripts/mathjax.js
+- https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+extra_css:
+- css/extra.css

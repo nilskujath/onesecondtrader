@@ -1,0 +1,86 @@
+fail_fast: true
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: Ruff check
+        entry: poetry run ruff check
+        args: [--fix]
+        language: system
+        types: [file, python]
+
+      - id: ruff-format
+        name: Ruff format
+        entry: poetry run ruff format
+        language: system
+        types: [file, python]
+
+      - id: mypy
+        name: Type check with mypy
+        entry: poetry run mypy
+        language: system
+        types: [file, python]
+        args: [--ignore-missing-imports]
+
+      - id: pytest
+        name: Run tests
+        entry: poetry run pytest
+        language: system
+        pass_filenames: false
+
+      - id: doctest
+        name: Run doctests in docstrings
+        entry: poetry run pytest --doctest-modules
+        language: system
+        pass_filenames: false
+
+      - id: bandit
+        name: Bandit security check
+        entry: poetry run bandit -r src/
+        language: system
+        pass_filenames: false
+
+      - id: safety
+        name: Safety security check
+        entry: >
+          bash -c "poetry export -f requirements.txt --without-hashes | safety check --stdin"
+        language: system
+        pass_filenames: false
+
+      - id: coverage
+        name: Coverage threshold check
+        entry: poetry run pytest --cov=src/ --cov-fail-under=90
+        language: system
+        pass_filenames: false
+
+      - id: generate-api-docs
+        name: Generate and stage API documentation
+        entry: >
+          bash -c "poetry run python scripts/generate_api_docs.py &&
+                   git add docs/api-reference/"
+        language: system
+        pass_filenames: false
+
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.2.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.28.0
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+        exclude: ^mkdocs\.yml$
+      - id: check-toml
+      - id: check-json
+      - id: end-of-file-fixer
+      - id: debug-statements
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-case-conflict

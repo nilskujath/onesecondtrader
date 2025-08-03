@@ -1,0 +1,44 @@
+[project]
+name = "onesecondtrader"
+version = "0.1.0"
+description = "The Trading Infrastructure Toolkit for Python. Research, simulate, and deploy algorithmic trading strategies — all in one place."
+authors = [
+    {name = "Nils P. Kujath",email = "63961429+NilsKujath@users.noreply.github.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas (>=2.3.1,<3.0.0)",
+]
+
+[tool.poetry]
+packages = [{include = "onesecondtrader", from = "src"}]
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+mkdocs-material = "^9.6.15"
+mkdocs-glightbox = "^0.4.0"
+mkdocstrings-python = "^1.16.12"
+pre-commit = "^4.2.0"
+pyyaml = "^6.0.2"
+pytest = "^8.4.1"
+ruff = "^0.12.7"
+mypy = "^1.17.1"
+bandit = "^1.8.6"
+safety = "^3.6.0"
+radon = "^6.0.1"
+types-pyyaml = "^6.0.12.20250516"
+coverage = "^7.10.1"
+pytest-cov = "^6.2.1"
+python-semantic-release = "^10.2.0"
+mkdocs-autorefs = "^1.4.2"
+mkdocs = "^1.6.1"
+
+[tool.semantic_release]
+version_source = "tag"
+upload_to_pypi = true
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install project dependencies
+        run: poetry install --with dev
+
+      - name: Run Ruff
+        run: poetry run ruff check .
+
+      - name: Run Mypy
+        run: poetry run mypy src/
+
+      - name: Run Tests
+        run: poetry run pytest
+
+      - name: Generate API Docs
+        run: poetry run python scripts/generate_api_docs.py
+
+      - name: Configure Git for Tagging and Auth
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+
+      - name: Semantic Versioning, Changelog, and PyPI Release
+        run: poetry run semantic-release publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Deploy Documentation
+        run: |
+          git fetch origin
+          poetry run mkdocs gh-deploy --force

@@ -1,0 +1,32 @@
+/* Change the font size of the body text */
+.md-typeset {
+    font-size: 16px; /* Change this value to the desired font size */
+}
+code {
+    white-space: pre-wrap; /* Allows code to wrap and keeps indentation */
+}
+
+code, pre {
+    tab-size: 4;  /* Ensures tabs are displayed as 4 spaces */
+    white-space: pre;  /* Makes sure code preserves indentation and spaces */
+}
+
+/* Light theme: show -light images, hide -dark images */
+[data-md-color-scheme="default"] .image-grid-light {
+    display: grid;
+}
+[data-md-color-scheme="default"] .image-grid-dark {
+    display: none !important;
+    margin: 0 !important;
+    height: 0 !important;
+}
+
+/* Dark theme: show -dark images, hide -light images */
+[data-md-color-scheme="slate"] .image-grid-light {
+    display: none !important;
+    margin: 0 !important;
+    height: 0 !important;
+}
+[data-md-color-scheme="slate"] .image-grid-dark {
+    display: grid;
+}
