@@ -662,6 +662,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#personal-access-token-pat-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Personal Access Token (PAT) Setup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#local-development-setup" class="md-nav__link">
     <span class="md-ellipsis">
       Local Development Setup
@@ -674,6 +683,48 @@
   <a href="#required-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       Required Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Scripts
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workflow-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow Permissions
     </span>
   </a>
   
@@ -975,6 +1026,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#personal-access-token-pat-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Personal Access Token (PAT) Setup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#local-development-setup" class="md-nav__link">
     <span class="md-ellipsis">
       Local Development Setup
@@ -987,6 +1047,48 @@
   <a href="#required-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       Required Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Scripts
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workflow-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow Permissions
     </span>
   </a>
   
@@ -1024,28 +1126,34 @@
 </ul>
 <p>The following diagram illustrates this CI/CD pipeline:</p>
 <pre class="mermaid"><code>graph TD
-    A[Developer Commits] --&gt; B["Pre-commit Hooks&lt;br/&gt;• Code Quality (Ruff, MyPy)&lt;br/&gt;• Tests &amp; Coverage&lt;br/&gt;• Security (Bandit, Safety)&lt;br/&gt;• Generate API Docs"]
+    A[Developer Commits] --&gt; B["Pre-commit Hooks&lt;br/&gt;• Code Quality (Ruff, MyPy)&lt;br/&gt;• Tests &amp; Coverage&lt;br/&gt;• Security (Bandit, Safety, Gitleaks)&lt;br/&gt;• Generate API Docs"]
     B --&gt; B2["Commit Message Hook&lt;br/&gt;• Conventional Commits"]
     B2 --&gt; C{All Checks Pass?}
     C --&gt;|No| D[Commit Blocked]
     C --&gt;|Yes| E[Commit to Local Git]
     E --&gt; F[Push to GitHub]
-    F --&gt; G[GitHub Actions Triggered]
+    F --&gt; G[GitHub Actions Triggered&lt;br/&gt;on master branch]
 
-    G --&gt; H[Code Quality Checks]
-    H --&gt; I[Run Test Suite]
-    I --&gt; K[Semantic Release Analysis]
+    G --&gt; H[Setup Environment&lt;br/&gt;Python 3.11 + Poetry]
+    H --&gt; I[Install Dependencies]
+    I --&gt; J[Code Quality Checks&lt;br/&gt;Ruff + MyPy + Tests]
+    J --&gt; K[Configure Git with PAT]
+    K --&gt; L[Custom Version Analysis&lt;br/&gt;bump_version.py script]
 
-    K --&gt; L{Version Bump Required?}
-    L --&gt;|Yes| M[Create Git Tag]
-    L --&gt;|No| P[Deploy Documentation]
+    L --&gt; M{Version Bump Required?}
+    M --&gt;|Yes| N[Update pyproject.toml&lt;br/&gt;&amp; CHANGELOG.md]
+    M --&gt;|No| S[Deploy Documentation Only]
 
-    M --&gt; O[Publish to PyPI]
-    O --&gt; P[Deploy Documentation]
-    P --&gt; Q[Pipeline Complete]
+    N --&gt; O[Commit &amp; Push Changes]
+    O --&gt; P[Build &amp; Publish to PyPI]
+    P --&gt; Q[Create GitHub Release&lt;br/&gt;with tag &amp; changelog]
+    Q --&gt; R[Deploy Documentation&lt;br/&gt;to GitHub Pages]
+    R --&gt; T[Pipeline Complete]
 
-    D --&gt; R[Fix Issues &amp; Retry]
-    R --&gt; A
+    S --&gt; R
+
+    D --&gt; U[Fix Issues &amp; Retry]
+    U --&gt; A
 
     subgraph "Local Development"
         A
@@ -1054,7 +1162,7 @@
         C
         D
         E
-        R
+        U
     end
 
     subgraph "GitHub Repository"
@@ -1065,15 +1173,20 @@
     subgraph "CI/CD Pipeline"
         H
         I
+        J
         K
         L
         M
+        N
+        O
     end
 
     subgraph "Deployment"
-        O
         P
         Q
+        R
+        S
+        T
     end</code></pre>
 <h2 id="pre-commit-hooks">Pre-commit Hooks</h2>
 <p>Local quality gates that run before each commit with <code>fail_fast: true</code> - any failure blocks the commit.</p>
@@ -1081,7 +1194,7 @@
 <ul>
 <li><strong>Ruff Check</strong>: Linting with auto-fixes (<code>poetry run ruff check --fix</code>)</li>
 <li><strong>Ruff Format</strong>: Code formatting (<code>poetry run ruff format</code>)</li>
-<li><strong>MyPy</strong>: Type checking (<code>poetry run mypy --ignore-missing-imports</code>)</li>
+<li><strong>MyPy</strong>: Type checking (<code>poetry run mypy src/</code>)</li>
 </ul>
 <h3 id="testing-hooks">Testing Hooks</h3>
 <ul>
@@ -1101,8 +1214,9 @@
 </ul>
 <h3 id="external-hooks">External Hooks</h3>
 <ul>
-<li><strong>Conventional Commits</strong>: Enforces commit message format (required for semantic-release)</li>
-<li><strong>File Validation</strong>: YAML/TOML/JSON syntax, file size limits, merge conflicts</li>
+<li><strong>Conventional Commits</strong>: Enforces commit message format (required for automated versioning)</li>
+<li><strong>Gitleaks</strong>: Detects secrets and API keys in commits</li>
+<li><strong>File Validation</strong>: YAML/TOML/JSON syntax, file size limits, merge conflicts, debug statements</li>
 </ul>
 <h2 id="commit-message-conventions">Commit Message Conventions</h2>
 <p>This project follows <a href="https://www.conventionalcommits.org/">Conventional Commits</a> specification for commit messages. This standardized format enables automated semantic versioning and changelog generation.</p>
@@ -1136,27 +1250,49 @@
 <p>Automated CI/CD that triggers on every push to <code>master</code> branch.</p>
 <h3 id="workflow-steps">Workflow Steps</h3>
 <ol>
-<li><strong>Setup</strong>: Checkout code with full Git history, install Python 3.11 and Poetry</li>
+<li><strong>Setup</strong>: Checkout code with full Git history (<code>fetch-depth: 0</code>), install Python 3.11 and Poetry</li>
 <li><strong>Dependencies</strong>: Install project dependencies with <code>poetry install --with dev</code></li>
 <li><strong>Quality Checks</strong>: Run Ruff linting, MyPy type checking, and pytest</li>
-<li><strong>Git Config</strong>: Configure bot identity for automated operations</li>
-<li><strong>Semantic Release</strong>: Analyze commits, bump version, create changelog, publish to PyPI</li>
-<li><strong>Deploy Docs</strong>: Deploy documentation to GitHub Pages</li>
+<li><strong>Git Configuration</strong>: Configure bot identity and PAT authentication for automated operations</li>
+<li><strong>Version Analysis</strong>: Custom script analyzes conventional commits to determine version bump</li>
+<li><strong>Conditional Release</strong>: If version bump required:</li>
+<li>Update <code>pyproject.toml</code> and <code>CHANGELOG.md</code></li>
+<li>Commit and push changes</li>
+<li>Build and publish to PyPI</li>
+<li>Create GitHub release with tag and changelog</li>
+<li><strong>Documentation</strong>: Deploy to GitHub Pages using <code>mkdocs gh-deploy</code></li>
 </ol>
 <h3 id="key-features">Key Features</h3>
 <ul>
-<li><strong>Semantic Versioning</strong>: Uses conventional commits to determine version bumps</li>
-<li><strong>PyPI Publishing</strong>: Automatically publishes new releases</li>
-<li><strong>Documentation</strong>: Deploys to GitHub Pages on every release</li>
-<li><strong>Environment</strong>: Requires <code>GITHUB_TOKEN</code> and <code>PYPI_API_TOKEN</code> secrets</li>
+<li><strong>Custom Semantic Versioning</strong>: Uses <code>scripts/bump_version.py</code> to analyze conventional commits</li>
+<li><strong>Conditional Publishing</strong>: Only publishes when version bump is required</li>
+<li><strong>Automated Changelog</strong>: Generates changelog from commit messages</li>
+<li><strong>GitHub Releases</strong>: Creates releases with tags and changelog content</li>
+<li><strong>Documentation Deployment</strong>: Always deploys docs, regardless of version changes</li>
+<li><strong>PAT Authentication</strong>: Uses Personal Access Token for enhanced permissions</li>
 </ul>
 <h2 id="setup-instructions">Setup Instructions</h2>
 <h3 id="github-configuration">GitHub Configuration</h3>
 <p><strong>Required Secrets</strong> (<code>Settings &gt; Secrets and variables &gt; Actions</code>):
+- <code>GH_PAT</code>: Personal Access Token with enhanced permissions (see PAT Setup below)
 - <code>PYPI_API_TOKEN</code>: Generate from PyPI account settings</p>
 <p><strong>Repository Settings</strong>:
 - <strong>Actions</strong>: Enable "Read and write permissions" and "Allow GitHub Actions to create and approve pull requests"
 - <strong>Pages</strong>: Set source to "Deploy from a branch" using <code>gh-pages</code> branch</p>
+<h3 id="personal-access-token-pat-setup">Personal Access Token (PAT) Setup</h3>
+<p>The workflow requires a Personal Access Token instead of the default <code>GITHUB_TOKEN</code> because it needs enhanced permissions to:
+- Push commits back to the repository (version bumps and changelog updates)
+- Create and manage GitHub releases
+- Access repository metadata for version analysis</p>
+<p><strong>Creating a PAT</strong>:
+1. Go to GitHub Settings &gt; Developer settings &gt; Personal access tokens &gt; Tokens (classic)
+2. Click "Generate new token (classic)"
+3. Set expiration and select these scopes:
+   - <code>repo</code> (Full control of private repositories)
+   - <code>workflow</code> (Update GitHub Action workflows)
+4. Copy the token and add it as <code>GH_PAT</code> secret in repository settings</p>
+<p><strong>Why PAT is Required</strong>:
+The default <code>GITHUB_TOKEN</code> has limited permissions and cannot trigger subsequent workflow runs or push to protected branches. The PAT provides the necessary permissions for the automated release process.</p>
 <h3 id="local-development-setup">Local Development Setup</h3>
 <p><strong>Install pre-commit hooks</strong>:
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>poetry<span class="w"> </span>run<span class="w"> </span>pre-commit<span class="w"> </span>install
@@ -1166,10 +1302,10 @@
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>poetry<span class="w"> </span>run<span class="w"> </span>pre-commit<span class="w"> </span>run<span class="w"> </span>--all-files
 </span></code></pre></div></p>
 <h3 id="required-configuration">Required Configuration</h3>
-<p><strong>pyproject.toml</strong>:
-<div class="language-toml highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">[tool.semantic_release]</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">version_source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tag&quot;</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">upload_to_pypi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<p><strong>pyproject.toml</strong> (version field):
+<div class="language-toml highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">[tool.poetry]</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;onesecondtrader&quot;</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;0.1.0&quot;</span><span class="w">  </span><span class="c1"># Updated automatically by bump_version.py</span>
 </span></code></pre></div></p>
 <p><strong>mkdocs.yml</strong> (key plugins):
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">plugins</span><span class="p">:</span>
@@ -1179,6 +1315,45 @@
 </span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">          </span><span class="nt">options</span><span class="p">:</span>
 </span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">            </span><span class="nt">docstring_style</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">google</span>
 </span></code></pre></div></p>
+<h3 id="custom-scripts">Custom Scripts</h3>
+<p><strong>scripts/bump_version.py</strong>:
+- Analyzes conventional commit messages since last tag
+- Determines semantic version bump (major/minor/patch)
+- Updates <code>pyproject.toml</code> version and generates <code>CHANGELOG.md</code>
+- Returns new version for GitHub Actions workflow</p>
+<p><strong>scripts/generate_api_docs.py</strong>:
+- Auto-generates API documentation from source code
+- Creates individual module pages and overview
+- Updates <code>mkdocs.yml</code> navigation structure
+- Runs as pre-commit hook to keep docs synchronized</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<p><strong>Permission Denied Errors</strong>:
+- Ensure <code>GH_PAT</code> secret is properly configured with correct scopes
+- Verify repository Actions permissions allow write access
+- Check that PAT hasn't expired</p>
+<p><strong>Version Not Bumping</strong>:
+- Ensure commits follow conventional commit format
+- Check that there are new commits since the last tag
+- Verify <code>bump_version.py</code> script can read Git history</p>
+<p><strong>Documentation Deployment Fails</strong>:
+- Ensure <code>gh-pages</code> branch exists and is configured in repository settings
+- Check that <code>mkdocs.yml</code> configuration is valid
+- Verify all documentation dependencies are installed</p>
+<p><strong>PyPI Publishing Fails</strong>:
+- Verify <code>PYPI_API_TOKEN</code> is valid and has upload permissions
+- Check that package name is available on PyPI
+- Ensure <code>pyproject.toml</code> has correct package metadata</p>
+<h3 id="workflow-permissions">Workflow Permissions</h3>
+<p>The workflow requires specific permissions that exceed the default <code>GITHUB_TOKEN</code> capabilities:</p>
+<ul>
+<li><strong>Repository Write</strong>: To push version bump commits</li>
+<li><strong>Contents Write</strong>: To create and update files</li>
+<li><strong>Actions Write</strong>: To trigger subsequent workflows</li>
+<li><strong>Pull Requests Write</strong>: For automated PR operations</li>
+<li><strong>Metadata Read</strong>: To access repository information</li>
+</ul>
+<p>These enhanced permissions are why a Personal Access Token (PAT) is required instead of the default token.</p>
 
 
 
