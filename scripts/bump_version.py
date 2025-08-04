@@ -35,7 +35,7 @@ def get_commit_messages():
 
 
 def determine_bump_level(messages):
-    bump = "patch"
+    bump = None
     for msg in messages:
         if "BREAKING CHANGE" in msg:
             return "major"
@@ -96,6 +96,9 @@ def main():
         return
 
     level = determine_bump_level(messages)
+    if not level:  # No version bump needed
+        return
+
     new_version = bump_version(current, level)
 
     update_pyproject(new_version)
