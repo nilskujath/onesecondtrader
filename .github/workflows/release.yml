@@ -12,7 +12,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-python@v4
         with:
@@ -33,17 +32,43 @@ jobs:
       - name: Run Tests
         run: poetry run pytest
 
-      - name: Configure Git for Tagging and Auth
+      - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}
 
-      - name: Semantic Versioning, Changelog, and PyPI Release
-        run: poetry run semantic-release publish
+      - name: Determine new version and update pyproject.toml
+        id: versioning
+        run: |
+          pip install toml
+          VERSION=$(python scripts/bump_version.py)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+
+      - name: Commit version bump and changelog if version updated
+        if: steps.versioning.outputs.version != ''
+        run: |
+          git add pyproject.toml CHANGELOG.md
+          git commit -m "chore(ci): release ${{ steps.versioning.outputs.version }}"
+          git push origin master
+
+      - name: Build and publish to PyPI
+        if: steps.versioning.outputs.version != ''
+        run: |
+          poetry build
+          poetry publish --username __token__ --password ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Create GitHub Release
+        if: steps.versioning.outputs.version != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.versioning.outputs.version }}
+          name: v${{ steps.versioning.outputs.version }}
+          body_path: CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
       - name: Deploy Documentation
         run: |

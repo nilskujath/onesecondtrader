@@ -31,14 +31,29 @@ radon = "^6.0.1"
 types-pyyaml = "^6.0.12.20250516"
 coverage = "^7.10.1"
 pytest-cov = "^6.2.1"
-python-semantic-release = "^10.2.0"
 mkdocs-autorefs = "^1.4.2"
 mkdocs = "^1.6.1"
+python-semantic-release = "^10.3.0"
 
 [tool.semantic_release]
 version_source = "tag"
 upload_to_pypi = true
+commit_version_number = true
+version_variables = [
+    "pyproject.toml:version"
+]
+build_command = "poetry build"
+commit_message = "chore(release): {version}"
+tag_format = "v{version}"
+major_on_zero = false
+allow_zero_version = true
+
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+mypy_path = "src"
+packages = ["onesecondtrader"]
+explicit_package_bases = true

@@ -20,6 +20,7 @@ nav:
   - CI/CD Pipeline: development/ci-cd.md
 - API Reference:
   - Overview: api-reference/overview.md
+  - Log Config: api-reference/log_config.md
 theme:
   icon:
     logo: material/book-open-page-variant-outline

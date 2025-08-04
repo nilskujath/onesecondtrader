@@ -17,10 +17,10 @@ repos:
 
       - id: mypy
         name: Type check with mypy
-        entry: poetry run mypy
+        entry: poetry run mypy src/
         language: system
         types: [file, python]
-        args: [--ignore-missing-imports]
+        pass_filenames: false
 
       - id: pytest
         name: Run tests
