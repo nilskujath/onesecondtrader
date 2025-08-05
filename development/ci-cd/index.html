@@ -1372,11 +1372,13 @@
 </span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>git<span class="w"> </span>config<span class="w"> </span>pull.rebase<span class="w"> </span><span class="nb">true</span>
 </span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>master
 </span></code></pre></div></p>
-<p><strong>When to Pull and Rebase</strong>:
-- ✅ After pushing commits that trigger a version bump
-- ✅ After any successful pipeline run that shows "version bump" in the logs
-- ✅ Before starting new work on the repository
-- ❌ Not necessary if the pipeline only deployed documentation (no version change)</p>
+<p><strong>When to Pull and Rebase</strong>:</p>
+<ul>
+<li>After pushing commits that trigger a version bump</li>
+<li>After any successful pipeline run that shows "version bump" in the logs</li>
+<li>Before starting new work on the repository</li>
+<li>(!) Not necessary if the pipeline only deployed documentation (no version change)</li>
+</ul>
 <h2 id="setup-instructions">Setup Instructions</h2>
 <h3 id="github-configuration">GitHub Configuration</h3>
 <p><strong>Required Secrets</strong> (<code>Settings &gt; Secrets and variables &gt; Actions</code>):
