@@ -30,8 +30,10 @@ graph TD
     N --> O[Commit & Push Changes]
     O --> P[Build & Publish to PyPI]
     P --> Q[Create GitHub Release<br/>with tag & changelog]
-    Q --> R[Deploy Documentation<br/>to GitHub Pages]
-    R --> T[Pipeline Complete]
+    Q --> R[Generate API Documentation<br/>from available modules]
+    R --> S2[Install Package for Docs]
+    S2 --> T[Deploy Documentation<br/>to GitHub Pages]
+    T --> U2[Pipeline Complete<br/>⚠️ Pull & Rebase Required]
 
     S --> R
 
@@ -68,8 +70,10 @@ graph TD
         P
         Q
         R
-        S
+        S2
         T
+        U2
+        S
     end
 ```
 
@@ -97,7 +101,7 @@ Local quality gates that run before each commit with `fail_fast: true` - any fai
 
 ### Documentation Hook
 
-- **Generate API Docs**: Auto-generates and stages API documentation based on google-style docstrings in `src/onesecondtrader`
+- **Generate API Docs**: Auto-generates and stages API documentation dynamically based on available modules in `src/onesecondtrader`
 
 ### External Hooks
 
@@ -158,7 +162,10 @@ Automated CI/CD that triggers on every push to `master` branch.
    - Commit and push changes
    - Build and publish to PyPI
    - Create GitHub release with tag and changelog
-7. **Documentation**: Deploy to GitHub Pages using `mkdocs gh-deploy`
+7. **Documentation**:
+   - Generate API documentation dynamically from available modules
+   - Install package for documentation imports
+   - Deploy to GitHub Pages using `mkdocs gh-deploy`
 
 ### Key Features
 
@@ -166,8 +173,47 @@ Automated CI/CD that triggers on every push to `master` branch.
 - **Conditional Publishing**: Only publishes when version bump is required
 - **Automated Changelog**: Generates changelog from commit messages
 - **GitHub Releases**: Creates releases with tags and changelog content
+- **Dynamic API Documentation**: Automatically generates docs based on available modules
 - **Documentation Deployment**: Always deploys docs, regardless of version changes
 - **PAT Authentication**: Uses Personal Access Token for enhanced permissions
+
+## Post-Pipeline Workflow
+
+### ⚠️ Important: Pull and Rebase After Pipeline Completion
+
+When the CI/CD pipeline completes successfully and creates version bumps or releases, it pushes commits back to the repository. This means your local branch will be **behind** the remote branch.
+
+**Required Steps After Pipeline Completion**:
+
+```bash
+# Pull the latest changes with rebase to maintain clean history
+git pull --rebase origin master
+```
+
+**Why This Is Necessary**:
+- The pipeline creates automated commits (version bumps, changelog updates)
+- These commits are pushed to the remote repository
+- Your local branch becomes divergent from the remote
+- Without rebasing, your next push will be rejected or create merge conflicts
+
+**Alternative Commands**:
+```bash
+# If you prefer to see what changed first
+git fetch origin
+git log HEAD..origin/master --oneline  # See what commits were added
+git rebase origin/master               # Apply them to your local branch
+
+# Or configure automatic rebase for this repository
+git config pull.rebase true
+git pull origin master
+```
+
+**When to Pull and Rebase**:
+
+- After pushing commits that trigger a version bump
+- After any successful pipeline run that shows "version bump" in the logs
+- Before starting new work on the repository
+- (!) Not necessary if the pipeline only deployed documentation (no version change)
 
 ## Setup Instructions
 
@@ -240,10 +286,12 @@ plugins:
 - Returns new version for GitHub Actions workflow
 
 **scripts/generate_api_docs.py**:
-- Auto-generates API documentation from source code
-- Creates individual module pages and overview
-- Updates `mkdocs.yml` navigation structure
-- Runs as pre-commit hook to keep docs synchronized
+- Dynamically scans `src/onesecondtrader/` for available Python modules
+- Cleans and regenerates API documentation directory
+- Creates individual module pages and overview based on discovered modules
+- Updates `mkdocs.yml` navigation structure automatically
+- Runs as pre-commit hook locally and in CI pipeline
+- Prevents documentation sync issues by only documenting available modules
 
 ## Troubleshooting
 
@@ -263,11 +311,25 @@ plugins:
 - Ensure `gh-pages` branch exists and is configured in repository settings
 - Check that `mkdocs.yml` configuration is valid
 - Verify all documentation dependencies are installed
+- Ensure the package is installed before documentation build (`pip install -e .`)
+- Check that `generate_api_docs.py` runs successfully and finds modules
+
+**MyPy Type Checking Issues**:
+- If MyPy fails in CI with module resolution errors, ensure all dependencies are installed
+- Check that the package structure matches the expected import paths
+- Verify that `mypy.ini` or `pyproject.toml` configuration is correct
+- Type annotations and type safety are maintained throughout the codebase
 
 **PyPI Publishing Fails**:
 - Verify `PYPI_API_TOKEN` is valid and has upload permissions
 - Check that package name is available on PyPI
 - Ensure `pyproject.toml` has correct package metadata
+
+**Divergent Branches Error**:
+- Occurs when pipeline creates commits (version bumps) while you have local changes
+- Error message: "hint: You have divergent branches and need to specify how to reconcile them"
+- Solution: `git pull --rebase origin master` to apply remote changes first
+- Prevention: Always pull and rebase after successful pipeline runs
 
 ### Workflow Permissions
 
