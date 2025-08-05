@@ -1,3 +1,7 @@
+## v0.3.0
+- feat: added domain_models module
+- chore: fixed version bump to not patch by default
+
 ## v0.2.1
 - docs: updated cicd pipeline documentation
 
