@@ -643,6 +643,30 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#post-pipeline-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Post-Pipeline Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Post-Pipeline Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-pull-and-rebase-after-pipeline-completion" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚠️ Important: Pull and Rebase After Pipeline Completion
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#setup-instructions" class="md-nav__link">
     <span class="md-ellipsis">
       Setup Instructions
@@ -805,6 +829,29 @@
   
   <span class="md-ellipsis">
     Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/domain_models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Domain Models
     
   </span>
   
@@ -1007,6 +1054,30 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#post-pipeline-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Post-Pipeline Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Post-Pipeline Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-pull-and-rebase-after-pipeline-completion" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚠️ Important: Pull and Rebase After Pipeline Completion
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#setup-instructions" class="md-nav__link">
     <span class="md-ellipsis">
       Setup Instructions
@@ -1147,8 +1218,10 @@
     N --&gt; O[Commit &amp; Push Changes]
     O --&gt; P[Build &amp; Publish to PyPI]
     P --&gt; Q[Create GitHub Release&lt;br/&gt;with tag &amp; changelog]
-    Q --&gt; R[Deploy Documentation&lt;br/&gt;to GitHub Pages]
-    R --&gt; T[Pipeline Complete]
+    Q --&gt; R[Generate API Documentation&lt;br/&gt;from available modules]
+    R --&gt; S2[Install Package for Docs]
+    S2 --&gt; T[Deploy Documentation&lt;br/&gt;to GitHub Pages]
+    T --&gt; U2[Pipeline Complete&lt;br/&gt;⚠️ Pull &amp; Rebase Required]
 
     S --&gt; R
 
@@ -1185,8 +1258,10 @@
         P
         Q
         R
-        S
+        S2
         T
+        U2
+        S
     end</code></pre>
 <h2 id="pre-commit-hooks">Pre-commit Hooks</h2>
 <p>Local quality gates that run before each commit with <code>fail_fast: true</code> - any failure blocks the commit.</p>
@@ -1210,7 +1285,7 @@
 </ul>
 <h3 id="documentation-hook">Documentation Hook</h3>
 <ul>
-<li><strong>Generate API Docs</strong>: Auto-generates and stages API documentation based on google-style docstrings in <code>src/onesecondtrader</code></li>
+<li><strong>Generate API Docs</strong>: Auto-generates and stages API documentation dynamically based on available modules in <code>src/onesecondtrader</code></li>
 </ul>
 <h3 id="external-hooks">External Hooks</h3>
 <ul>
@@ -1260,7 +1335,10 @@
 <li>Commit and push changes</li>
 <li>Build and publish to PyPI</li>
 <li>Create GitHub release with tag and changelog</li>
-<li><strong>Documentation</strong>: Deploy to GitHub Pages using <code>mkdocs gh-deploy</code></li>
+<li><strong>Documentation</strong>:</li>
+<li>Generate API documentation dynamically from available modules</li>
+<li>Install package for documentation imports</li>
+<li>Deploy to GitHub Pages using <code>mkdocs gh-deploy</code></li>
 </ol>
 <h3 id="key-features">Key Features</h3>
 <ul>
@@ -1268,9 +1346,37 @@
 <li><strong>Conditional Publishing</strong>: Only publishes when version bump is required</li>
 <li><strong>Automated Changelog</strong>: Generates changelog from commit messages</li>
 <li><strong>GitHub Releases</strong>: Creates releases with tags and changelog content</li>
+<li><strong>Dynamic API Documentation</strong>: Automatically generates docs based on available modules</li>
 <li><strong>Documentation Deployment</strong>: Always deploys docs, regardless of version changes</li>
 <li><strong>PAT Authentication</strong>: Uses Personal Access Token for enhanced permissions</li>
 </ul>
+<h2 id="post-pipeline-workflow">Post-Pipeline Workflow</h2>
+<h3 id="important-pull-and-rebase-after-pipeline-completion">⚠️ Important: Pull and Rebase After Pipeline Completion</h3>
+<p>When the CI/CD pipeline completes successfully and creates version bumps or releases, it pushes commits back to the repository. This means your local branch will be <strong>behind</strong> the remote branch.</p>
+<p><strong>Required Steps After Pipeline Completion</strong>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Pull the latest changes with rebase to maintain clean history</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>git<span class="w"> </span>pull<span class="w"> </span>--rebase<span class="w"> </span>origin<span class="w"> </span>master
+</span></code></pre></div>
+<p><strong>Why This Is Necessary</strong>:
+- The pipeline creates automated commits (version bumps, changelog updates)
+- These commits are pushed to the remote repository
+- Your local branch becomes divergent from the remote
+- Without rebasing, your next push will be rejected or create merge conflicts</p>
+<p><strong>Alternative Commands</strong>:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># If you prefer to see what changed first</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>git<span class="w"> </span>fetch<span class="w"> </span>origin
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>git<span class="w"> </span>log<span class="w"> </span>HEAD..origin/master<span class="w"> </span>--oneline<span class="w">  </span><span class="c1"># See what commits were added</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>git<span class="w"> </span>rebase<span class="w"> </span>origin/master<span class="w">               </span><span class="c1"># Apply them to your local branch</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c1"># Or configure automatic rebase for this repository</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>git<span class="w"> </span>config<span class="w"> </span>pull.rebase<span class="w"> </span><span class="nb">true</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>master
+</span></code></pre></div></p>
+<p><strong>When to Pull and Rebase</strong>:
+- ✅ After pushing commits that trigger a version bump
+- ✅ After any successful pipeline run that shows "version bump" in the logs
+- ✅ Before starting new work on the repository
+- ❌ Not necessary if the pipeline only deployed documentation (no version change)</p>
 <h2 id="setup-instructions">Setup Instructions</h2>
 <h3 id="github-configuration">GitHub Configuration</h3>
 <p><strong>Required Secrets</strong> (<code>Settings &gt; Secrets and variables &gt; Actions</code>):
@@ -1295,25 +1401,25 @@
 The default <code>GITHUB_TOKEN</code> has limited permissions and cannot trigger subsequent workflow runs or push to protected branches. The PAT provides the necessary permissions for the automated release process.</p>
 <h3 id="local-development-setup">Local Development Setup</h3>
 <p><strong>Install pre-commit hooks</strong>:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>poetry<span class="w"> </span>run<span class="w"> </span>pre-commit<span class="w"> </span>install
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>poetry<span class="w"> </span>run<span class="w"> </span>pre-commit<span class="w"> </span>install<span class="w"> </span>--hook-type<span class="w"> </span>commit-msg
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>poetry<span class="w"> </span>run<span class="w"> </span>pre-commit<span class="w"> </span>install
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>poetry<span class="w"> </span>run<span class="w"> </span>pre-commit<span class="w"> </span>install<span class="w"> </span>--hook-type<span class="w"> </span>commit-msg
 </span></code></pre></div></p>
 <p><strong>Test installation</strong>:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>poetry<span class="w"> </span>run<span class="w"> </span>pre-commit<span class="w"> </span>run<span class="w"> </span>--all-files
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>poetry<span class="w"> </span>run<span class="w"> </span>pre-commit<span class="w"> </span>run<span class="w"> </span>--all-files
 </span></code></pre></div></p>
 <h3 id="required-configuration">Required Configuration</h3>
 <p><strong>pyproject.toml</strong> (version field):
-<div class="language-toml highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">[tool.poetry]</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;onesecondtrader&quot;</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;0.1.0&quot;</span><span class="w">  </span><span class="c1"># Updated automatically by bump_version.py</span>
+<div class="language-toml highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">[tool.poetry]</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;onesecondtrader&quot;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;0.1.0&quot;</span><span class="w">  </span><span class="c1"># Updated automatically by bump_version.py</span>
 </span></code></pre></div></p>
 <p><strong>mkdocs.yml</strong> (key plugins):
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">plugins</span><span class="p">:</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mkdocstrings</span><span class="p">:</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">      </span><span class="nt">handlers</span><span class="p">:</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">        </span><span class="nt">python</span><span class="p">:</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">          </span><span class="nt">options</span><span class="p">:</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">            </span><span class="nt">docstring_style</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">google</span>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">plugins</span><span class="p">:</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mkdocstrings</span><span class="p">:</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">      </span><span class="nt">handlers</span><span class="p">:</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">        </span><span class="nt">python</span><span class="p">:</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">          </span><span class="nt">options</span><span class="p">:</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">            </span><span class="nt">docstring_style</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">google</span>
 </span></code></pre></div></p>
 <h3 id="custom-scripts">Custom Scripts</h3>
 <p><strong>scripts/bump_version.py</strong>:
@@ -1322,10 +1428,12 @@ The default <code>GITHUB_TOKEN</code> has limited permissions and cannot trigger
 - Updates <code>pyproject.toml</code> version and generates <code>CHANGELOG.md</code>
 - Returns new version for GitHub Actions workflow</p>
 <p><strong>scripts/generate_api_docs.py</strong>:
-- Auto-generates API documentation from source code
-- Creates individual module pages and overview
-- Updates <code>mkdocs.yml</code> navigation structure
-- Runs as pre-commit hook to keep docs synchronized</p>
+- Dynamically scans <code>src/onesecondtrader/</code> for available Python modules
+- Cleans and regenerates API documentation directory
+- Creates individual module pages and overview based on discovered modules
+- Updates <code>mkdocs.yml</code> navigation structure automatically
+- Runs as pre-commit hook locally and in CI pipeline
+- Prevents documentation sync issues by only documenting available modules</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="common-issues">Common Issues</h3>
 <p><strong>Permission Denied Errors</strong>:
@@ -1339,11 +1447,23 @@ The default <code>GITHUB_TOKEN</code> has limited permissions and cannot trigger
 <p><strong>Documentation Deployment Fails</strong>:
 - Ensure <code>gh-pages</code> branch exists and is configured in repository settings
 - Check that <code>mkdocs.yml</code> configuration is valid
-- Verify all documentation dependencies are installed</p>
+- Verify all documentation dependencies are installed
+- Ensure the package is installed before documentation build (<code>pip install -e .</code>)
+- Check that <code>generate_api_docs.py</code> runs successfully and finds modules</p>
+<p><strong>MyPy Type Checking Issues</strong>:
+- If MyPy fails in CI with module resolution errors, ensure all dependencies are installed
+- Check that the package structure matches the expected import paths
+- Verify that <code>mypy.ini</code> or <code>pyproject.toml</code> configuration is correct
+- Type annotations and type safety are maintained throughout the codebase</p>
 <p><strong>PyPI Publishing Fails</strong>:
 - Verify <code>PYPI_API_TOKEN</code> is valid and has upload permissions
 - Check that package name is available on PyPI
 - Ensure <code>pyproject.toml</code> has correct package metadata</p>
+<p><strong>Divergent Branches Error</strong>:
+- Occurs when pipeline creates commits (version bumps) while you have local changes
+- Error message: "hint: You have divergent branches and need to specify how to reconcile them"
+- Solution: <code>git pull --rebase origin master</code> to apply remote changes first
+- Prevention: Always pull and rebase after successful pipeline runs</p>
 <h3 id="workflow-permissions">Workflow Permissions</h3>
 <p>The workflow requires specific permissions that exceed the default <code>GITHUB_TOKEN</code> capabilities:</p>
 <ul>
