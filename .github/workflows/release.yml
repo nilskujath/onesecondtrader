@@ -67,6 +67,7 @@ jobs:
           tag_name: v${{ steps.versioning.outputs.version }}
           name: v${{ steps.versioning.outputs.version }}
           body_path: CHANGELOG.md
+
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 

@@ -20,7 +20,11 @@ nav:
   - CI/CD Pipeline: development/ci-cd.md
 - API Reference:
   - Overview: api-reference/overview.md
+  - Domain Models: api-reference/domain_models.md
+  - Event Bus: api-reference/event_bus.md
+  - Events: api-reference/events.md
   - Log Config: api-reference/log_config.md
+  - Portfolio: api-reference/portfolio.md
 theme:
   icon:
     logo: material/book-open-page-variant-outline
@@ -75,6 +79,7 @@ plugins:
       python:
         options:
           docstring_style: google
+          members_order: source
 repo_url: https://github.com/NilsKujath/onesecondtrader
 repo_name: nilskujath/onesecondtrader
 markdown_extensions:
