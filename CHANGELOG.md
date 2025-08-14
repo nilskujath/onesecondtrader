@@ -1,3 +1,7 @@
+## v0.4.0
+- feat: general cleanup and updated documentation
+- docs: fix docs website deploy issue
+
 ## v0.3.0
 - feat: added domain_models module
 - chore: fixed version bump to not patch by default
