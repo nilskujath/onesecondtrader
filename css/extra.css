@@ -30,3 +30,10 @@ code, pre {
 [data-md-color-scheme="slate"] .image-grid-dark {
     display: grid;
 }
+
+/* Center all Mermaid diagrams */
+.mermaid {
+    text-align: center;
+    margin: 0 auto;
+    display: block;
+}

@@ -2,26 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://www.onesecondtrader.com/</loc>
-         <lastmod>2025-08-05</lastmod>
+         <lastmod>2025-08-14</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/quickstart/</loc>
-         <lastmod>2025-08-05</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/domain_models/</loc>
-         <lastmod>2025-08-05</lastmod>
+         <lastmod>2025-08-14</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/log_config/</loc>
-         <lastmod>2025-08-05</lastmod>
+         <lastmod>2025-08-14</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/overview/</loc>
-         <lastmod>2025-08-05</lastmod>
+         <lastmod>2025-08-14</lastmod>
     </url>
     <url>
-         <loc>https://www.onesecondtrader.com/development/ci-cd/</loc>
-         <lastmod>2025-08-05</lastmod>
+         <loc>https://www.onesecondtrader.com/documentation/architecture/</loc>
+         <lastmod>2025-08-14</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/documentation/backtesting/</loc>
+         <lastmod>2025-08-14</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/documentation/developing/</loc>
+         <lastmod>2025-08-14</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/documentation/overview/</loc>
+         <lastmod>2025-08-14</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/documentation/trading/</loc>
+         <lastmod>2025-08-14</lastmod>
     </url>
 </urlset>
