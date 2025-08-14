@@ -1,3 +1,6 @@
+## v0.5.0
+- feat: re-added domain models module
+
 ## v0.4.0
 - feat: general cleanup and updated documentation
 - docs: fix docs website deploy issue
