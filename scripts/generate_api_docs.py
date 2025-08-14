@@ -15,25 +15,27 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-########################################################################################
 # API REFERENCE DOCUMENTATION GENERATION
-########################################################################################
+# --------------------------------------------------------------------------------------
 
 
 def generate_api_docs():
-    """Generate comprehensive API documentation for the onesecondtrader package.
+    """Generate API reference documentation from docstrings via mkdocstrings package.
 
     Automatically discovers Python modules in src/onesecondtrader and generates
     corresponding markdown documentation files. Modules with substantial content
     (classes/functions) use mkdocstrings for automatic API documentation, while
-    simple modules display their source code directly.
+    simple modules display their source code directly. This is done in the following
+    steps:
 
-    Process:
         1. Clean and recreate docs/api-reference directory
         2. Discover all Python modules (excluding __init__.py)
         3. Generate individual module documentation pages
         4. Create overview page with navigation cards
         5. Update mkdocs.yml navigation structure
+
+    Should modules not contain any substantial content (no classes/functions), their
+    source code is displayed directly in the API reference documentation.
 
     Output:
         - Individual .md files for each module in docs/api-reference/

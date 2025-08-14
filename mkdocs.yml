@@ -16,15 +16,15 @@ extra:
 nav:
 - Home: index.md
 - "\u2192 Quickstart": quickstart.md
-- Development:
-  - CI/CD Pipeline: development/ci-cd.md
+- Documentation:
+  - Overview: documentation/overview.md
+  - Architecture: documentation/architecture.md
+  - Backtesting: documentation/backtesting.md
+  - Trading: documentation/trading.md
+  - Developing: documentation/developing.md
 - API Reference:
   - Overview: api-reference/overview.md
-  - Domain Models: api-reference/domain_models.md
-  - Event Bus: api-reference/event_bus.md
-  - Events: api-reference/events.md
   - Log Config: api-reference/log_config.md
-  - Portfolio: api-reference/portfolio.md
 theme:
   icon:
     logo: material/book-open-page-variant-outline
