@@ -24,6 +24,7 @@ nav:
   - Developing: documentation/developing.md
 - API Reference:
   - Overview: api-reference/overview.md
+  - Domain Models: api-reference/domain_models.md
   - Log Config: api-reference/log_config.md
 theme:
   icon:
