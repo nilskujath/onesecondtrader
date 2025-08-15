@@ -15,7 +15,7 @@ import enum
 import pandas as pd
 import uuid
 
-from .monitoring import logger
+from onesecondtrader.monitoring import logger
 
 
 ########################################################################################

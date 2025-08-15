@@ -11,9 +11,11 @@ hide:
 
 -   __Domain__&nbsp;&nbsp;
 
+    Contains: `models.py`
+
     ---
 
-    [:material-link-variant: View `domain.py` API](domain.md)
+    [:material-link-variant: View `domain/` package API](domain/)
 
 -   __Monitoring__&nbsp;&nbsp;
 

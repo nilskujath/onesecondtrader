@@ -1,6 +1,6 @@
-# Domain
+# Models
 
-::: onesecondtrader.domain
+::: onesecondtrader.domain.models
     options:
       show_root_heading: False
       show_source: true

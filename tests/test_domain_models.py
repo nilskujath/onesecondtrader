@@ -1,7 +1,7 @@
 """
-Test suite for domain.py module.
+Test suite for domain models module.
 
-This module tests the domain models defined in the domain.py file.
+This module tests the domain models defined in the domain/models.py file.
 Event classes are excluded from testing coverage.
 """
 
@@ -149,6 +149,55 @@ class TestSystemManagementDomainModels:
         # Test uniqueness of values
         values = [member.value for member in SystemManagement.StopReason]
         assert len(values) == len(set(values))
+
+
+class TestNewStructureCompatibility:
+    """Test that the new hierarchical structure maintains compatibility."""
+
+    def test_domain_module_exports(self):
+        """Test that domain module exports all expected items."""
+        from src.onesecondtrader.domain import (
+            DomainModel,
+            Event,
+            MarketData,
+            PositionManagement,
+            SystemManagement,
+        )
+
+        # Test that aliases work correctly
+        assert MarketData is DomainModel.MarketData
+        assert PositionManagement is DomainModel.PositionManagement
+        assert SystemManagement is DomainModel.SystemManagement
+
+        # Test that we can access the Event class
+        assert Event is not None
+        assert hasattr(Event, "_AbstractEvent")
+
+    def test_main_package_imports(self):
+        """Test that main package imports still work."""
+        from src.onesecondtrader import (
+            MarketData,
+            PositionManagement,
+            SystemManagement,
+            logger,
+        )
+
+        # Test that imports work and point to correct classes
+        assert MarketData.__name__ == "MarketData"
+        assert PositionManagement.__name__ == "PositionManagement"
+        assert SystemManagement.__name__ == "SystemManagement"
+        assert logger.name == "onesecondtrader"
+
+    def test_direct_models_import(self):
+        """Test that direct import from models still works."""
+        from src.onesecondtrader.domain.models import DomainModel, Event
+
+        # Test that direct imports work
+        assert DomainModel is not None
+        assert Event is not None
+        assert hasattr(DomainModel, "MarketData")
+        assert hasattr(DomainModel, "PositionManagement")
+        assert hasattr(DomainModel, "SystemManagement")
 
 
 class TestDocumentationExamples:
