@@ -58,3 +58,29 @@ build-backend = "poetry.core.masonry.api"
 mypy_path = "src"
 packages = ["onesecondtrader"]
 explicit_package_bases = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "class Event:",
+    "class .*Event.*:",
+    "@(abc\\.)?abstractmethod",
+]
