@@ -15,10 +15,10 @@ hide:
 
     [:material-link-variant: View `domain.py` API](domain.md)
 
--   __Log Config__&nbsp;&nbsp;
+-   __Monitoring__&nbsp;&nbsp;
 
     ---
 
-    [:material-link-variant: View `log_config.py` API](log_config.md)
+    [:material-link-variant: View `monitoring.py` API](monitoring.md)
 
 </div>

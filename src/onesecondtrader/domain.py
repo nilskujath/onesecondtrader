@@ -15,7 +15,7 @@ import enum
 import pandas as pd
 import uuid
 
-from .log_config import logger
+from .monitoring import logger
 
 
 ########################################################################################

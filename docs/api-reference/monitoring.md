@@ -1,13 +1,13 @@
-# Log Config
+# Monitoring
 
-::: onesecondtrader.log_config
+::: onesecondtrader.monitoring
     options:
       show_root_heading: False
       show_source: false
       heading_level: 2
       show_root_toc_entry: False
 
-???+ quote "Source code in `log_config.py`"
+???+ quote "Source code in `monitoring.py`"
 
     ```python linenums="1"
     """Logging configuration for the OneSecondTrader package.

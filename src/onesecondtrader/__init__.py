@@ -5,7 +5,7 @@ Research, simulate, and deploy algorithmic trading strategies — all in one pla
 """
 
 # Core infrastructure
-from .log_config import logger
+from .monitoring import logger
 
 # Domain models
 from .domain import MarketData, PositionManagement, SystemManagement

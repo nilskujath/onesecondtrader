@@ -25,7 +25,7 @@ nav:
 - API Reference:
   - Overview: api-reference/overview.md
   - Domain: api-reference/domain.md
-  - Log Config: api-reference/log_config.md
+  - Monitoring: api-reference/monitoring.md
 theme:
   icon:
     logo: material/book-open-page-variant-outline
