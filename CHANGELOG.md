@@ -1,3 +1,6 @@
+## v0.5.1
+- fix: restructured domain_models into domain module
+
 ## v0.5.0
 - feat: re-added domain models module
 
