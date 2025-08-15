@@ -1,3 +1,6 @@
+## v0.5.2
+- fix: changed name from log_config to monitoring
+
 ## v0.5.1
 - fix: restructured domain_models into domain module
 

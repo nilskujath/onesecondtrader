@@ -1,6 +1,6 @@
 [project]
 name = "onesecondtrader"
-version = "0.5.1"
+version = "0.5.2"
 description = "The Trading Infrastructure Toolkit for Python. Research, simulate, and deploy algorithmic trading strategies — all in one place."
 authors = [
     {name = "Nils P. Kujath",email = "63961429+NilsKujath@users.noreply.github.com"}
