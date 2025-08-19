@@ -6,24 +6,24 @@
 
     ---
 
-    [:material-link-variant: View Architecture Documentation Page](documentation/architecture.md)
+    [:material-link-variant: View Architecture Documentation Page](./architecture.md)
 
 -   __:material-file-document-outline: Backtesting Strategies__&nbsp;&nbsp;
 
     ---
 
-    [:material-link-variant: View Backtesting Documentation Page](documentation/backtesting.md)
+    [:material-link-variant: View Backtesting Documentation Page](./backtesting.md)
 
 -   __:material-file-document-outline: Live Trading__&nbsp;&nbsp;
 
     ---
 
-    [:material-link-variant: View Trading Documentation Page](documentation/trading.md) 
+    [:material-link-variant: View Trading Documentation Page](./trading.md) 
 
 - __:material-file-document-outline: Package Development__&nbsp;&nbsp;
 
     ---
 
-    [:material-link-variant: View Developing Documentation Page](documentation/developing.md)
+    [:material-link-variant: View Developing Documentation Page](./developing.md)
 
 </div>
