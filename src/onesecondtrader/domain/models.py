@@ -1,26 +1,12 @@
 """
-Domain ontology for trading infrastructure.
+Container module for non-component-specific domain models.
 
-This module provides:
-
- - the **non-component-specific domain models** used across the
-trading infrastructure and
- - the **event messages** used for decoupled communication
-between the trading infrastructure's components.
+This module provides the non-component-specific domain models used across the
+trading infrastructure.
 """
 
 import collections
-import dataclasses
 import enum
-import pandas as pd
-import uuid
-
-from onesecondtrader.monitoring import logger
-
-
-########################################################################################
-# DOMAIN MODELS
-########################################################################################
 
 
 class DomainModel:
@@ -472,7 +458,7 @@ class DomainModel:
             volume (int | float): Volume
 
         Examples:
-            >>> from onesecondtrader.domain import MarketData
+            >>> from onesecondtrader.domain.models import MarketData
             >>> bar = MarketData.OHLCV(12.34, 13.74, 11.26, 12.32, 56789)
             >>> bar.open
             12.34
@@ -499,7 +485,7 @@ class DomainModel:
 
 
             Examples:
-                >>> from onesecondtrader.domain import MarketData
+                >>> from onesecondtrader.domain.models import MarketData
                 >>> MarketData.RecordType.OHLCV_1S
                 <MarketData.RecordType.OHLCV_1S: 32>
                 >>> MarketData.RecordType.OHLCV_1S.value
@@ -538,158 +524,3 @@ class DomainModel:
 MarketData = DomainModel.MarketData
 PositionManagement = DomainModel.PositionManagement
 SystemManagement = DomainModel.SystemManagement
-
-
-########################################################################################
-# DOMAIN EVENTS
-########################################################################################
-
-
-class Event:
-    @dataclasses.dataclass(kw_only=True, frozen=True)
-    class _AbstractEvent:
-        """
-        Root base class for all event types in the trading system.
-
-        This class prevents instantiation of any class that has subclasses.
-        Only leaf classes (classes with no children) can be instantiated. This ensures
-        that only concrete event classes can be created, while base/parent classes
-        remain non-instantiable.
-
-        The check is performed dynamically at instantiation time, so it automatically
-        adapts to changes in the inheritance hierarchy without manual maintenance.
-
-        Attributes:
-            ts_event (pd.Timestamp): Timestamp of the event. Must be timezone-aware.
-            event_id (uuid.UUID): Unique identifier for the event. Automatically
-                generated.
-            sequence_number (int | None): Global sequence number assigned by the event
-                bus at publish time.
-        """
-
-        ts_event: pd.Timestamp
-        event_id: uuid.UUID = dataclasses.field(default_factory=uuid.uuid4)
-        sequence_number: int | None = dataclasses.field(default=None, init=False)
-
-        @staticmethod
-        def _has_subclasses(cls):
-            """
-            Check if a class has any subclasses (direct or indirect).
-
-            Args:
-                cls: The class to check for subclasses.
-
-            Returns:
-                bool: True if the class has any subclasses, False otherwise.
-            """
-
-            def get_all_subclasses(cls):
-                all_subclasses = set()
-                for subclass in cls.__subclasses__():
-                    all_subclasses.add(subclass)
-                    all_subclasses.update(get_all_subclasses(subclass))
-                return all_subclasses
-
-            return len(get_all_subclasses(cls)) > 0
-
-        def __new__(cls, *args, **kwargs):
-            """
-            Prevent instantiation of classes that have subclasses.
-
-            Only allows instantiation of leaf classes (classes with no children).
-
-            Raises:
-                TypeError: If attempting to instantiate a class that has subclasses.
-            """
-            if Event._AbstractEvent._has_subclasses(cls):
-                subclass_names = [subcls.__name__ for subcls in cls.__subclasses__()]
-                logger.error(
-                    f"Cannot instantiate class '{cls.__name__}' because it has subclasses: "
-                    f"{subclass_names}. Only leaf classes (classes with no children) can be instantiated."
-                )
-            return super().__new__(cls)
-
-        def __post_init__(self) -> None:
-            if self.ts_event.tz is None:
-                raise ValueError(
-                    f"Event timestamp should be timezone-aware, "
-                    f"got timezone-naive: {self.ts_event}"
-                )
-
-    @dataclasses.dataclass(kw_only=True, frozen=True)
-    class _AbstractMarketUpdateEvent(_AbstractEvent):
-        """
-        Base class for events related to market data updates.
-
-        Attributes:
-            ts_event (pd.Timestamp): Timestamp of the event. Must be timezone-aware.
-            event_id (uuid.UUID): Unique identifier for the event. (auto-generated)
-            sequence_number (int | None): Global sequence number assigned by the event
-                bus at publish time.
-            symbol (str): The financial instrument symbol.
-        """
-
-        symbol: str
-
-    @dataclasses.dataclass(kw_only=True, frozen=True)
-    class _AbstractBrokerRequest(_AbstractEvent):
-        """
-        Base class for broker request events.
-
-        Attributes:
-            ts_event (pd.Timestamp): Timestamp of the request. (defaults to current
-                UTC time)
-            event_id (uuid.UUID): Unique identifier for the event. (auto-generated)
-            sequence_number (int | None): Global sequence number assigned by the event
-                bus at publish time.
-            symbol (str): The financial instrument symbol.
-        """
-
-        symbol: str
-        ts_event: pd.Timestamp = dataclasses.field(
-            default_factory=lambda: pd.Timestamp.now(tz="UTC")
-        )
-
-    @dataclasses.dataclass(kw_only=True, frozen=True)
-    class _AbstractBrokerResponse(_AbstractEvent):
-        """
-        Base class for broker response events.
-
-        Attributes:
-            ts_event (pd.Timestamp): Timestamp of the event. Must be timezone-aware.
-            event_id (uuid.UUID): Unique identifier for the event. (auto-generated)
-            sequence_number (int | None): Global sequence number assigned by the event
-                bus at publish time.
-            symbol (str): The financial instrument symbol.
-        """
-
-        symbol: str
-
-    @dataclasses.dataclass(kw_only=True, frozen=True)
-    class _AbstractSystemEvent(_AbstractEvent):
-        """
-        Base class for system-level events.
-
-        Attributes:
-            ts_event (pd.Timestamp): Timestamp of the event. Must be timezone-aware.
-            event_id (uuid.UUID): Unique identifier for the event. (auto-generated)
-            sequence_number (int | None): Global sequence number assigned by the event
-                bus at publish time.
-        """
-
-        pass
-
-    class MarketUpdate:
-        pass
-
-    class BrokerRequest:
-        pass
-
-        class Order:
-            pass
-
-    class BrokerResponse:
-        pass
-
-    class System:
-        pass

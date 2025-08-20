@@ -8,12 +8,13 @@ Research, simulate, and deploy algorithmic trading strategies — all in one pla
 from .monitoring import logger
 
 # Domain models
-from .domain.models import MarketData, PositionManagement, SystemManagement
+from .domain.models import DomainModel, MarketData, PositionManagement, SystemManagement
 
 __all__ = [
     # Core infrastructure
     "logger",
     # Domain models
+    "DomainModel",
     "MarketData",
     "PositionManagement",
     "SystemManagement",

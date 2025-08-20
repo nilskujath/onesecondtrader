@@ -2,7 +2,6 @@
 Test suite for domain models module.
 
 This module tests the domain models defined in the domain/models.py file.
-Event classes are excluded from testing coverage.
 """
 
 import pytest
@@ -158,7 +157,6 @@ class TestNewStructureCompatibility:
         """Test that domain module exports all expected items."""
         from src.onesecondtrader.domain import (
             DomainModel,
-            Event,
             MarketData,
             PositionManagement,
             SystemManagement,
@@ -168,10 +166,6 @@ class TestNewStructureCompatibility:
         assert MarketData is DomainModel.MarketData
         assert PositionManagement is DomainModel.PositionManagement
         assert SystemManagement is DomainModel.SystemManagement
-
-        # Test that we can access the Event class
-        assert Event is not None
-        assert hasattr(Event, "_AbstractEvent")
 
     def test_main_package_imports(self):
         """Test that main package imports still work."""
@@ -190,11 +184,10 @@ class TestNewStructureCompatibility:
 
     def test_direct_models_import(self):
         """Test that direct import from models still works."""
-        from src.onesecondtrader.domain.models import DomainModel, Event
+        from src.onesecondtrader.domain.models import DomainModel
 
         # Test that direct imports work
         assert DomainModel is not None
-        assert Event is not None
         assert hasattr(DomainModel, "MarketData")
         assert hasattr(DomainModel, "PositionManagement")
         assert hasattr(DomainModel, "SystemManagement")

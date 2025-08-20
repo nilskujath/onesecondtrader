@@ -1,4 +1,4 @@
-from .models import DomainModel, Event
+from .models import DomainModel
 
 # Convenience aliases for domain models
 MarketData = DomainModel.MarketData
@@ -7,7 +7,6 @@ SystemManagement = DomainModel.SystemManagement
 
 __all__ = [
     "DomainModel",
-    "Event",
     "MarketData",
     "PositionManagement",
     "SystemManagement",
