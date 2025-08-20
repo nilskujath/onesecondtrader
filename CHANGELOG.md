@@ -1,3 +1,8 @@
+## v0.5.3
+- fix: removed event class from domain.models module
+- docs: fixed links in documentation overview
+- docs: fixed api-reference generation script
+
 ## v0.5.2
 - fix: changed name from log_config to monitoring
 
