@@ -7,7 +7,7 @@
       heading_level: 2
       show_root_toc_entry: False
 
-???+ quote "Source code in `monitoring.py`"
+??? quote "Source code in `monitoring.py`"
 
     ```python linenums="1"
     """Logging configuration for the OneSecondTrader package.

@@ -183,7 +183,7 @@ def generate_api_docs():
       heading_level: 2
       show_root_toc_entry: False
 
-???+ quote "Source code in `{module}.py`"
+??? quote "Source code in `{module}.py`"
 
     ```python linenums="1"
 {indented_content}
