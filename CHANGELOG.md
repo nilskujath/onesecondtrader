@@ -1,3 +1,8 @@
+## v0.6.0
+- feat: removed complexity to rework
+- docs: fixed link in api reference overview
+- chore: removed coverage testing
+
 ## v0.5.3
 - fix: removed event class from domain.models module
 - docs: fixed links in documentation overview
