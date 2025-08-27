@@ -24,9 +24,6 @@ nav:
   - Developing: documentation/developing.md
 - API Reference:
   - Overview: api-reference/overview.md
-  - Domain:
-    - Events: api-reference/domain/events.md
-    - Models: api-reference/domain/models.md
   - Monitoring: api-reference/monitoring.md
 theme:
   name: material

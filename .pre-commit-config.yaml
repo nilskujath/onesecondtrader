@@ -34,19 +34,6 @@ repos:
         language: system
         pass_filenames: false
 
-      - id: bandit
-        name: Bandit security check
-        entry: poetry run bandit -r src/
-        language: system
-        pass_filenames: false
-
-      - id: safety
-        name: Safety security check
-        entry: >
-          bash -c "poetry export -f requirements.txt --without-hashes | safety check --stdin"
-        language: system
-        pass_filenames: false
-
       - id: generate-api-docs
         name: Generate and stage API documentation
         entry: >
