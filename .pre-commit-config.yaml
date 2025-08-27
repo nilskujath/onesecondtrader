@@ -17,7 +17,7 @@ repos:
 
       - id: mypy
         name: Type check with mypy
-        entry: poetry run mypy src/
+        entry: poetry run mypy src/onesecondtrader
         language: system
         types: [file, python]
         pass_filenames: false

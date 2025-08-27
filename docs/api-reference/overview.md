@@ -15,7 +15,7 @@ hide:
 
     ---
 
-    [:material-link-variant: View `domain/` package API](domain/)
+    [:material-link-variant: View `domain/` package API](domain/events.md)
 
 -   __Monitoring__&nbsp;&nbsp;
 

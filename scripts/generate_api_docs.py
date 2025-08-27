@@ -228,6 +228,10 @@ hide:
                 )
                 link_text = f"View `{module}/` package API"
 
+                # Point to the alphabetically first submodule file
+                first_submodule = sorted(submodule_structure[module])[0]
+                link_target = f"{module}/{first_submodule}.md"
+
                 overview_content += f"""
 -   __{title}__&nbsp;&nbsp;
 
@@ -235,7 +239,7 @@ hide:
 
     ---
 
-    [:material-link-variant: {link_text}]({module}/)
+    [:material-link-variant: {link_text}]({link_target})
 """
             else:
                 # Fallback for submodules without discoverable files
