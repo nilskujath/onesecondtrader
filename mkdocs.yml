@@ -25,14 +25,15 @@ nav:
 - API Reference:
   - Overview: api-reference/overview.md
   - Domain:
+    - Events: api-reference/domain/events.md
     - Models: api-reference/domain/models.md
   - Monitoring: api-reference/monitoring.md
 theme:
+  name: material
   icon:
     logo: material/book-open-page-variant-outline
   font:
     text: Robot Serif
-  name: material
   palette:
   - media: (prefers-color-scheme)
     toggle:

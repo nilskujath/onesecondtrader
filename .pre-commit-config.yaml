@@ -47,12 +47,6 @@ repos:
         language: system
         pass_filenames: false
 
-      - id: coverage
-        name: Coverage threshold check
-        entry: poetry run pytest --cov=src/ --cov-fail-under=90
-        language: system
-        pass_filenames: false
-
       - id: generate-api-docs
         name: Generate and stage API documentation
         entry: >

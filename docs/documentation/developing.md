@@ -83,11 +83,11 @@ The following diagram illustrates this pre-commit workflow:
         subgraph PrecommitHooks ["Local Pre-commit Hooks"]
             B["<b>Code Quality Checks</b><br/>• Ruff Check & Format<br/>• MyPy Type Checking<br/>• Tests & Doctests"]
             C["<b>Security Checks</b><br/>• Bandit & Safety<br/>• Gitleaks Secret Detection"]
-            D["<b>File Validation</b><br/>• YAML/TOML/JSON Check<br/>• End-of-file Fixer<br/>• Large Files Check<br/>• Merge Conflict Check<br/>• Debug Statements Check<"]
+            D["<b>File Validation</b><br/>• YAML/TOML/JSON Check<br/>• End-of-file Fixer<br/>• Large Files Check<br/>• Merge Conflict Check<br/>• Debug Statements Check"]
             E["<b>Generate API Documentation</b> via <kbd>scripts/generate_api_docs.py</kbd><br/>• Auto-generate docs<br/>• Stage changes"]
-            B --> C --> D --> E
         end
-        
+        B --> C --> D --> E        
+
         F([Write Commit Message])
         PrecommitHooks -->|Pass| F
         PrecommitHooks -.->|Fail| H

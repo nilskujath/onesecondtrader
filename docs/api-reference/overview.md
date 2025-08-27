@@ -11,7 +11,7 @@ hide:
 
 -   __Domain__&nbsp;&nbsp;
 
-    Contains: `models.py`
+    Contains: `events.py`, `models.py`
 
     ---
 
