@@ -6,24 +6,36 @@
 
     ---
 
-    [:material-link-variant: View Architecture Documentation Page](./architecture.md)
-
--   __:material-file-document-outline: Backtesting Strategies__&nbsp;&nbsp;
-
-    ---
-
-    [:material-link-variant: View Backtesting Documentation Page](./backtesting.md)
-
--   __:material-file-document-outline: Live Trading__&nbsp;&nbsp;
-
-    ---
-
-    [:material-link-variant: View Trading Documentation Page](./trading.md) 
-
-- __:material-file-document-outline: Package Development__&nbsp;&nbsp;
-
-    ---
-
-    [:material-link-variant: View Developing Documentation Page](./developing.md)
+    [:material-link-variant: Read Architecture Documentation Page](./architecture.md)
 
 </div>
+
+[//]: # ()
+[//]: # (<div class="grid cards" markdown>)
+
+[//]: # ()
+[//]: # (-   __:material-file-document-outline: Strategy Backtesting__&nbsp;&nbsp;)
+
+[//]: # ()
+[//]: # (    ---)
+
+[//]: # ()
+[//]: # (    [:material-link-variant: Read Backtesting Documentation Page]&#40;./backtesting.md&#41;)
+
+[//]: # ()
+[//]: # (</div>)
+
+[//]: # ()
+[//]: # (<div class="grid cards" markdown>)
+
+[//]: # ()
+[//]: # (-   __:material-file-document-outline: Live Trading__&nbsp;&nbsp;)
+
+[//]: # ()
+[//]: # (    ---)
+
+[//]: # ()
+[//]: # (    [:material-link-variant: Read Trading Documentation Page]&#40;./trading.md&#41; )
+
+[//]: # ()
+[//]: # (</div>)

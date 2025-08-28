@@ -19,9 +19,6 @@ nav:
 - Documentation:
   - Overview: documentation/overview.md
   - Architecture: documentation/architecture.md
-  - Backtesting: documentation/backtesting.md
-  - Trading: documentation/trading.md
-  - Developing: documentation/developing.md
 - API Reference:
   - Overview: api-reference/overview.md
   - Monitoring: api-reference/monitoring.md
