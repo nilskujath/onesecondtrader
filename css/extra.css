@@ -37,3 +37,22 @@ code, pre {
     margin: 0 auto;
     display: block;
 }
+
+/* Enable hyphenation for justified paragraphs */
+.justify {
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+}
+
+/* Fallback for browsers that don't support hyphenation */
+/* This will simply align text to the left and prevent big gaps */
+.justify:not([style*="hyphens"]) {
+    text-align: left;
+}
+
+p {
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+}
