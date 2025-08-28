@@ -21,6 +21,11 @@ nav:
   - Architecture: documentation/architecture.md
 - API Reference:
   - Overview: api-reference/overview.md
+  - Datafeeds:
+    - Basedatafeed: api-reference/datafeeds/basedatafeed.md
+  - Messaging:
+    - Eventbus: api-reference/messaging/eventbus.md
+    - Events: api-reference/messaging/events.md
   - Monitoring:
     - Console: api-reference/monitoring/console.md
 theme:
