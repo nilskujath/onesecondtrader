@@ -131,9 +131,17 @@ def generate_api_docs():
             # Generate documentation for each file in the submodule
             for subfile in submodule_files:
                 subfile_title = subfile.replace("_", " ").title()
+                subfile_path = submodule_dir / f"{subfile}.py"
+                subfile_content = subfile_path.read_text()
 
-                # Create documentation for the specific submodule file
-                md_content = f"""# {subfile_title}
+                # Check if this subfile has substantial content
+                has_classes_or_functions = (
+                    "def " in subfile_content or "class " in subfile_content
+                )
+
+                if has_classes_or_functions:
+                    # Use mkdocstrings for files with classes/functions
+                    md_content = f"""# {subfile_title}
 
 ::: onesecondtrader.{module}.{subfile}
     options:
@@ -141,6 +149,27 @@ def generate_api_docs():
       show_source: true
       heading_level: 2
       show_root_toc_entry: False
+"""
+                else:
+                    # Manual source code display for simple files
+                    indented_content = "\n".join(
+                        "    " + line for line in subfile_content.split("\n")
+                    )
+
+                    md_content = f"""# {subfile_title}
+
+::: onesecondtrader.{module}.{subfile}
+    options:
+      show_root_heading: False
+      show_source: false
+      heading_level: 2
+      show_root_toc_entry: False
+
+??? quote "Source code in `{subfile}.py`"
+
+    ```python linenums="1"
+{indented_content}
+    ```
 """
 
                 subfile_md = submodule_docs_dir / f"{subfile}.md"
