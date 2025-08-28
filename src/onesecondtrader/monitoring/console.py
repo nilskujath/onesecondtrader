@@ -1,11 +1,9 @@
-"""Logging configuration for the OneSecondTrader package.
+"""Console logging utilities for OneSecondTrader.
 
-This module sets up the default logging configuration and provides
-a logger instance for use throughout the package.
+Simple console logging configuration for terminal output.
 """
 
 import logging
-
 
 logging.basicConfig(
     level=logging.DEBUG,

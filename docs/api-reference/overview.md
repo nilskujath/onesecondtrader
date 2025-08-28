@@ -11,8 +11,10 @@ hide:
 
 -   __Monitoring__&nbsp;&nbsp;
 
+    Contains: `console.py`
+
     ---
 
-    [:material-link-variant: View `monitoring.py` API](monitoring.md)
+    [:material-link-variant: View `monitoring/` package API](monitoring/console.md)
 
 </div>

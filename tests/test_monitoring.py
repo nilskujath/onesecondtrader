@@ -1,7 +1,7 @@
 import importlib
 import logging
 
-import src.onesecondtrader.monitoring as log_config
+import src.onesecondtrader.monitoring.console as log_config
 
 
 def test_logger_captures_info_with_expected_name(caplog):

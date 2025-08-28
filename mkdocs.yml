@@ -21,7 +21,8 @@ nav:
   - Architecture: documentation/architecture.md
 - API Reference:
   - Overview: api-reference/overview.md
-  - Monitoring: api-reference/monitoring.md
+  - Monitoring:
+    - Console: api-reference/monitoring/console.md
 theme:
   name: material
   icon:
