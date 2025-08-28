@@ -1,3 +1,9 @@
+## v0.7.0
+- feat: restructured monitoring package
+- docs: removed placeholders in docs website
+- docs: added CI/CD pipeline to README.md
+- docs: fixed source display in no content modules
+
 ## v0.6.0
 - feat: removed complexity to rework
 - docs: fixed link in api reference overview
