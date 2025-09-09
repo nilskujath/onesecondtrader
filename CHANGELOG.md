@@ -1,3 +1,8 @@
+## v0.8.0
+- feat: Added event message dataclasses
+- docs: justified text via extra css
+- docs: fixed script to generate api docs
+
 ## v0.7.0
 - feat: restructured monitoring package
 - docs: removed placeholders in docs website
