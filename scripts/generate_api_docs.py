@@ -264,9 +264,10 @@ hide:
                 overview_content += f"""
 -   __{title}__&nbsp;&nbsp;
 
+    ---
+
     Contains: {files_list}
 
-    ---
 
     [:material-link-variant: {link_text}]({link_target})
 """

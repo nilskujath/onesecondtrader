@@ -9,27 +9,30 @@ hide:
 <div class="grid cards" markdown>
 
 
--   __Datafeeds__&nbsp;&nbsp;
-
-    Contains: `basedatafeed.py`
+-   __Core__&nbsp;&nbsp;
 
     ---
 
-    [:material-link-variant: View `datafeeds/` package API](datafeeds/basedatafeed.md)
+    Contains: `models.py`
+
+
+    [:material-link-variant: View `core/` package API](core/models.md)
 
 -   __Messaging__&nbsp;&nbsp;
 
-    Contains: `eventbus.py`, `events.py`
-
     ---
 
-    [:material-link-variant: View `messaging/` package API](messaging/eventbus.md)
+    Contains: `events.py`
+
+
+    [:material-link-variant: View `messaging/` package API](messaging/events.md)
 
 -   __Monitoring__&nbsp;&nbsp;
 
+    ---
+
     Contains: `console.py`
 
-    ---
 
     [:material-link-variant: View `monitoring/` package API](monitoring/console.md)
 

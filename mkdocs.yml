@@ -21,10 +21,9 @@ nav:
   - Architecture: documentation/architecture.md
 - API Reference:
   - Overview: api-reference/overview.md
-  - Datafeeds:
-    - Basedatafeed: api-reference/datafeeds/basedatafeed.md
+  - Core:
+    - Models: api-reference/core/models.md
   - Messaging:
-    - Eventbus: api-reference/messaging/eventbus.md
     - Events: api-reference/messaging/events.md
   - Monitoring:
     - Console: api-reference/monitoring/console.md
@@ -83,6 +82,7 @@ plugins:
         options:
           docstring_style: google
           members_order: source
+          filters: []
 repo_url: https://github.com/NilsKujath/onesecondtrader
 repo_name: nilskujath/onesecondtrader
 markdown_extensions:

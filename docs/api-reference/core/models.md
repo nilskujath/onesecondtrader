@@ -1,6 +1,6 @@
-# Eventbus
+# Models
 
-::: onesecondtrader.messaging.eventbus
+::: onesecondtrader.core.models
     options:
       show_root_heading: False
       show_source: true
