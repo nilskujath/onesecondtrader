@@ -24,6 +24,7 @@ nav:
   - Core:
     - Models: api-reference/core/models.md
   - Messaging:
+    - Eventbus: api-reference/messaging/eventbus.md
     - Events: api-reference/messaging/events.md
   - Monitoring:
     - Console: api-reference/monitoring/console.md

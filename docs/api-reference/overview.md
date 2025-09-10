@@ -22,10 +22,10 @@ hide:
 
     ---
 
-    Contains: `events.py`
+    Contains: `eventbus.py`, `events.py`
 
 
-    [:material-link-variant: View `messaging/` package API](messaging/events.md)
+    [:material-link-variant: View `messaging/` package API](messaging/eventbus.md)
 
 -   __Monitoring__&nbsp;&nbsp;
 
