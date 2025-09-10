@@ -1,3 +1,6 @@
+## v0.9.0
+- feat: implemented event bus
+
 ## v0.8.0
 - feat: Added event message dataclasses
 - docs: justified text via extra css
