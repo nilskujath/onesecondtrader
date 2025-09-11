@@ -1,3 +1,6 @@
+## v0.10.1
+- fix: removed bar preloading method from datafeeds
+
 ## v0.10.0
 - feat: implemented datafeeds base class
 
