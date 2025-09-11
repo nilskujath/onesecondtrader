@@ -1,3 +1,6 @@
+## v0.10.0
+- feat: implemented datafeeds base class
+
 ## v0.9.0
 - feat: implemented event bus
 
