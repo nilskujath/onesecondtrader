@@ -19,6 +19,33 @@ logger = logging.getLogger(__name__)
 # --------------------------------------------------------------------------------------
 
 
+def format_module_title(module_name: str) -> str:
+    """Format module name into a proper title with correct capitalization.
+
+    Handles special cases:
+    - 'ib', 'mt5', or 'csv' followed by or after an underscore becomes 'IB', 'MT5', or 'CSV'
+    - Regular title case for other words
+
+    Args:
+        module_name: The module name to format (e.g., 'ib_broker', 'mt5_adapter', 'csv_parser')
+
+    Returns:
+        Formatted title (e.g., 'IB Broker', 'MT5 Adapter', 'CSV Parser')
+    """
+    # Replace underscores with spaces and apply title case
+    title = module_name.replace("_", " ").title()
+
+    # Fix specific capitalizations
+    title = title.replace(" Ib ", " IB ").replace(" Ib", " IB")
+    title = title.replace("Ib ", "IB ").replace("Ib", "IB")
+    title = title.replace(" Mt5 ", " MT5 ").replace(" Mt5", " MT5")
+    title = title.replace("Mt5 ", "MT5 ").replace("Mt5", "MT5")
+    title = title.replace(" Csv ", " CSV ").replace(" Csv", " CSV")
+    title = title.replace("Csv ", "CSV ").replace("Csv", "CSV")
+
+    return title
+
+
 def generate_api_docs():
     """Generate API reference documentation from docstrings via mkdocstrings package.
 
@@ -104,7 +131,7 @@ def generate_api_docs():
     submodule_structure = {}  # Track submodule structure for navigation
 
     for module in modules:
-        title = module.replace("_", " ").title()
+        title = format_module_title(module)
 
         # Check if this is a submodule (directory) or a regular module (.py file)
         module_file = src_path / f"{module}.py"
@@ -130,7 +157,7 @@ def generate_api_docs():
 
             # Generate documentation for each file in the submodule
             for subfile in submodule_files:
-                subfile_title = subfile.replace("_", " ").title()
+                subfile_title = format_module_title(subfile)
                 subfile_path = submodule_dir / f"{subfile}.py"
                 subfile_content = subfile_path.read_text()
 
@@ -246,7 +273,7 @@ hide:
 
     # Add all modules in alphabetical order regardless of type
     for module in sorted(modules):
-        title = module.replace("_", " ").title()
+        title = format_module_title(module)
 
         if module in submodules:
             # This is a submodule
@@ -315,7 +342,7 @@ hide:
 
     # Add modules in alphabetical order
     for module in sorted_modules:
-        title = module.replace("_", " ").title()
+        title = format_module_title(module)
 
         if module in submodules:
             # This is a submodule - create hierarchical navigation
@@ -323,7 +350,7 @@ hide:
                 # Create hierarchical navigation for submodules with files
                 submodule_nav = []
                 for subfile in sorted(submodule_structure[module]):
-                    subfile_title = subfile.replace("_", " ").title()
+                    subfile_title = format_module_title(subfile)
                     submodule_nav.append(
                         {subfile_title: f"api-reference/{module}/{subfile}.md"}
                     )

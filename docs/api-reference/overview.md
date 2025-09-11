@@ -18,6 +18,15 @@ hide:
 
     [:material-link-variant: View `core/` package API](core/models.md)
 
+-   __Datafeeds__&nbsp;&nbsp;
+
+    ---
+
+    Contains: `base_datafeed.py`
+
+
+    [:material-link-variant: View `datafeeds/` package API](datafeeds/base_datafeed.md)
+
 -   __Messaging__&nbsp;&nbsp;
 
     ---

@@ -131,3 +131,29 @@ class OrderRejectionReason(enum.Enum):
 
     UNKNOWN = enum.auto()
     NEGATIVE_QUANTITY = enum.auto()
+
+
+class TimeFrame(enum.Enum):
+    """
+    Enum for timeframes.
+
+    **Attributes:**
+
+    | Enum | Value | Description |
+    |------|-------|-------------|
+    | `SECOND` | `enum.auto()` | 1 second |
+    | `MINUTE` | `enum.auto()` | 1 minute |
+    | `HOUR` | `enum.auto()` | 1 hour |
+    | `DAY` | `enum.auto()` | 1 day |
+    | `WEEK` | `enum.auto()` | 1 week |
+    | `MONTH` | `enum.auto()` | 1 month |
+    | `YEAR` | `enum.auto()` | 1 year
+    """
+
+    SECOND = enum.auto()
+    MINUTE = enum.auto()
+    HOUR = enum.auto()
+    DAY = enum.auto()
+    WEEK = enum.auto()
+    MONTH = enum.auto()
+    YEAR = enum.auto()
