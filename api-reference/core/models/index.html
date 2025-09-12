@@ -731,9 +731,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#onesecondtrader.core.models.TimeFrame" class="md-nav__link">
+  <a href="#onesecondtrader.core.models.RecordType" class="md-nav__link">
     <span class="md-ellipsis">
-      TimeFrame
+      RecordType
     </span>
   </a>
   
@@ -810,6 +810,29 @@
   
   <span class="md-ellipsis">
     Base Datafeed
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datafeeds/csv_datafeed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CSV Datafeed
     
   </span>
   
@@ -1092,9 +1115,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#onesecondtrader.core.models.TimeFrame" class="md-nav__link">
+  <a href="#onesecondtrader.core.models.RecordType" class="md-nav__link">
     <span class="md-ellipsis">
-      TimeFrame
+      RecordType
     </span>
   </a>
   
@@ -1340,7 +1363,7 @@
           <tr class="doc-section-item">
             <td><code><span title="onesecondtrader.core.models.Bar.volume">volume</span></code></td>
             <td>
-                  <code><span title="float">float</span></code>
+                  <code><span title="int">int</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1386,14 +1409,14 @@
 </span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">        high (float): High price</span>
 </span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">        low (float): Low price</span>
 </span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">        close (float): Close price</span>
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">        volume (float): Volume</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">        volume (int | None): Volume</span>
 </span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a>
 </span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a>    <span class="nb">open</span><span class="p">:</span> <span class="nb">float</span>
 </span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a>    <span class="n">high</span><span class="p">:</span> <span class="nb">float</span>
 </span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a>    <span class="n">low</span><span class="p">:</span> <span class="nb">float</span>
 </span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a>    <span class="n">close</span><span class="p">:</span> <span class="nb">float</span>
-</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a>    <span class="n">volume</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a>    <span class="n">volume</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span></code></pre></div></td></tr></table></div>
               </details>
 
@@ -1961,8 +1984,8 @@
 
 
 
-<h2 id="onesecondtrader.core.models.TimeFrame" class="doc doc-heading">
-            <code>TimeFrame</code>
+<h2 id="onesecondtrader.core.models.RecordType" class="doc doc-heading">
+            <code>RecordType</code>
 
 
 </h2>
@@ -1973,7 +1996,7 @@
               Bases: <code><span title="enum.Enum">Enum</span></code></p>
 
 
-        <p>Enum for timeframes.</p>
+        <p>Enum for Databento record types.</p>
 <p><strong>Attributes:</strong></p>
 <table>
 <thead>
@@ -1985,39 +2008,24 @@
 </thead>
 <tbody>
 <tr>
-<td><code>SECOND</code></td>
-<td><code>enum.auto()</code></td>
-<td>1 second</td>
+<td><code>OHLCV_1S</code></td>
+<td><code>32</code></td>
+<td>1-second bars</td>
 </tr>
 <tr>
-<td><code>MINUTE</code></td>
-<td><code>enum.auto()</code></td>
-<td>1 minute</td>
+<td><code>OHLCV_1M</code></td>
+<td><code>33</code></td>
+<td>1-minute bars</td>
 </tr>
 <tr>
-<td><code>HOUR</code></td>
-<td><code>enum.auto()</code></td>
-<td>1 hour</td>
+<td><code>OHLCV_1H</code></td>
+<td><code>34</code></td>
+<td>1-hour bars</td>
 </tr>
 <tr>
-<td><code>DAY</code></td>
-<td><code>enum.auto()</code></td>
-<td>1 day</td>
-</tr>
-<tr>
-<td><code>WEEK</code></td>
-<td><code>enum.auto()</code></td>
-<td>1 week</td>
-</tr>
-<tr>
-<td><code>MONTH</code></td>
-<td><code>enum.auto()</code></td>
-<td>1 month</td>
-</tr>
-<tr>
-<td><code>YEAR</code></td>
-<td><code>enum.auto()</code></td>
-<td>1 year</td>
+<td><code>OHLCV_1D</code></td>
+<td><code>35</code></td>
+<td>1-day bars</td>
 </tr>
 </tbody>
 </table>
@@ -2053,30 +2061,46 @@
 <span class="normal"><a href="#__codelineno-0-156">156</a></span>
 <span class="normal"><a href="#__codelineno-0-157">157</a></span>
 <span class="normal"><a href="#__codelineno-0-158">158</a></span>
-<span class="normal"><a href="#__codelineno-0-159">159</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-136"><a id="__codelineno-0-136" name="__codelineno-0-136"></a><span class="k">class</span><span class="w"> </span><span class="nc">TimeFrame</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="normal"><a href="#__codelineno-0-159">159</a></span>
+<span class="normal"><a href="#__codelineno-0-160">160</a></span>
+<span class="normal"><a href="#__codelineno-0-161">161</a></span>
+<span class="normal"><a href="#__codelineno-0-162">162</a></span>
+<span class="normal"><a href="#__codelineno-0-163">163</a></span>
+<span class="normal"><a href="#__codelineno-0-164">164</a></span>
+<span class="normal"><a href="#__codelineno-0-165">165</a></span>
+<span class="normal"><a href="#__codelineno-0-166">166</a></span>
+<span class="normal"><a href="#__codelineno-0-167">167</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-136"><a id="__codelineno-0-136" name="__codelineno-0-136"></a><span class="k">class</span><span class="w"> </span><span class="nc">RecordType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 </span><span id="__span-0-137"><a id="__codelineno-0-137" name="__codelineno-0-137"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-138"><a id="__codelineno-0-138" name="__codelineno-0-138"></a><span class="sd">    Enum for timeframes.</span>
+</span><span id="__span-0-138"><a id="__codelineno-0-138" name="__codelineno-0-138"></a><span class="sd">    Enum for Databento record types.</span>
 </span><span id="__span-0-139"><a id="__codelineno-0-139" name="__codelineno-0-139"></a>
 </span><span id="__span-0-140"><a id="__codelineno-0-140" name="__codelineno-0-140"></a><span class="sd">    **Attributes:**</span>
 </span><span id="__span-0-141"><a id="__codelineno-0-141" name="__codelineno-0-141"></a>
 </span><span id="__span-0-142"><a id="__codelineno-0-142" name="__codelineno-0-142"></a><span class="sd">    | Enum | Value | Description |</span>
 </span><span id="__span-0-143"><a id="__codelineno-0-143" name="__codelineno-0-143"></a><span class="sd">    |------|-------|-------------|</span>
-</span><span id="__span-0-144"><a id="__codelineno-0-144" name="__codelineno-0-144"></a><span class="sd">    | `SECOND` | `enum.auto()` | 1 second |</span>
-</span><span id="__span-0-145"><a id="__codelineno-0-145" name="__codelineno-0-145"></a><span class="sd">    | `MINUTE` | `enum.auto()` | 1 minute |</span>
-</span><span id="__span-0-146"><a id="__codelineno-0-146" name="__codelineno-0-146"></a><span class="sd">    | `HOUR` | `enum.auto()` | 1 hour |</span>
-</span><span id="__span-0-147"><a id="__codelineno-0-147" name="__codelineno-0-147"></a><span class="sd">    | `DAY` | `enum.auto()` | 1 day |</span>
-</span><span id="__span-0-148"><a id="__codelineno-0-148" name="__codelineno-0-148"></a><span class="sd">    | `WEEK` | `enum.auto()` | 1 week |</span>
-</span><span id="__span-0-149"><a id="__codelineno-0-149" name="__codelineno-0-149"></a><span class="sd">    | `MONTH` | `enum.auto()` | 1 month |</span>
-</span><span id="__span-0-150"><a id="__codelineno-0-150" name="__codelineno-0-150"></a><span class="sd">    | `YEAR` | `enum.auto()` | 1 year</span>
-</span><span id="__span-0-151"><a id="__codelineno-0-151" name="__codelineno-0-151"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-152"><a id="__codelineno-0-152" name="__codelineno-0-152"></a>
-</span><span id="__span-0-153"><a id="__codelineno-0-153" name="__codelineno-0-153"></a>    <span class="n">SECOND</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
-</span><span id="__span-0-154"><a id="__codelineno-0-154" name="__codelineno-0-154"></a>    <span class="n">MINUTE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
-</span><span id="__span-0-155"><a id="__codelineno-0-155" name="__codelineno-0-155"></a>    <span class="n">HOUR</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
-</span><span id="__span-0-156"><a id="__codelineno-0-156" name="__codelineno-0-156"></a>    <span class="n">DAY</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
-</span><span id="__span-0-157"><a id="__codelineno-0-157" name="__codelineno-0-157"></a>    <span class="n">WEEK</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
-</span><span id="__span-0-158"><a id="__codelineno-0-158" name="__codelineno-0-158"></a>    <span class="n">MONTH</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
-</span><span id="__span-0-159"><a id="__codelineno-0-159" name="__codelineno-0-159"></a>    <span class="n">YEAR</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+</span><span id="__span-0-144"><a id="__codelineno-0-144" name="__codelineno-0-144"></a><span class="sd">    | `OHLCV_1S` | `32` | 1-second bars |</span>
+</span><span id="__span-0-145"><a id="__codelineno-0-145" name="__codelineno-0-145"></a><span class="sd">    | `OHLCV_1M` | `33` | 1-minute bars |</span>
+</span><span id="__span-0-146"><a id="__codelineno-0-146" name="__codelineno-0-146"></a><span class="sd">    | `OHLCV_1H` | `34` | 1-hour bars |</span>
+</span><span id="__span-0-147"><a id="__codelineno-0-147" name="__codelineno-0-147"></a><span class="sd">    | `OHLCV_1D` | `35` | 1-day bars |</span>
+</span><span id="__span-0-148"><a id="__codelineno-0-148" name="__codelineno-0-148"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-149"><a id="__codelineno-0-149" name="__codelineno-0-149"></a>
+</span><span id="__span-0-150"><a id="__codelineno-0-150" name="__codelineno-0-150"></a>    <span class="n">OHLCV_1S</span> <span class="o">=</span> <span class="mi">32</span>
+</span><span id="__span-0-151"><a id="__codelineno-0-151" name="__codelineno-0-151"></a>    <span class="n">OHLCV_1M</span> <span class="o">=</span> <span class="mi">33</span>
+</span><span id="__span-0-152"><a id="__codelineno-0-152" name="__codelineno-0-152"></a>    <span class="n">OHLCV_1H</span> <span class="o">=</span> <span class="mi">34</span>
+</span><span id="__span-0-153"><a id="__codelineno-0-153" name="__codelineno-0-153"></a>    <span class="n">OHLCV_1D</span> <span class="o">=</span> <span class="mi">35</span>
+</span><span id="__span-0-154"><a id="__codelineno-0-154" name="__codelineno-0-154"></a>
+</span><span id="__span-0-155"><a id="__codelineno-0-155" name="__codelineno-0-155"></a>    <span class="nd">@classmethod</span>
+</span><span id="__span-0-156"><a id="__codelineno-0-156" name="__codelineno-0-156"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">to_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">rtype</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="__span-0-157"><a id="__codelineno-0-157" name="__codelineno-0-157"></a>        <span class="k">match</span> <span class="n">rtype</span><span class="p">:</span>
+</span><span id="__span-0-158"><a id="__codelineno-0-158" name="__codelineno-0-158"></a>            <span class="k">case</span> <span class="bp">cls</span><span class="o">.</span><span class="n">OHLCV_1S</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+</span><span id="__span-0-159"><a id="__codelineno-0-159" name="__codelineno-0-159"></a>                <span class="k">return</span> <span class="s2">&quot;1-second bars&quot;</span>
+</span><span id="__span-0-160"><a id="__codelineno-0-160" name="__codelineno-0-160"></a>            <span class="k">case</span> <span class="bp">cls</span><span class="o">.</span><span class="n">OHLCV_1M</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+</span><span id="__span-0-161"><a id="__codelineno-0-161" name="__codelineno-0-161"></a>                <span class="k">return</span> <span class="s2">&quot;1-minute bars&quot;</span>
+</span><span id="__span-0-162"><a id="__codelineno-0-162" name="__codelineno-0-162"></a>            <span class="k">case</span> <span class="bp">cls</span><span class="o">.</span><span class="n">OHLCV_1H</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+</span><span id="__span-0-163"><a id="__codelineno-0-163" name="__codelineno-0-163"></a>                <span class="k">return</span> <span class="s2">&quot;1-hour bars&quot;</span>
+</span><span id="__span-0-164"><a id="__codelineno-0-164" name="__codelineno-0-164"></a>            <span class="k">case</span> <span class="bp">cls</span><span class="o">.</span><span class="n">OHLCV_1D</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+</span><span id="__span-0-165"><a id="__codelineno-0-165" name="__codelineno-0-165"></a>                <span class="k">return</span> <span class="s2">&quot;daily bars&quot;</span>
+</span><span id="__span-0-166"><a id="__codelineno-0-166" name="__codelineno-0-166"></a>            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+</span><span id="__span-0-167"><a id="__codelineno-0-167" name="__codelineno-0-167"></a>                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;unknown (</span><span class="si">{</span><span class="n">rtype</span><span class="si">}</span><span class="s2">)&quot;</span>
 </span></code></pre></div></td></tr></table></div>
               </details>
 
