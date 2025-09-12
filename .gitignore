@@ -1,4 +1,5 @@
 csv_port/
+csv_port_archive
 strategies/
 .idea/
 site/
@@ -6,3 +7,12 @@ site/
 coverage.xml
 **/__pycache__/
 htmlcov/
+
+# Environment configuration
+.env
+.env.local
+.env.*.local
+
+# Data files
+data/
+*.csv

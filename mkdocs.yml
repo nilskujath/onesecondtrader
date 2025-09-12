@@ -25,6 +25,7 @@ nav:
     - Models: api-reference/core/models.md
   - Datafeeds:
     - Base Datafeed: api-reference/datafeeds/base_datafeed.md
+    - CSV Datafeed: api-reference/datafeeds/csv_datafeed.md
   - Messaging:
     - Eventbus: api-reference/messaging/eventbus.md
     - Events: api-reference/messaging/events.md

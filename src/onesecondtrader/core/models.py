@@ -32,14 +32,14 @@ class Bar:
         high (float): High price
         low (float): Low price
         close (float): Close price
-        volume (float): Volume
+        volume (int | None): Volume
     """
 
     open: float
     high: float
     low: float
     close: float
-    volume: float | None = None
+    volume: int | None = None
 
 
 class Side(enum.Enum):
@@ -133,27 +133,35 @@ class OrderRejectionReason(enum.Enum):
     NEGATIVE_QUANTITY = enum.auto()
 
 
-class TimeFrame(enum.Enum):
+class RecordType(enum.Enum):
     """
-    Enum for timeframes.
+    Enum for Databento record types.
 
     **Attributes:**
 
     | Enum | Value | Description |
     |------|-------|-------------|
-    | `SECOND` | `enum.auto()` | 1 second |
-    | `MINUTE` | `enum.auto()` | 1 minute |
-    | `HOUR` | `enum.auto()` | 1 hour |
-    | `DAY` | `enum.auto()` | 1 day |
-    | `WEEK` | `enum.auto()` | 1 week |
-    | `MONTH` | `enum.auto()` | 1 month |
-    | `YEAR` | `enum.auto()` | 1 year
+    | `OHLCV_1S` | `32` | 1-second bars |
+    | `OHLCV_1M` | `33` | 1-minute bars |
+    | `OHLCV_1H` | `34` | 1-hour bars |
+    | `OHLCV_1D` | `35` | 1-day bars |
     """
 
-    SECOND = enum.auto()
-    MINUTE = enum.auto()
-    HOUR = enum.auto()
-    DAY = enum.auto()
-    WEEK = enum.auto()
-    MONTH = enum.auto()
-    YEAR = enum.auto()
+    OHLCV_1S = 32
+    OHLCV_1M = 33
+    OHLCV_1H = 34
+    OHLCV_1D = 35
+
+    @classmethod
+    def to_string(cls, rtype: int) -> str:
+        match rtype:
+            case cls.OHLCV_1S.value:
+                return "1-second bars"
+            case cls.OHLCV_1M.value:
+                return "1-minute bars"
+            case cls.OHLCV_1H.value:
+                return "1-hour bars"
+            case cls.OHLCV_1D.value:
+                return "daily bars"
+            case _:
+                return f"unknown ({rtype})"

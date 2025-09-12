@@ -22,7 +22,7 @@ hide:
 
     ---
 
-    Contains: `base_datafeed.py`
+    Contains: `base_datafeed.py`, `csv_datafeed.py`
 
 
     [:material-link-variant: View `datafeeds/` package API](datafeeds/base_datafeed.md)
