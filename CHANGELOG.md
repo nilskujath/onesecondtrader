@@ -1,3 +1,6 @@
+## v0.11.0
+- feat: added csv datafeed
+
 ## v0.10.1
 - fix: removed bar preloading method from datafeeds
 
