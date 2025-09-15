@@ -1,3 +1,6 @@
+## v0.12.0
+- feat: added indicator base class
+
 ## v0.11.0
 - feat: added csv datafeed
 
