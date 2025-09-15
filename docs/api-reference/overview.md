@@ -13,7 +13,7 @@ hide:
 
     ---
 
-    Contains: `models.py`
+    Contains: `models.py`, `portfolio.py`, `strategy.py`
 
 
     [:material-link-variant: View `core/` package API](core/models.md)
@@ -26,6 +26,15 @@ hide:
 
 
     [:material-link-variant: View `datafeeds/` package API](datafeeds/base_datafeed.md)
+
+-   __Indicators__&nbsp;&nbsp;
+
+    ---
+
+    Contains: `base_indicator.py`
+
+
+    [:material-link-variant: View `indicators/` package API](indicators/base_indicator.md)
 
 -   __Messaging__&nbsp;&nbsp;
 

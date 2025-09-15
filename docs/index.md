@@ -32,20 +32,25 @@ hide:
 
 ## :material-airplane-takeoff: Quick**start**
 
-=== "Pip"
+=== "Local"
 
     ```bash
     pip install onesecondtrader
+    poetry add onesecondtrader # If using Poetry
     ```
 
-=== "Poetry"
-
-    ```bash
-    poetry add onesecondtrader
+    ```python
+    from onesecondtrader.messaging import eventbus, events
+    from onesecondtrader.core import models
     ```
 
 === "Colab"
 
     ```python
     !pip install onesecondtrader
+    ```
+
+    ```python
+    from onesecondtrader.messaging import eventbus, events
+    from onesecondtrader.core import models
     ```

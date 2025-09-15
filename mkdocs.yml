@@ -23,9 +23,13 @@ nav:
   - Overview: api-reference/overview.md
   - Core:
     - Models: api-reference/core/models.md
+    - Portfolio: api-reference/core/portfolio.md
+    - Strategy: api-reference/core/strategy.md
   - Datafeeds:
     - Base Datafeed: api-reference/datafeeds/base_datafeed.md
     - CSV Datafeed: api-reference/datafeeds/csv_datafeed.md
+  - Indicators:
+    - Base Indicator: api-reference/indicators/base_indicator.md
   - Messaging:
     - Eventbus: api-reference/messaging/eventbus.md
     - Events: api-reference/messaging/events.md
