@@ -2,54 +2,58 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://www.onesecondtrader.com/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/quickstart/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/overview/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/core/models/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/datafeeds/base_datafeed/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/datafeeds/csv_datafeed/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/api-reference/indicators/base_indicator/</loc>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/messaging/eventbus/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/messaging/events/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/monitoring/console/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/documentation/architecture/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/documentation/backtesting/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/documentation/overview/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/documentation/trading/</loc>
-         <lastmod>2025-09-12</lastmod>
+         <lastmod>2025-09-15</lastmod>
     </url>
 </urlset>
