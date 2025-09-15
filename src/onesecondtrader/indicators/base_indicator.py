@@ -16,8 +16,7 @@ class BaseIndicator(abc.ABC):
     Base class for all indicators.
 
     If new market data is received, the indicator is updated by calling the
-    `<indicator_instance>.update(incoming_bar)` method.
-
+    `update(incoming_bar)` method.
     When programming a new indicator, only the `name` property and the
     `_compute_indicator()` method need to be implemented.
 
@@ -84,6 +83,15 @@ class BaseIndicator(abc.ABC):
         """
         pass
 
+    @property
+    def latest(self) -> float:
+        """
+        The latest (most recent) indicator value.
+
+        Equivalent to self[0]. Returns numpy.nan when no value is available yet.
+        """
+        return self[0]
+
     def update(self, incoming_bar: models.Bar) -> None:
         """
         Updates the indicator based on an incoming closed bar by calling
@@ -92,6 +100,14 @@ class BaseIndicator(abc.ABC):
         new_value = self._compute_indicator(incoming_bar)
         with self._lock:
             self._history.append(new_value)
+
+    @abc.abstractmethod
+    def _compute_indicator(self, incoming_bar: models.Bar) -> float:
+        """
+        Computes the new indicator value based on an incoming closed bar.
+        This method must be implemented by subclasses.
+        """
+        pass
 
     def __getitem__(self, index: int) -> float:
         """
@@ -118,20 +134,3 @@ class BaseIndicator(abc.ABC):
                 return self._history[normalized]
             except IndexError:
                 return np.nan
-
-    @property
-    def latest(self) -> float:
-        """
-        The latest (most recent) indicator value.
-
-        Equivalent to self[0]. Returns numpy.nan when no value is available yet.
-        """
-        return self[0]
-
-    @abc.abstractmethod
-    def _compute_indicator(self, incoming_bar: models.Bar) -> float:
-        """
-        Computes the new indicator value based on an incoming closed bar.
-        This method must be implemented by subclasses.
-        """
-        pass
