@@ -1,3 +1,6 @@
+## v0.13.0
+- feat: added simple moving average implementation
+
 ## v0.12.1
 - fix: documentation fixes in base indicator class
 
