@@ -31,7 +31,7 @@ hide:
 
     ---
 
-    Contains: `base_indicator.py`
+    Contains: `base_indicator.py`, `moving_averages.py`
 
 
     [:material-link-variant: View `indicators/` package API](indicators/base_indicator.md)

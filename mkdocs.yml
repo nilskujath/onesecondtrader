@@ -30,6 +30,7 @@ nav:
     - CSV Datafeed: api-reference/datafeeds/csv_datafeed.md
   - Indicators:
     - Base Indicator: api-reference/indicators/base_indicator.md
+    - Moving Averages: api-reference/indicators/moving_averages.md
   - Messaging:
     - Eventbus: api-reference/messaging/eventbus.md
     - Events: api-reference/messaging/events.md

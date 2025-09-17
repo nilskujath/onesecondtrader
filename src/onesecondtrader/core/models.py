@@ -63,8 +63,7 @@ class TimeInForce(enum.Enum):
     | `FOK` | `enum.auto()` | Fill entire order immediately or cancel (Fill-or-Kill) |
     | `GTC` | `enum.auto()` | Active until explicitly cancelled (Good-Till-Cancelled) |
     | `GTD` | `enum.auto()` | Active until specified date (Good-Till-Date) |
-    | `IOC` | `enum.auto()` | Execute available quantity immediately, cancel rest
-        (Immediate-or-Cancel) |
+    | `IOC` | `enum.auto()` | Execute available quantity immediately, cancel rest (Immediate-or-Cancel) |
     """
 
     DAY = enum.auto()
@@ -102,10 +101,8 @@ class OrderLifecycleState(enum.Enum):
 
     | Enum | Value | Description |
     |------|-------|-------------|
-    | `PENDING` | `enum.auto()` | Order has been submitted, but not yet acknowledged by
-        the broker |
-    | `OPEN` | `enum.auto()` | Order has been acknowledged by the broker, but not yet
-        filled or cancelled |
+    | `PENDING` | `enum.auto()` | Order has been submitted, but not yet acknowledged by the broker |
+    | `OPEN` | `enum.auto()` | Order has been acknowledged by the broker, but not yet filled or cancelled |
     | `FILLED` | `enum.auto()` | Order has been filled |
     | `CANCELLED` | `enum.auto()` | Order has been cancelled |
     """
@@ -165,3 +162,27 @@ class RecordType(enum.Enum):
                 return "daily bars"
             case _:
                 return f"unknown ({rtype})"
+
+
+class XMAMode(enum.Enum):
+    """
+    Enum for moving average modes.
+
+    **Attributes:**
+
+    | Enum | Value | Description |
+    |------|-------|-------------|
+    | `OPEN` | `enum.auto()` | Open price |
+    | `HIGH` | `enum.auto()` | High price |
+    | `LOW` | `enum.auto()` | Low price |
+    | `CLOSE` | `enum.auto()` | Close price |
+    | `TYPICAL_PRICE` | `enum.auto()` | Typical price ((H+ L + C) / 3) |
+    | `WEIGHTED_CLOSE` | `enum.auto()` | Weighted close price ((H + L + 2*C) / 4) |
+    """
+
+    OPEN = enum.auto()
+    HIGH = enum.auto()
+    LOW = enum.auto()
+    CLOSE = enum.auto()
+    TYPICAL_PRICE = enum.auto()
+    WEIGHTED_CLOSE = enum.auto()
