@@ -87,7 +87,7 @@ class SimpleMovingAverage(base_indicator.BaseIndicator):
 
         Returns:
             float: Simple moving average value, or np.nan if insufficient data or
-            errors occur.
+                errors occur.
         """
         try:
             mode = self.mode
