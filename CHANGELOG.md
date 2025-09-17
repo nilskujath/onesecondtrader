@@ -1,3 +1,6 @@
+## v0.13.1
+- fix: fixed docstring in sma class
+
 ## v0.13.0
 - feat: added simple moving average implementation
 
