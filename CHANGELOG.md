@@ -1,3 +1,6 @@
+## v0.14.0
+- feat: added portfolio namespace to events
+
 ## v0.13.1
 - fix: fixed docstring in sma class
 
