@@ -1,6 +1,6 @@
-# Strategy
+# Simulated Broker
 
-::: onesecondtrader.core.strategy
+::: onesecondtrader.brokers.simulated_broker
     options:
       show_root_heading: False
       show_source: true

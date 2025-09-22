@@ -2,26 +2,6 @@ from dataclasses import dataclass
 import enum
 
 
-class BrokerType(enum.Enum):
-    """
-    Enum for broker types.
-
-    **Attributes:**
-
-    | Enum | Value | Description |
-    |------|-------|-------------|
-    | `LOCAL_SIMULATED` | `enum.auto()` | Locally simulated broker |
-    | `IB_SIMULATED` | `enum.auto()` | Interactive Brokers paper trading account |
-    | `IB_LIVE` | `enum.auto()` | Interactive Brokers live trading account |
-    | `MT5` | `enum.auto()` | MetaTrader 5 |
-    """
-
-    LOCAL_SIMULATED = enum.auto()
-    IB_SIMULATED = enum.auto()
-    IB_LIVE = enum.auto()
-    MT5 = enum.auto()
-
-
 @dataclass(frozen=True, slots=True)
 class Bar:
     """
@@ -101,8 +81,8 @@ class OrderLifecycleState(enum.Enum):
 
     | Enum | Value | Description |
     |------|-------|-------------|
-    | `PENDING` | `enum.auto()` | Order has been submitted, but not yet acknowledged by the broker |
-    | `OPEN` | `enum.auto()` | Order has been acknowledged by the broker, but not yet filled or cancelled |
+    | `PENDING` | `enum.auto()` | Order has been submitted, but not yet acknowledged by the brokers |
+    | `OPEN` | `enum.auto()` | Order has been acknowledged by the brokers, but not yet filled or cancelled |
     | `FILLED` | `enum.auto()` | Order has been filled |
     | `CANCELLED` | `enum.auto()` | Order has been cancelled |
     """
@@ -186,3 +166,23 @@ class XMAMode(enum.Enum):
     CLOSE = enum.auto()
     TYPICAL_PRICE = enum.auto()
     WEIGHTED_CLOSE = enum.auto()
+
+
+class Position:
+    pass
+
+
+class StrategyShutdownMode(enum.Enum):
+    """
+    Enum for strategy shutdown modes.
+
+    **Attributes:**
+
+    | Enum | Value | Description |
+    |------|-------|-------------|
+    | `SOFT` | `enum.auto()` | Do not open new positions; wait until current positions close naturally |
+    | `HARD` | `enum.auto()` | Close all positions immediately with market orders |
+    """
+
+    SOFT = enum.auto()
+    HARD = enum.auto()

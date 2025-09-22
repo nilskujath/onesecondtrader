@@ -23,11 +23,13 @@ Dataclass field validation logic is grouped under the `_Validate` namespace.
     R22[events.Base.CancelRequest]
     R3[events.Base.Response]
     R4[events.Base.System]
+    R5[events.Base.Portfolio]
 
     R --> R1
     R --> R2
     R --> R3
     R --> R4
+    R --> R5
 
     R2 --> R21
     R2 --> R22
@@ -83,6 +85,11 @@ Dataclass field validation logic is grouped under the `_Validate` namespace.
 
     style D1 fill:#6F42C1,fill-opacity:0.3
 
+    E1[events.Portfolio.SymbolRelease]
+
+    R5 --> E1
+
+    style E1 fill:#6F42C1,fill-opacity:0.3
 
     subgraph Market ["Market Update Event Messages"]
         R1
@@ -141,6 +148,16 @@ Dataclass field validation logic is grouped under the `_Validate` namespace.
 
         subgraph SystemNamespace ["events.System Namespace"]
             D1
+        end
+
+    end
+
+    subgraph Portfolio ["Portfolio Coord. Event Messages"]
+        R5
+        E1
+
+        subgraph PortfolioNamespace ["events.Portfolio Namespace"]
+            E1
         end
 
     end
@@ -340,6 +357,28 @@ class Base:
 
         def __new__(cls, *args, **kwargs):
             if cls is Base.System:
+                console.logger.error(
+                    f"Cannot instantiate abstract class '{cls.__name__}' directly"
+                )
+            return super().__new__(cls)
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class Portfolio(Event):
+        """
+        Base event message dataclass for portfolio coordination messages.
+        This dataclass cannot be instantiated directly.
+
+        Attributes:
+            ts_event: Timestamp of the event. (defaults to current UTC time;
+                auto-generated)
+        """
+
+        ts_event: pd.Timestamp = dataclasses.field(
+            default_factory=lambda: pd.Timestamp.now(tz="UTC")
+        )
+
+        def __new__(cls, *args, **kwargs):
+            if cls is Base.Portfolio:
                 console.logger.error(
                     f"Cannot instantiate abstract class '{cls.__name__}' directly"
                 )
@@ -697,6 +736,25 @@ class System:
         """
 
         pass
+
+
+class Portfolio:
+    """
+    Namespace for portfolio coordination event messages.
+    """
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class SymbolRelease(Base.Portfolio):
+        """
+        Event to indicate a strategy releases ownership of a symbol.
+        """
+
+        symbol: str
+        strategy_name: str
+
+        def __post_init__(self) -> None:
+            super().__post_init__()
+            _Validate.symbol(self.symbol, "Portfolio.SymbolRelease")
 
 
 class _Validate:

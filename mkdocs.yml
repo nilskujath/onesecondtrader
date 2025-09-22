@@ -21,10 +21,12 @@ nav:
   - Architecture: documentation/architecture.md
 - API Reference:
   - Overview: api-reference/overview.md
+  - Brokers:
+    - Base Broker: api-reference/brokers/base_broker.md
+    - Simulated Broker: api-reference/brokers/simulated_broker.md
   - Core:
     - Models: api-reference/core/models.md
     - Portfolio: api-reference/core/portfolio.md
-    - Strategy: api-reference/core/strategy.md
   - Datafeeds:
     - Base Datafeed: api-reference/datafeeds/base_datafeed.md
     - CSV Datafeed: api-reference/datafeeds/csv_datafeed.md
@@ -36,6 +38,8 @@ nav:
     - Events: api-reference/messaging/events.md
   - Monitoring:
     - Console: api-reference/monitoring/console.md
+  - Strategies:
+    - Base Strategy: api-reference/strategies/base_strategy.md
 theme:
   name: material
   icon:

@@ -12,6 +12,12 @@ from onesecondtrader.messaging import events
 from onesecondtrader.monitoring import console
 
 
+__all__ = [
+    "EventBus",
+    "system_event_bus",
+]
+
+
 class EventBus:
     # noinspection PyTypeChecker
     """
@@ -488,3 +494,6 @@ class EventBus:
                 f"total handlers: "
                 f"{sum(len(handlers) for handlers in new_cache.values())}"
             )
+
+
+system_event_bus = EventBus()

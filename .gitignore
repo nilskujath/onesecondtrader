@@ -1,6 +1,5 @@
 csv_port/
 csv_port_archive
-strategies/
 .idea/
 site/
 .coverage

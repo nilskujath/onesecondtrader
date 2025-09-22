@@ -9,11 +9,20 @@ hide:
 <div class="grid cards" markdown>
 
 
+-   __Brokers__&nbsp;&nbsp;
+
+    ---
+
+    Contains: `base_broker.py`, `simulated_broker.py`
+
+
+    [:material-link-variant: View `brokers/` package API](brokers/base_broker.md)
+
 -   __Core__&nbsp;&nbsp;
 
     ---
 
-    Contains: `models.py`, `portfolio.py`, `strategy.py`
+    Contains: `models.py`, `portfolio.py`
 
 
     [:material-link-variant: View `core/` package API](core/models.md)
@@ -53,5 +62,14 @@ hide:
 
 
     [:material-link-variant: View `monitoring/` package API](monitoring/console.md)
+
+-   __Strategies__&nbsp;&nbsp;
+
+    ---
+
+    Contains: `base_strategy.py`
+
+
+    [:material-link-variant: View `strategies/` package API](strategies/base_strategy.md)
 
 </div>
