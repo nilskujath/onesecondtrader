@@ -1,8 +1,8 @@
 """
 This module provides the event messages used for decoupled communication between the
  trading infrastructure's components.
-Events are organized into namespaces (`Market`, `Request`, `Response`, and `System`)
- to provide clear semantic groupings.
+Events are organized into namespaces (`Strategy`, `Market`, `Request`, `Response`, and
+`System`) to provide clear semantic groupings.
 Base event messages used for structure inheritance are grouped under the
  `Base` namespace.
 Dataclass field validation logic is grouped under the `_Validate` namespace.
@@ -23,7 +23,7 @@ Dataclass field validation logic is grouped under the `_Validate` namespace.
     R22[events.Base.CancelRequest]
     R3[events.Base.Response]
     R4[events.Base.System]
-    R5[events.Base.Portfolio]
+    R5[events.Base.Strategy]
 
     R --> R1
     R --> R2
@@ -85,11 +85,14 @@ Dataclass field validation logic is grouped under the `_Validate` namespace.
 
     style D1 fill:#6F42C1,fill-opacity:0.3
 
-    E1[events.Portfolio.SymbolRelease]
+    E1[events.Strategy.SymbolRelease]
+    E2[events.Strategy.StopTrading]
 
     R5 --> E1
+    R5 --> E2
 
     style E1 fill:#6F42C1,fill-opacity:0.3
+    style E2 fill:#6F42C1,fill-opacity:0.3
 
     subgraph Market ["Market Update Event Messages"]
         R1
@@ -152,12 +155,14 @@ Dataclass field validation logic is grouped under the `_Validate` namespace.
 
     end
 
-    subgraph Portfolio ["Portfolio Coord. Event Messages"]
+    subgraph Strategy ["Strategy Coord. Event Messages"]
         R5
         E1
+        E2
 
-        subgraph PortfolioNamespace ["events.Portfolio Namespace"]
+        subgraph StrategyNamespace ["events.Strategy Namespace"]
             E1
+            E2
         end
 
     end
@@ -170,6 +175,7 @@ import re
 import uuid
 from onesecondtrader.core import models
 from onesecondtrader.monitoring import console
+from onesecondtrader.strategies import base_strategy
 
 
 class Base:
@@ -297,7 +303,7 @@ class Base:
             )
             _Validate.quantity(self.quantity, f"Order {self.order_id}")
 
-            if self.time_in_force.value == 4:
+            if self.time_in_force is models.TimeInForce.GTD:
                 if self.order_expiration is None:
                     console.logger.error(
                         f"Order {self.order_id}: GTD order missing expiration "
@@ -363,9 +369,9 @@ class Base:
             return super().__new__(cls)
 
     @dataclasses.dataclass(kw_only=True, frozen=True)
-    class Portfolio(Event):
+    class Strategy(Event):
         """
-        Base event message dataclass for portfolio coordination messages.
+        Base event message dataclass for strategy coordination messages.
         This dataclass cannot be instantiated directly.
 
         Attributes:
@@ -376,13 +382,21 @@ class Base:
         ts_event: pd.Timestamp = dataclasses.field(
             default_factory=lambda: pd.Timestamp.now(tz="UTC")
         )
+        strategy: base_strategy.Strategy
 
         def __new__(cls, *args, **kwargs):
-            if cls is Base.Portfolio:
+            if cls is Base.Strategy:
                 console.logger.error(
                     f"Cannot instantiate abstract class '{cls.__name__}' directly"
                 )
             return super().__new__(cls)
+
+        def __post_init__(self) -> None:
+            super().__post_init__()
+            if not isinstance(self.strategy, base_strategy.Strategy):
+                console.logger.error(
+                    f"{type(self).__name__}: strategy must inherit from Strategy"
+                )
 
 
 class Market:
@@ -413,7 +427,7 @@ class Market:
             ...         volume=10000,
             ...     ),
             ... )
-            ```
+
         """
 
         bar: models.Bar
@@ -660,7 +674,7 @@ class Response:
 
             gross_value = self.filled_at_price * self.quantity_filled
 
-            if self.side.value == 1:
+            if self.side is models.Side.BUY:
                 net_value = gross_value + self.commission_and_fees
             else:
                 net_value = gross_value - self.commission_and_fees
@@ -738,23 +752,49 @@ class System:
         pass
 
 
-class Portfolio:
+class Strategy:
     """
-    Namespace for portfolio coordination event messages.
+    Namespace for strategy coordination event messages.
     """
 
     @dataclasses.dataclass(kw_only=True, frozen=True)
-    class SymbolRelease(Base.Portfolio):
+    class SymbolRelease(Base.Strategy):
         """
         Event to indicate a strategy releases ownership of a symbol.
+
+        Attributes:
+            symbol (str): Symbol released.
+
+        Examples:
+            >>> from onesecondtrader.messaging import events
+            >>> event = events.Strategy.SymbolRelease(
+            ...     symbol="AAPL",
+            ... )
         """
 
         symbol: str
-        strategy_name: str
 
         def __post_init__(self) -> None:
             super().__post_init__()
-            _Validate.symbol(self.symbol, "Portfolio.SymbolRelease")
+            _Validate.symbol(self.symbol, "Strategy.SymbolRelease")
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class StopTrading(Base.Strategy):
+        """
+        Event to indicate a strategy should stop trading.
+
+        Attributes:
+            shutdown_mode (models.StrategyShutdownMode): Shutdown mode to use.
+
+        Examples:
+            >>> from onesecondtrader.messaging import events
+            >>> event = events.Strategy.StopTrading(
+            ...     strategy=my_strategy,
+            ...     shutdown_mode=models.StrategyShutdownMode.SOFT,
+            ... )
+        """
+
+        shutdown_mode: models.StrategyShutdownMode
 
 
 class _Validate:

@@ -5,5 +5,5 @@ from .events import (
     Request as Request,
     Response as Response,
     System as System,
-    Portfolio as Portfolio,
+    Strategy as Strategy,
 )
