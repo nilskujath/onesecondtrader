@@ -1,3 +1,6 @@
+## v0.14.2
+- fix: updated portfolio class, added strategy event
+
 ## v0.14.1
 - fix: Fixed mypy error in CI
 - fix: Added incomplete packages for mypy CI check
