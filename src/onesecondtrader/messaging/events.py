@@ -86,13 +86,16 @@ Dataclass field validation logic is grouped under the `_Validate` namespace.
     style D1 fill:#6F42C1,fill-opacity:0.3
 
     E1[events.Strategy.SymbolRelease]
-    E2[events.Strategy.StopTrading]
+    E2[events.Strategy.SymbolAssignment]
+    E3[events.Strategy.StopTrading]
 
     R5 --> E1
     R5 --> E2
+    R5 --> E3
 
     style E1 fill:#6F42C1,fill-opacity:0.3
     style E2 fill:#6F42C1,fill-opacity:0.3
+    style E3 fill:#6F42C1,fill-opacity:0.3
 
     subgraph Market ["Market Update Event Messages"]
         R1
@@ -159,10 +162,12 @@ Dataclass field validation logic is grouped under the `_Validate` namespace.
         R5
         E1
         E2
+        E3
 
         subgraph StrategyNamespace ["events.Strategy Namespace"]
             E1
             E2
+            E3
         end
 
     end
@@ -777,6 +782,29 @@ class Strategy:
         def __post_init__(self) -> None:
             super().__post_init__()
             _Validate.symbol(self.symbol, "Strategy.SymbolRelease")
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class SymbolAssignment(Base.Strategy):
+        """
+        Event message to indicate that a symbol should be assigned to a strategy.
+
+        Attributes:
+            symbol_list (list[str]): List of symbols to be assigned.
+
+        Examples:
+            >>> from onesecondtrader.messaging import events
+            >>> event = events.Strategy.SymbolAssignment(
+            ...     strategy=my_strategy,
+            ...     symbol=["AAPL"],
+            ... )
+        """
+
+        symbol_list: list[str]
+
+        def __post_init__(self) -> None:
+            super().__post_init__()
+            for symbol in self.symbol_list:
+                _Validate.symbol(symbol, "Strategy.SymbolAssignment")
 
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class StopTrading(Base.Strategy):

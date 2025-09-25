@@ -47,8 +47,9 @@ class Portfolio:
             self._symbol_owner (dict[str, base_strategy.Strategy]): Exclusive symbol
                 ownership map; each symbol is owned by at most one strategy instance at
                 a time.
-            self._removal_pending (set[base_strategy.Strategy]): Set of strategies that
-                are still active but marked for removal once all symbols are released.
+            self.strategy_removal_pending (set[base_strategy.Strategy]): Set of
+                strategies that are still active but marked for removal once all symbols
+                are released.
             self.broker (base_broker.BaseBroker | None): Instantiated broker; may be
                 disconnected if connect failed.
         """
@@ -69,11 +70,12 @@ class Portfolio:
         # KEEP TRACK OF STRATEGIES AND SYMBOL OWNERSHIP
         # ------------------------------------------------------------------------------
         self._strategies: set[base_strategy.Strategy] = set()
+        self.strategy_removal_pending: set[base_strategy.Strategy] = set()
         self._symbol_owner: dict[str, base_strategy.Strategy] = {}
-        self._removal_pending: set[base_strategy.Strategy] = set()
 
         # INITIALIZE BROKER
         # ------------------------------------------------------------------------------
+        # TODO Decouple by also doing this via an event
         self.broker: base_broker.BaseBroker | None = None
         if broker_class is None or not issubclass(broker_class, base_broker.BaseBroker):
             broker_name = (
@@ -167,13 +169,23 @@ class Portfolio:
                         "use Portfolio.assign_symbols(...) after resolving. "
                         f"non_conflicting={non_conflicting}, conflicts={conflicting}"
                     )
+                    return False
                 else:
-                    self.assign_symbols(strategy_instance, symbols_list)
+                    for sym in symbols_list:
+                        self._symbol_owner[sym] = strategy_instance
+                    self.event_bus.publish(
+                        events.Strategy.SymbolAssignment(
+                            strategy=strategy_instance,
+                            symbol_list=symbols_list,
+                        )
+                    )
+                    return True
+
         return True
 
     def remove_strategy(
         self,
-        strategy: base_strategy.Strategy,
+        strategy_instance: base_strategy.Strategy,
         shutdown_mode: StrategyShutdownMode = StrategyShutdownMode.SOFT,
     ) -> bool:
         """
@@ -182,93 +194,90 @@ class Portfolio:
         for open positions to close naturally and release symbols once they are flat).
 
         Args:
-            strategy (base_strategy.Strategy): Strategy instance to remove.
+            strategy_instance (base_strategy.Strategy): Strategy instance to remove.
             shutdown_mode (StrategyShutdownMode): Shutdown mode to use. Defaults to
                 StrategyShutdownMode.SOFT.
         """
 
-        # IF STRATEGY IS REGISTERED, MARK IT FOR REMOVAL
+        # IF STRATEGY IS REGISTERED, MARK IT FOR REMOVAL AND PUBLISH STOP TRADING EVENT
         # ------------------------------------------------------------------------------
         with self._lock:
-            if strategy not in self._strategies:
+            if strategy_instance not in self._strategies:
                 console.logger.warning("remove_strategy: strategy not registered")
                 return False
-            self._removal_pending.add(strategy)
+            self.strategy_removal_pending.add(strategy_instance)
 
-        try:
-            strategy.request_close(shutdown_mode)
-        except Exception:
-            console.logger.warning(
-                "remove_strategy: strategy does not support request_close; proceeding to flatness check"
+        # PUBLISH STOP TRADING REQUEST TO EVENT BUS
+        # ------------------------------------------------------------------------------
+        self.event_bus.publish(
+            events.Strategy.StopTrading(
+                strategy=strategy_instance,
+                shutdown_mode=shutdown_mode,
             )
-
-        try:
-            if bool(strategy.is_flat()):
-                # If the strategy is already flat and owns no symbols, deregister now
-                with self._lock:
-                    has_owned_left = any(
-                        owner is strategy for owner in self._symbol_owner.values()
-                    )
-                    if not has_owned_left:
-                        if strategy in self._strategies:
-                            self._strategies.remove(strategy)
-                        self._removal_pending.discard(strategy)
-                        console.logger.info(
-                            f"Strategy {getattr(strategy, 'name', type(strategy).__name__)} removed: flat and no symbols owned"
-                        )
-                        return True
-        except Exception:
-            console.logger.warning(
-                "remove_strategy: strategy does not implement is_flat; will wait for symbol releases"
-            )
-        return False
+        )
+        return True
 
     def assign_symbols(
-        self,
-        strategy: base_strategy.Strategy,
-        symbols: Iterable[str],
-    ) -> tuple[list[str], list[str]]:
+        self, strategy_instance: base_strategy.Strategy, symbols: Iterable[str]
+    ):
         """
-        Assign symbols to a strategy with exclusivity enforcement.
+        Assign a list of symbols to a strategy.
 
-        Returns:
-            tuple[list[str], list[str]]: (accepted, conflicts)
+        Args:
+            strategy_instance (base_strategy.Strategy): Strategy instance to assign
+                symbols to.
+            symbols (Iterable[str]): List of symbols to assign.
         """
-        if not isinstance(strategy, base_strategy.Strategy):
-            console.logger.error("assign_symbols: strategy must inherit from Strategy")
-            return [], list(symbols)
-        symbols_list = list(
-            dict.fromkeys(s.strip() for s in symbols if s and s.strip())
-        )
-        if not symbols_list:
-            return [], []
-        accepted: list[str] = []
-        conflicts: list[str] = []
+        # IF STRATEGY IS REGISTERED, MARK IT FOR REMOVAL AND PUBLISH STOP TRADING EVENT
+        # ------------------------------------------------------------------------------
         with self._lock:
-            for sym in symbols_list:
-                current = self._symbol_owner.get(sym)
-                if current is None or current is strategy:
-                    self._symbol_owner[sym] = strategy
-                    accepted.append(sym)
-                else:
-                    conflicts.append(sym)
-        if accepted:
-            strategy.add_symbols(accepted)
-        if conflicts:
-            console.logger.warning(
-                f"assign_symbols: conflicts for {len(conflicts)} symbol(s): {conflicts}"
+            if strategy_instance not in self._strategies:
+                console.logger.warning("remove_strategy: strategy not registered")
+                return False
+            self.strategy_removal_pending.add(strategy_instance)
+
+        # ASSIGN SYMBOLS IF PROVIDED AND NO CONFLICTS EXIST, ELSE LOG WARNING
+        # ------------------------------------------------------------------------------
+        # TODO This is an repetition of the same logic as in add_strategy; refactor
+
+        if symbols is not None:
+            # Create an ordered list of unique, non-empty, trimmed symbols
+            symbols_list = list(
+                dict.fromkeys(s.strip() for s in symbols if s and s.strip())
             )
-        return accepted, conflicts
+
+            # Check for conflicts, claim symbols for strategy if no conflicts arise
+            if symbols_list:
+                non_conflicting: list[str] = []
+                conflicting: list[str] = []
+                with self._lock:
+                    for sym in symbols_list:
+                        owner = self._symbol_owner.get(sym)
+                        if owner is None or owner is strategy_instance:
+                            non_conflicting.append(sym)
+                        else:
+                            conflicting.append(sym)
+                if conflicting:
+                    console.logger.warning(
+                        "assign_symbols: symbols not assigned due to conflicts; "
+                        "use Portfolio.assign_symbols(...) after resolving. "
+                        f"non_conflicting={non_conflicting}, conflicts={conflicting}"
+                    )
+                    return False
+                else:
+                    for sym in symbols_list:
+                        self._symbol_owner[sym] = strategy_instance
+                    self.event_bus.publish(
+                        events.Strategy.SymbolAssignment(
+                            strategy=strategy_instance,
+                            symbol_list=symbols_list,
+                        )
+                    )
+                    return True
 
     def unassign_symbols(
         self, strategy: base_strategy.Strategy, symbols: Iterable[str]
     ) -> list[str]:
-        """
-        Release symbol ownership from a strategy.
-
-        Returns:
-            list[str]: Symbols actually unassigned.
-        """
         if not isinstance(strategy, base_strategy.Strategy):
             console.logger.error(
                 "unassign_symbols: strategy must inherit from Strategy"
@@ -296,23 +305,38 @@ class Portfolio:
         with self._lock:
             return self._symbol_owner.get(symbol)
 
-    def release_symbols_from_strategy(
-        self, strategy: base_strategy.Strategy, symbols: Iterable[str]
-    ) -> list[str]:
+    def on_symbol_release(self, event: events.Base.Event) -> None:
         """
-        Release symbols from the given strategy.
+        Handle symbol release events. Ignores unrelated event types.
 
-        If the strategy was previously marked for removal and ends up with no owned
-        symbols after this call, and the strategy is flat, it will be automatically
-        deregistered.
+        If a symbol is released, it is unassigned from the strategy that owns it
+        (inside the symbol_owner registry). If the strategy is marked for removal and
+        has no more symbols assigned to it, it is automatically deregistered.
         """
-        removed = self.unassign_symbols(strategy, symbols)
+
+        # IGNORE UNRELATED EVENT TYPES
+        # ------------------------------------------------------------------------------
+        if not isinstance(event, events.Strategy.SymbolRelease):
+            return
+
+        # IF STRATEGY IS REGISTERED, RELEASE SYMBOL FROM STRATEGY
+        # ------------------------------------------------------------------------------
+        # TODO This needs reworking; this will be the same logic as unassig_symbols
+        strategy = event.strategy
+        with self._lock:
+            if strategy not in self._strategies:
+                console.logger.warning("on_symbol_release: strategy not registered")
+                return
+        removed = self.unassign_symbols(strategy, [event.symbol])
         if not removed:
-            return removed
-        # Auto-deregister if pending removal and no more owned symbols
+            console.logger.warning(
+                f"on_symbol_release: symbol {event.symbol} not owned by "
+                f"{getattr(event.strategy, 'name', type(event.strategy).__name__)}"
+            )
+            return
         pending = False
         with self._lock:
-            pending = strategy in self._removal_pending
+            pending = strategy in self.strategy_removal_pending
             has_owned_left = any(
                 owner is strategy for owner in self._symbol_owner.values()
             )
@@ -322,27 +346,14 @@ class Portfolio:
                     with self._lock:
                         if strategy in self._strategies:
                             self._strategies.remove(strategy)
-                        self._removal_pending.discard(strategy)
+                        self.strategy_removal_pending.discard(strategy)
                     console.logger.info(
-                        f"Strategy {getattr(strategy, 'name', type(strategy).__name__)} removed: all symbols released and flat"
+                        f"Strategy {getattr(strategy, 'name', type(strategy).__name__)} "
+                        f"removed: all symbols released and flat"
                     )
             except Exception:
                 pass
-        return removed
-
-    def on_symbol_release(self, event: events.Base.Event) -> None:
-        """
-        Handle symbol release events. Ignores unrelated event types.
-        """
-        if not isinstance(event, events.Strategy.SymbolRelease):
-            return
-        strategy = event.strategy
-        with self._lock:
-            if strategy not in self._strategies:
-                console.logger.warning("on_symbol_release: strategy not registered")
-                return
-        removed = self.release_symbols_from_strategy(strategy, [event.symbol])
-        if not removed:
-            console.logger.warning(
-                f"on_symbol_release: symbol {event.symbol} not owned by {getattr(event.strategy, 'name', type(event.strategy).__name__)}"
-            )
+        console.logger.info(
+            f"on_symbol_release: symbol {event.symbol} released from "
+            f"{getattr(event.strategy, 'name', type(event.strategy).__name__)}"
+        )
