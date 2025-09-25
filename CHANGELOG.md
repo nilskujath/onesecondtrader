@@ -1,3 +1,8 @@
+## v0.14.1
+- fix: Fixed mypy error in CI
+- fix: Added incomplete packages for mypy CI check
+- fix: Added StopStrategy event
+
 ## v0.14.0
 - feat: added portfolio namespace to events
 
