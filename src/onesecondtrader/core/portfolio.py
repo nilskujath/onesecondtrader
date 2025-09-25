@@ -76,13 +76,14 @@ class Portfolio:
         # ------------------------------------------------------------------------------
         self.broker: base_broker.BaseBroker | None = None
         if broker_class is None or not issubclass(broker_class, base_broker.BaseBroker):
+            broker_name = (
+                getattr(broker_class, "__name__", str(broker_class))
+                if broker_class
+                else None
+            )
             console.logger.error(
                 "Portfolio requires a valid broker_class (subclass of BaseBroker), "
-                f"got {
-                    getattr(broker_class, '__name__', str(broker_class))
-                    if broker_class
-                    else None
-                }"
+                f"got {broker_name}"
             )
             return
         try:
