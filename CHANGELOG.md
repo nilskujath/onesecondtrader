@@ -1,3 +1,6 @@
+## v0.15.0
+- feat: added minimal working portfolio class
+
 ## v0.14.2
 - fix: updated portfolio class, added strategy event
 
