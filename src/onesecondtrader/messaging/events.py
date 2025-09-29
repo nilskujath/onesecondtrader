@@ -88,14 +88,17 @@ Dataclass field validation logic is grouped under the `_Validate` namespace.
     E1[events.Strategy.SymbolRelease]
     E2[events.Strategy.SymbolAssignment]
     E3[events.Strategy.StopTrading]
+    E4[events.Strategy.StopTradingSymbol]
 
     R5 --> E1
     R5 --> E2
     R5 --> E3
+    R5 --> E4
 
     style E1 fill:#6F42C1,fill-opacity:0.3
     style E2 fill:#6F42C1,fill-opacity:0.3
     style E3 fill:#6F42C1,fill-opacity:0.3
+    style E4 fill:#6F42C1,fill-opacity:0.3
 
     subgraph Market ["Market Update Event Messages"]
         R1
@@ -163,11 +166,13 @@ Dataclass field validation logic is grouped under the `_Validate` namespace.
         E1
         E2
         E3
+        E4
 
         subgraph StrategyNamespace ["events.Strategy Namespace"]
             E1
             E2
             E3
+            E4
         end
 
     end
@@ -242,7 +247,6 @@ class Base:
 
         def __post_init__(self) -> None:
             super().__post_init__()
-            _Validate.symbol(self.symbol, "Market event")
 
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class Request(Event):
@@ -301,7 +305,6 @@ class Base:
 
         def __post_init__(self) -> None:
             super().__post_init__()
-            _Validate.symbol(self.symbol, f"Order {self.order_id}")
 
             _Validate.timezone_aware(
                 self.order_expiration, "order_expiration", f"Order {self.order_id}"
@@ -583,7 +586,6 @@ class Request:
 
         def __post_init__(self) -> None:
             super().__post_init__()
-            _Validate.symbol(self.symbol, "Flush request")
 
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class FlushAll(Base.Request):
@@ -781,7 +783,6 @@ class Strategy:
 
         def __post_init__(self) -> None:
             super().__post_init__()
-            _Validate.symbol(self.symbol, "Strategy.SymbolRelease")
 
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class SymbolAssignment(Base.Strategy):
@@ -803,8 +804,6 @@ class Strategy:
 
         def __post_init__(self) -> None:
             super().__post_init__()
-            for symbol in self.symbol_list:
-                _Validate.symbol(symbol, "Strategy.SymbolAssignment")
 
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class StopTrading(Base.Strategy):
@@ -813,6 +812,7 @@ class Strategy:
 
         Attributes:
             shutdown_mode (models.StrategyShutdownMode): Shutdown mode to use.
+                Defaults to `SOFT`.
 
         Examples:
             >>> from onesecondtrader.messaging import events
@@ -823,6 +823,32 @@ class Strategy:
         """
 
         shutdown_mode: models.StrategyShutdownMode
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class StopTradingSymbol(Base.Strategy):
+        """
+        Event to indicate a strategy should stop trading a symbol.
+
+        Attributes:
+            symbol (str): Symbol to stop trading.
+            shutdown_mode (models.SymbolShutdownMode): Shutdown mode to use.
+                Defaults to `SOFT`.
+
+        Examples:
+            >>> from onesecondtrader.messaging import events
+            >>> event = events.Strategy.StopTradingSymbol(
+            ...     strategy=my_strategy,
+            ...     symbol="AAPL",
+            ...     shutdown_mode=models.SymbolShutdownMode.HARD,
+            ... )
+        """
+
+        symbol: str
+        shutdown_mode: models.SymbolShutdownMode = models.SymbolShutdownMode.SOFT
+
+        def __post_init__(self) -> None:
+            super().__post_init__()
+            _Validate.symbol(self.symbol, f"StopTradingSymbol {self.symbol}")
 
 
 class _Validate:

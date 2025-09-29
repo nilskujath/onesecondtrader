@@ -186,3 +186,19 @@ class StrategyShutdownMode(enum.Enum):
 
     SOFT = enum.auto()
     HARD = enum.auto()
+
+
+class SymbolShutdownMode(enum.Enum):
+    """
+    Enum for symbol shutdown modes.
+
+    **Attributes:**
+
+    | Enum | Value | Description |
+    |------|-------|-------------|
+    | `SOFT` | `enum.auto()` | Do not open new positions; wait until current positions close naturally |
+    | `HARD` | `enum.auto()` | Close all positions immediately with market orders |
+    """
+
+    SOFT = enum.auto()
+    HARD = enum.auto()
