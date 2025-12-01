@@ -1,3 +1,6 @@
+## v0.17.0
+- feat: Added core module
+
 ## v0.16.0
 - feat: Reworked entire project
 
