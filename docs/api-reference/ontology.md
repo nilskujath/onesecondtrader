@@ -1,6 +1,6 @@
-# Portfolio
+# Ontology
 
-::: onesecondtrader.core.portfolio
+::: onesecondtrader.ontology
     options:
       show_root_heading: False
       show_source: true

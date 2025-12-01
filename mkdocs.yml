@@ -16,30 +16,10 @@ extra:
 nav:
 - Home: index.md
 - "\u2192 Quickstart": quickstart.md
-- Documentation:
-  - Overview: documentation/overview.md
-  - Architecture: documentation/architecture.md
 - API Reference:
   - Overview: api-reference/overview.md
-  - Brokers:
-    - Base Broker: api-reference/brokers/base_broker.md
-    - Simulated Broker: api-reference/brokers/simulated_broker.md
-  - Core:
-    - Models: api-reference/core/models.md
-    - Portfolio: api-reference/core/portfolio.md
-  - Datafeeds:
-    - Base Datafeed: api-reference/datafeeds/base_datafeed.md
-    - CSV Datafeed: api-reference/datafeeds/csv_datafeed.md
-  - Indicators:
-    - Base Indicator: api-reference/indicators/base_indicator.md
-    - Moving Averages: api-reference/indicators/moving_averages.md
-  - Messaging:
-    - Eventbus: api-reference/messaging/eventbus.md
-    - Events: api-reference/messaging/events.md
-  - Monitoring:
-    - Console: api-reference/monitoring/console.md
-  - Strategies:
-    - Base Strategy: api-reference/strategies/base_strategy.md
+  - Indicators: api-reference/indicators.md
+  - Ontology: api-reference/ontology.md
 theme:
   name: material
   icon:
@@ -134,6 +114,7 @@ markdown_extensions:
 - footnotes
 extra_javascript:
 - javascripts/mathjax.js
+- javascripts/source_open.js
 - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 extra_css:
 - css/extra.css

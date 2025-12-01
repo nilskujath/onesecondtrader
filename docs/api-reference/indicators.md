@@ -1,6 +1,6 @@
-# Base Indicator
+# Indicators
 
-::: onesecondtrader.indicators.base_indicator
+::: onesecondtrader.indicators
     options:
       show_root_heading: False
       show_source: true

@@ -192,7 +192,7 @@ def generate_api_docs():
       heading_level: 2
       show_root_toc_entry: False
 
-??? quote "Source code in `{subfile}.py`"
+???+ quote "Source code in `{subfile}.py`"
 
     ```python linenums="1"
 {indented_content}
@@ -239,7 +239,7 @@ def generate_api_docs():
       heading_level: 2
       show_root_toc_entry: False
 
-??? quote "Source code in `{module}.py`"
+???+ quote "Source code in `{module}.py`"
 
     ```python linenums="1"
 {indented_content}
@@ -293,7 +293,9 @@ hide:
 
     ---
 
-    Contains: {files_list}
+    Contains:
+
+    {files_list}
 
 
     [:material-link-variant: {link_text}]({link_target})

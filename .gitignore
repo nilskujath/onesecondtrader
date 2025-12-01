@@ -6,6 +6,7 @@ site/
 coverage.xml
 **/__pycache__/
 htmlcov/
+ignore/
 
 # Environment configuration
 .env

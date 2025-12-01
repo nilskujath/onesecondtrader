@@ -56,3 +56,42 @@ p {
     text-justify: inter-word;
     hyphens: auto;
 }
+
+/* Custom "sourcecode" admonition type for mkdocstrings source code blocks.
+   Uses magenta border color and a code-tags icon (</>).
+   This is applied via JavaScript in source_open.js which adds the 'sourcecode'
+   class to mkdocstrings source code details elements. */
+:root {
+  --md-admonition-icon--sourcecode: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.6,16.6L19.2,12L14.6,7.4L16,6L22,12L16,18L14.6,16.6M9.4,16.6L4.8,12L9.4,7.4L8,6L2,12L8,18L9.4,16.6Z"/></svg>');
+}
+/* Light mode: indigo */
+[data-md-color-scheme="default"] .md-typeset .admonition.sourcecode,
+[data-md-color-scheme="default"] .md-typeset details.sourcecode {
+  border-color: rgb(63, 81, 181);
+}
+[data-md-color-scheme="default"] .md-typeset .sourcecode > .admonition-title,
+[data-md-color-scheme="default"] .md-typeset .sourcecode > summary {
+  background-color: rgba(63, 81, 181, 0.1);
+}
+[data-md-color-scheme="default"] .md-typeset .sourcecode > .admonition-title::before,
+[data-md-color-scheme="default"] .md-typeset .sourcecode > summary::before {
+  background-color: rgb(63, 81, 181);
+  -webkit-mask-image: var(--md-admonition-icon--sourcecode);
+          mask-image: var(--md-admonition-icon--sourcecode);
+}
+
+/* Dark mode: magenta */
+[data-md-color-scheme="slate"] .md-typeset .admonition.sourcecode,
+[data-md-color-scheme="slate"] .md-typeset details.sourcecode {
+  border-color: rgb(139, 0, 139);
+}
+[data-md-color-scheme="slate"] .md-typeset .sourcecode > .admonition-title,
+[data-md-color-scheme="slate"] .md-typeset .sourcecode > summary {
+  background-color: rgba(139, 0, 139, 0.1);
+}
+[data-md-color-scheme="slate"] .md-typeset .sourcecode > .admonition-title::before,
+[data-md-color-scheme="slate"] .md-typeset .sourcecode > summary::before {
+  background-color: rgb(139, 0, 139);
+  -webkit-mask-image: var(--md-admonition-icon--sourcecode);
+          mask-image: var(--md-admonition-icon--sourcecode);
+}

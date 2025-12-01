@@ -1,1 +1,0 @@
-# :material-finance: Strategy **Backtesting**
