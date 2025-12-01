@@ -1,3 +1,6 @@
+## v0.16.0
+- feat: Reworked entire project
+
 ## v0.15.0
 - feat: added minimal working portfolio class
 
