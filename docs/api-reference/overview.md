@@ -9,16 +9,16 @@ hide:
 <div class="grid cards" markdown>
 
 
+-   __Core__&nbsp;&nbsp;
+
+    ---
+
+    [:material-link-variant: View `core.py` API](core.md)
+
 -   __Indicators__&nbsp;&nbsp;
 
     ---
 
     [:material-link-variant: View `indicators.py` API](indicators.md)
-
--   __Ontology__&nbsp;&nbsp;
-
-    ---
-
-    [:material-link-variant: View `ontology.py` API](ontology.md)
 
 </div>

@@ -18,8 +18,8 @@ nav:
 - "\u2192 Quickstart": quickstart.md
 - API Reference:
   - Overview: api-reference/overview.md
+  - Core: api-reference/core.md
   - Indicators: api-reference/indicators.md
-  - Ontology: api-reference/ontology.md
 theme:
   name: material
   icon:

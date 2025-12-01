@@ -1,6 +1,6 @@
 // Configuration: set to true to have source code admonitions open by default,
 // false to have them closed by default.
-const SOURCE_CODE_OPEN_BY_DEFAULT = false;
+const SOURCE_CODE_OPEN_BY_DEFAULT = true;
 
 // Apply custom "sourcecode" admonition styling to mkdocstrings source code blocks.
 //

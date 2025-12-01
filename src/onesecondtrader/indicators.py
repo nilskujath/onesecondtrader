@@ -8,7 +8,7 @@ import numpy as np
 import threading
 
 from collections import deque
-from onesecondtrader.ontology import Bar
+from onesecondtrader.core import Events
 
 
 class BaseIndicator(abc.ABC):
@@ -26,13 +26,13 @@ class BaseIndicator(abc.ABC):
     def name(self) -> str:
         pass
 
-    def update(self, incoming_bar: Bar) -> None:
+    def update(self, incoming_bar: Events.IncomingBar) -> None:
         _latest_value: float = self._compute_indicator(incoming_bar)
         with self._lock:
             self._history.append(_latest_value)
 
     @abc.abstractmethod
-    def _compute_indicator(self, incoming_bar: Bar) -> float:
+    def _compute_indicator(self, incoming_bar: Events.IncomingBar) -> float:
         pass
 
     @property
@@ -79,24 +79,28 @@ class SimpleMovingAverage(BaseIndicator):
     def name(self) -> str:
         return f"SMA_{self.period}_{self.input_source.name}"
 
-    def _compute_indicator(self, bar: Bar) -> float:
-        value: float = self._extract_input(bar)
+    def _compute_indicator(self, incoming_bar: Events.IncomingBar) -> float:
+        value: float = self._extract_input(incoming_bar)
         self._window.append(value)
         if len(self._window) < self.period:
             return np.nan
         return sum(self._window) / self.period
 
-    def _extract_input(self, bar: Bar) -> float:
+    def _extract_input(self, incoming_bar: Events.IncomingBar) -> float:
         match self.input_source:
             case InputSource.OPEN:
-                return float(bar.open)
+                return incoming_bar.open
             case InputSource.HIGH:
-                return float(bar.high)
+                return incoming_bar.high
             case InputSource.LOW:
-                return float(bar.low)
+                return incoming_bar.low
             case InputSource.CLOSE:
-                return float(bar.close)
+                return incoming_bar.close
             case InputSource.VOLUME:
-                return float(bar.volume)
+                return (
+                    float(incoming_bar.volume)
+                    if incoming_bar.volume is not None
+                    else np.nan
+                )
             case _:
-                return float(bar.close)
+                return incoming_bar.close

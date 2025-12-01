@@ -1,6 +1,6 @@
-# Ontology
+# Core
 
-::: onesecondtrader.ontology
+::: onesecondtrader.core
     options:
       show_root_heading: False
       show_source: true
