@@ -1,3 +1,6 @@
+## v0.21.0
+- feat: consolidated rejection reason model
+
 ## v0.20.0
 - feat: added datafeeds module
 
