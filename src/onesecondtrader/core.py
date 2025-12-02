@@ -8,6 +8,7 @@ import enum
 import pandas as pd
 import queue
 import threading
+import uuid
 
 from collections import defaultdict
 
@@ -23,6 +24,16 @@ class Models:
         OHLCV_1H = 34
         OHLCV_1D = 35
 
+    class OrderSide(enum.Enum):
+        BUY = enum.auto()
+        SELL = enum.auto()
+
+    class OrderType(enum.Enum):
+        MARKET = enum.auto()
+        LIMIT = enum.auto()
+        STOP = enum.auto()
+        STOP_LIMIT = enum.auto()
+
 
 class Events:
     """
@@ -35,10 +46,12 @@ class Events:
             default_factory=lambda: pd.Timestamp.now(tz="UTC")
         )
 
+    # SYSTEM EVENTS
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class SystemShutdown(BaseEvent):
         pass
 
+    # MARKET EVENTS
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class IncomingBar(BaseEvent):
         ts_event: pd.Timestamp
@@ -49,6 +62,29 @@ class Events:
         low: float
         close: float
         volume: int | None = None
+
+    # BROKER REQUEST EVENTS
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class Order(BaseEvent):
+        order_id: uuid.UUID = dataclasses.field(default_factory=lambda: uuid.uuid4())
+        symbol: str
+        order_type: Models.OrderType
+        side: Models.OrderSide
+        quantity: float
+        limit_price: float | None = None
+        stop_price: float | None = None
+
+    # BROKER RESPONSE EVENTS
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class Fill(BaseEvent):
+        fill_id: uuid.UUID = dataclasses.field(default_factory=uuid.uuid4)
+        broker_fill_id: str | None = None
+        associated_order_id: uuid.UUID
+        side: Models.OrderSide
+        quantity_filled: float
+        fill_price: float
+        commission: float
+        exchange: str = "SIMULATED"
 
 
 class BaseConsumer(abc.ABC):
@@ -103,3 +139,9 @@ class EventBus:
             consumers = list(self._subscriptions[type(event)])
         for consumer in consumers:
             consumer.receive(event)
+
+
+event_bus = EventBus()
+"""
+Global event bus instance.
+"""
