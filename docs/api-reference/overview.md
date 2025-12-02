@@ -15,6 +15,12 @@ hide:
 
     [:material-link-variant: View `core.py` API](core.md)
 
+-   __Datafeeds__&nbsp;&nbsp;
+
+    ---
+
+    [:material-link-variant: View `datafeeds.py` API](datafeeds.md)
+
 -   __Indicators__&nbsp;&nbsp;
 
     ---

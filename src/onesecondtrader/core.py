@@ -5,12 +5,20 @@ Core module containing the backbone of OneSecondTrader's event-driven architectu
 import abc
 import dataclasses
 import enum
+import logging
 import pandas as pd
 import queue
 import threading
 import uuid
 
 from collections import defaultdict
+
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(threadName)s - %(message)s",
+)
+logger = logging.getLogger("onesecondtrader")
 
 
 class Models:
@@ -185,7 +193,9 @@ class BaseConsumer(abc.ABC):
 
     def __init__(self) -> None:
         self._queue: queue.Queue[Events.BaseEvent] = queue.Queue()
-        self._thread = threading.Thread(target=self._consume, daemon=True)
+        self._thread = threading.Thread(
+            target=self._consume, name=self.__class__.__name__, daemon=True
+        )
         self._thread.start()
 
     @abc.abstractmethod

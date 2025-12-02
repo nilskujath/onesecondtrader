@@ -19,6 +19,7 @@ nav:
 - API Reference:
   - Overview: api-reference/overview.md
   - Core: api-reference/core.md
+  - Datafeeds: api-reference/datafeeds.md
   - Indicators: api-reference/indicators.md
 theme:
   name: material
