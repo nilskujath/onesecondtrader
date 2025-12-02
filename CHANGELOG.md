@@ -1,3 +1,6 @@
+## v0.18.0
+- feat: added fill event message
+
 ## v0.17.0
 - feat: Added core module
 
