@@ -42,25 +42,11 @@ class Models:
         STOP = enum.auto()
         STOP_LIMIT = enum.auto()
 
-    class OrderRejectionReason(enum.Enum):
+    class RejectionReason(enum.Enum):
+        ORDER_ALREADY_FILLED = enum.auto()
+        ORDER_ALREADY_CANCELLED = enum.auto()
+        ORDER_PENDING_EXECUTION = enum.auto()
         INSUFFICIENT_FUNDS = enum.auto()
-        MARKET_CLOSED = enum.auto()
-        UNKNOWN = enum.auto()
-
-    class CancelRejectionReason(enum.Enum):
-        ORDER_ALREADY_FILLED = enum.auto()
-        ORDER_ALREADY_CANCELLED = enum.auto()
-        ORDER_PENDING_EXECUTION = enum.auto()
-        MARKET_CLOSED = enum.auto()
-        UNKNOWN = enum.auto()
-
-    class ModifyRejectionReason(enum.Enum):
-        ORDER_ALREADY_FILLED = enum.auto()
-        ORDER_ALREADY_CANCELLED = enum.auto()
-        ORDER_PENDING_EXECUTION = enum.auto()
-        ORDER_NOT_FOUND = enum.auto()
-        INVALID_PRICE = enum.auto()
-        INVALID_QUANTITY = enum.auto()
         MARKET_CLOSED = enum.auto()
         UNKNOWN = enum.auto()
 
@@ -165,7 +151,7 @@ class Events:
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class OrderRejected(BrokerResponseEvent):
         order_id: uuid.UUID
-        reason: Models.OrderRejectionReason
+        reason: Models.RejectionReason
 
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class OrderCancelled(BrokerResponseEvent):
@@ -178,12 +164,12 @@ class Events:
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class CancelRejected(BrokerResponseEvent):
         order_id: uuid.UUID
-        reason: Models.CancelRejectionReason
+        reason: Models.RejectionReason
 
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class ModifyRejected(BrokerResponseEvent):
         order_id: uuid.UUID
-        reason: Models.ModifyRejectionReason
+        reason: Models.RejectionReason
 
 
 class BaseConsumer(abc.ABC):
