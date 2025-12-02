@@ -1,3 +1,6 @@
+## v0.20.0
+- feat: added datafeeds module
+
 ## v0.19.0
 - feat: implemented order lifecycle events
 
