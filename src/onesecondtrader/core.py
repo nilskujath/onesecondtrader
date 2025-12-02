@@ -34,12 +34,41 @@ class Models:
         STOP = enum.auto()
         STOP_LIMIT = enum.auto()
 
+    class OrderRejectionReason(enum.Enum):
+        INSUFFICIENT_FUNDS = enum.auto()
+        MARKET_CLOSED = enum.auto()
+        UNKNOWN = enum.auto()
+
+    class CancelRejectionReason(enum.Enum):
+        ORDER_ALREADY_FILLED = enum.auto()
+        ORDER_ALREADY_CANCELLED = enum.auto()
+        ORDER_PENDING_EXECUTION = enum.auto()
+        MARKET_CLOSED = enum.auto()
+        UNKNOWN = enum.auto()
+
+    class ModifyRejectionReason(enum.Enum):
+        ORDER_ALREADY_FILLED = enum.auto()
+        ORDER_ALREADY_CANCELLED = enum.auto()
+        ORDER_PENDING_EXECUTION = enum.auto()
+        ORDER_NOT_FOUND = enum.auto()
+        INVALID_PRICE = enum.auto()
+        INVALID_QUANTITY = enum.auto()
+        MARKET_CLOSED = enum.auto()
+        UNKNOWN = enum.auto()
+
+    class TimeInForce(enum.Enum):
+        GTC = enum.auto()
+        DAY = enum.auto()
+        IOC = enum.auto()
+        FOK = enum.auto()
+
 
 class Events:
     """
     Namespace for all events.
     """
 
+    # BASE EVENT
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class BaseEvent:
         ts_event: pd.Timestamp = dataclasses.field(
@@ -48,12 +77,20 @@ class Events:
 
     # SYSTEM EVENTS
     @dataclasses.dataclass(kw_only=True, frozen=True)
-    class SystemShutdown(BaseEvent):
+    class SystemEvent(BaseEvent):
+        pass
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class SystemShutdown(SystemEvent):
         pass
 
     # MARKET EVENTS
     @dataclasses.dataclass(kw_only=True, frozen=True)
-    class IncomingBar(BaseEvent):
+    class MarketEvent(BaseEvent):
+        pass
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class IncomingBar(MarketEvent):
         ts_event: pd.Timestamp
         symbol: str
         record_type: Models.RecordType
@@ -63,28 +100,82 @@ class Events:
         close: float
         volume: int | None = None
 
-    # BROKER REQUEST EVENTS
+    # BROKER REQUESTS EVENTS
     @dataclasses.dataclass(kw_only=True, frozen=True)
-    class Order(BaseEvent):
-        order_id: uuid.UUID = dataclasses.field(default_factory=lambda: uuid.uuid4())
+    class BrokerRequestEvent(BaseEvent):
+        pass
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class SubmitOrder(BrokerRequestEvent):
+        order_id: uuid.UUID = dataclasses.field(default_factory=uuid.uuid4)
         symbol: str
         order_type: Models.OrderType
         side: Models.OrderSide
         quantity: float
         limit_price: float | None = None
         stop_price: float | None = None
+        time_in_force: Models.TimeInForce = Models.TimeInForce.GTC
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class ModifyOrder(BrokerRequestEvent):
+        order_id: uuid.UUID
+        quantity: float | None = None
+        limit_price: float | None = None
+        stop_price: float | None = None
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class CancelOrder(BrokerRequestEvent):
+        order_id: uuid.UUID
 
     # BROKER RESPONSE EVENTS
     @dataclasses.dataclass(kw_only=True, frozen=True)
-    class Fill(BaseEvent):
+    class BrokerResponseEvent(BaseEvent):
+        ts_broker: pd.Timestamp
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class OrderSubmitted(BrokerResponseEvent):
+        order_id: uuid.UUID
+        broker_order_id: str | None = None
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class OrderModified(BrokerResponseEvent):
+        order_id: uuid.UUID
+        broker_order_id: str | None = None
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class Fill(BrokerResponseEvent):
         fill_id: uuid.UUID = dataclasses.field(default_factory=uuid.uuid4)
         broker_fill_id: str | None = None
         associated_order_id: uuid.UUID
+        symbol: str
         side: Models.OrderSide
         quantity_filled: float
         fill_price: float
         commission: float
         exchange: str = "SIMULATED"
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class OrderRejected(BrokerResponseEvent):
+        order_id: uuid.UUID
+        reason: Models.OrderRejectionReason
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class OrderCancelled(BrokerResponseEvent):
+        order_id: uuid.UUID
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class OrderExpired(BrokerResponseEvent):
+        order_id: uuid.UUID
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class CancelRejected(BrokerResponseEvent):
+        order_id: uuid.UUID
+        reason: Models.CancelRejectionReason
+
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class ModifyRejected(BrokerResponseEvent):
+        order_id: uuid.UUID
+        reason: Models.ModifyRejectionReason
 
 
 class BaseConsumer(abc.ABC):
