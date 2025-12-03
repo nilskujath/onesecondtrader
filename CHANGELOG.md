@@ -1,3 +1,6 @@
+## v0.22.0
+- feat: added event syncinc for backtesting
+
 ## v0.21.0
 - feat: consolidated rejection reason model
 
