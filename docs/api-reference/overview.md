@@ -9,6 +9,12 @@ hide:
 <div class="grid cards" markdown>
 
 
+-   __Brokers__&nbsp;&nbsp;
+
+    ---
+
+    [:material-link-variant: View `brokers.py` API](brokers.md)
+
 -   __Core__&nbsp;&nbsp;
 
     ---

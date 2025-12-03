@@ -18,6 +18,7 @@ nav:
 - "\u2192 Quickstart": quickstart.md
 - API Reference:
   - Overview: api-reference/overview.md
+  - Brokers: api-reference/brokers.md
   - Core: api-reference/core.md
   - Datafeeds: api-reference/datafeeds.md
   - Indicators: api-reference/indicators.md

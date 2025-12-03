@@ -151,6 +151,7 @@ class SimulatedDatafeedCSV(DatafeedBase):
                 )
 
                 event_bus.publish(bar_event)
+                event_bus.wait_until_idle()
 
                 if should_delay and self._stop_event.wait(delay_time):
                     break
@@ -168,5 +169,5 @@ class SimulatedDatafeedCSV(DatafeedBase):
 
 simulated_datafeed_csv = SimulatedDatafeedCSV()
 """
-Global instance of SimulatedDatafeedCSV.
+Global instance of `SimulatedDatafeedCSV`.
 """

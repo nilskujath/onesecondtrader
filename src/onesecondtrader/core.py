@@ -94,6 +94,17 @@ class Events:
         close: float
         volume: int | None = None
 
+    @dataclasses.dataclass(kw_only=True, frozen=True)
+    class BarReady(MarketEvent):
+        ts_event: pd.Timestamp
+        symbol: str
+        record_type: Models.RecordType
+        open: float
+        high: float
+        low: float
+        close: float
+        volume: int | None = None
+
     # BROKER REQUESTS EVENTS
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class BrokerRequestEvent(BaseEvent):
@@ -112,6 +123,7 @@ class Events:
 
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class ModifyOrder(BrokerRequestEvent):
+        symbol: str
         order_id: uuid.UUID
         quantity: float | None = None
         limit_price: float | None = None
@@ -119,6 +131,7 @@ class Events:
 
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class CancelOrder(BrokerRequestEvent):
+        symbol: str
         order_id: uuid.UUID
 
     # BROKER RESPONSE EVENTS
@@ -178,7 +191,7 @@ class BaseConsumer(abc.ABC):
     """
 
     def __init__(self) -> None:
-        self._queue: queue.Queue[Events.BaseEvent] = queue.Queue()
+        self.queue: queue.Queue[Events.BaseEvent] = queue.Queue()
         self._thread = threading.Thread(
             target=self._consume, name=self.__class__.__name__, daemon=True
         )
@@ -189,14 +202,16 @@ class BaseConsumer(abc.ABC):
         pass
 
     def receive(self, event: Events.BaseEvent) -> None:
-        self._queue.put(event)
+        self.queue.put(event)
 
     def _consume(self) -> None:
         while True:
-            event = self._queue.get()
+            event = self.queue.get()
             if isinstance(event, Events.SystemShutdown):
+                self.queue.task_done()
                 break
             self.on_event(event)
+            self.queue.task_done()
 
 
 class EventBus:
@@ -208,10 +223,12 @@ class EventBus:
         self._subscriptions: defaultdict[type[Events.BaseEvent], list[BaseConsumer]] = (
             defaultdict(list)
         )
+        self._consumers: set[BaseConsumer] = set()
         self._lock: threading.Lock = threading.Lock()
 
     def subscribe(self, subscriber: BaseConsumer, event_type: type[Events.BaseEvent]):
         with self._lock:
+            self._consumers.add(subscriber)
             if subscriber not in self._subscriptions[event_type]:
                 self._subscriptions[event_type].append(subscriber)
 
@@ -220,6 +237,8 @@ class EventBus:
             for consumer_list in self._subscriptions.values():
                 if subscriber in consumer_list:
                     consumer_list.remove(subscriber)
+            if not any(subscriber in cl for cl in self._subscriptions.values()):
+                self._consumers.discard(subscriber)
 
     def publish(self, event: Events.BaseEvent) -> None:
         with self._lock:
@@ -227,8 +246,15 @@ class EventBus:
         for consumer in consumers:
             consumer.receive(event)
 
+    # Enable synchronous execution via wait_until_idle()
+    def wait_until_idle(self) -> None:
+        with self._lock:
+            consumers = list(self._consumers)
+        for consumer in consumers:
+            consumer.queue.join()
+
 
 event_bus = EventBus()
 """
-Global event bus instance.
+Global instance of `EventBus`.
 """
