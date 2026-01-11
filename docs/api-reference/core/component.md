@@ -1,6 +1,6 @@
-# Datafeeds
+# Component
 
-::: onesecondtrader.datafeeds
+::: onesecondtrader.core.component
     options:
       show_root_heading: False
       show_source: true

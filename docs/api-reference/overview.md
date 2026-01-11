@@ -9,28 +9,15 @@ hide:
 <div class="grid cards" markdown>
 
 
--   __Brokers__&nbsp;&nbsp;
-
-    ---
-
-    [:material-link-variant: View `brokers.py` API](brokers.md)
-
 -   __Core__&nbsp;&nbsp;
 
     ---
 
-    [:material-link-variant: View `core.py` API](core.md)
+    Contains:
 
--   __Datafeeds__&nbsp;&nbsp;
+    `component.py`, `eventbus.py`, `events.py`, `models.py`
 
-    ---
 
-    [:material-link-variant: View `datafeeds.py` API](datafeeds.md)
-
--   __Indicators__&nbsp;&nbsp;
-
-    ---
-
-    [:material-link-variant: View `indicators.py` API](indicators.md)
+    [:material-link-variant: View `core/` package API](core/component.md)
 
 </div>

@@ -1,5 +1,6 @@
 site_name: OneSecondTrader
 site_url: https://www.onesecondtrader.com
+site_lang: en
 copyright: "Copyright \xA9 2024-2025 Nils Kujath.<br><br>\n<div style='text-align:\
   \ justify; font-size: 0.8em;'>THE INFORMATION PROVIDED IS FOR EDUCATIONAL AND INFORMATIONAL\
   \ PURPOSES ONLY. IT DOES NOT CONSTITUTE FINANCIAL, INVESTMENT, OR TRADING ADVICE.\
@@ -18,10 +19,11 @@ nav:
 - "\u2192 Quickstart": quickstart.md
 - API Reference:
   - Overview: api-reference/overview.md
-  - Brokers: api-reference/brokers.md
-  - Core: api-reference/core.md
-  - Datafeeds: api-reference/datafeeds.md
-  - Indicators: api-reference/indicators.md
+  - Core:
+    - Component: api-reference/core/component.md
+    - Eventbus: api-reference/core/eventbus.md
+    - Events: api-reference/core/events.md
+    - Models: api-reference/core/models.md
 theme:
   name: material
   icon:
@@ -72,12 +74,15 @@ plugins:
     shadow: true
     manual: false
 - mkdocstrings:
+    custom_templates: docs/templates
     handlers:
       python:
         options:
           docstring_style: google
           members_order: source
           filters: []
+          extra:
+            show_class_source: false
 repo_url: https://github.com/NilsKujath/onesecondtrader
 repo_name: nilskujath/onesecondtrader
 markdown_extensions:

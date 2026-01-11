@@ -1,6 +1,6 @@
-# Brokers
+# Events
 
-::: onesecondtrader.brokers
+::: onesecondtrader.core.events
     options:
       show_root_heading: False
       show_source: true

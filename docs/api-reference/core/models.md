@@ -1,6 +1,6 @@
-# Indicators
+# Models
 
-::: onesecondtrader.indicators
+::: onesecondtrader.core.models
     options:
       show_root_heading: False
       show_source: true

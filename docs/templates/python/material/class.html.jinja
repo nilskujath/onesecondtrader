@@ -1,0 +1,52 @@
+{% extends "_base/class.html.jinja" %}
+{% import "language.html.jinja" as lang with context %}
+
+{% block source %}
+{% set has_user_methods = [] %}
+{% for func_name in class.functions %}
+{% if not func_name.startswith("__") %}
+{% set _ = has_user_methods.append(func_name) %}
+{% endif %}
+{% endfor %}
+
+{% if config.extra.show_class_source or not has_user_methods %}
+{{ super() }}
+{% elif config.show_source and has_user_methods %}
+{%- set skeleton_lines = [] -%}
+{%- set _ = skeleton_lines.append("class " ~ class.name ~ ":") -%}
+{%- set _ = skeleton_lines.append("") -%}
+{%- for func_name, func in class.functions.items() -%}
+{%- for dec in func.decorators -%}
+{%- set _ = skeleton_lines.append("    @" ~ dec.value|string) -%}
+{%- endfor -%}
+{%- set params = [] -%}
+{%- for param in func.parameters -%}
+{%- if param.annotation -%}
+{%- set _ = params.append(param.name ~ ": " ~ param.annotation|string) -%}
+{%- else -%}
+{%- set _ = params.append(param.name) -%}
+{%- endif -%}
+{%- endfor -%}
+{%- if func.returns -%}
+{%- set _ = skeleton_lines.append("    def " ~ func_name ~ "(" ~ params|join(", ") ~ ") -> " ~ func.returns|string ~ ":") -%}
+{%- else -%}
+{%- set _ = skeleton_lines.append("    def " ~ func_name ~ "(" ~ params|join(", ") ~ "):") -%}
+{%- endif -%}
+{%- set _ = skeleton_lines.append("        ...") -%}
+{%- if not loop.last -%}
+{%- set _ = skeleton_lines.append("") -%}
+{%- endif -%}
+{%- endfor -%}
+{%- set skeleton = skeleton_lines|join("\n") -%}
+<details class="quote">
+<summary>{{ lang.t("Source code in") }} <code>
+{%- if class.relative_filepath.is_absolute() -%}
+{{ class.relative_package_filepath }}
+{%- else -%}
+{{ class.relative_filepath }}
+{%- endif -%}
+</code></summary>
+{{ skeleton|highlight(language="python", linenums=False) }}
+</details>
+{% endif %}
+{% endblock source %}

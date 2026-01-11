@@ -1,6 +1,6 @@
-# Core
+# Eventbus
 
-::: onesecondtrader.core
+::: onesecondtrader.core.eventbus
     options:
       show_root_heading: False
       show_source: true
