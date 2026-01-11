@@ -1,3 +1,6 @@
+## v0.23.0
+- feat: reworked core
+
 ## v0.22.0
 - feat: added event syncinc for backtesting
 
