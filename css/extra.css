@@ -1,6 +1,10 @@
 /* Change the font size of the body text */
 .md-typeset {
-    font-size: 16px; /* Change this value to the desired font size */
+    font-size: 16px;
+    text-align: justify;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
 }
 code {
     white-space: pre-wrap; /* Allows code to wrap and keeps indentation */
@@ -80,18 +84,139 @@ p {
           mask-image: var(--md-admonition-icon--sourcecode);
 }
 
-/* Dark mode: magenta */
+/* Dark mode: muted slate */
 [data-md-color-scheme="slate"] .md-typeset .admonition.sourcecode,
 [data-md-color-scheme="slate"] .md-typeset details.sourcecode {
-  border-color: rgb(139, 0, 139);
+  border-color: #64748B;
 }
 [data-md-color-scheme="slate"] .md-typeset .sourcecode > .admonition-title,
 [data-md-color-scheme="slate"] .md-typeset .sourcecode > summary {
-  background-color: rgba(139, 0, 139, 0.1);
+  background-color: rgba(100, 116, 139, 0.1);
 }
 [data-md-color-scheme="slate"] .md-typeset .sourcecode > .admonition-title::before,
 [data-md-color-scheme="slate"] .md-typeset .sourcecode > summary::before {
-  background-color: rgb(139, 0, 139);
+  background-color: #64748B;
   -webkit-mask-image: var(--md-admonition-icon--sourcecode);
           mask-image: var(--md-admonition-icon--sourcecode);
 }
+
+:root {
+  --md-admonition-icon--structure: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 16V13C21 11.89 20.11 11 19 11H13V8H15V2H9V8H11V11H5C3.89 11 3 11.89 3 13V16H1V22H7V16H5V13H11V16H9V22H15V16H13V13H19V16H17V22H23V16H21M11 4H13V6H11V4M5 20H3V18H5V20M13 20H11V18H13V20M21 20H19V18H21V20Z"/></svg>');
+}
+[data-md-color-scheme="default"] .md-typeset .admonition.structure,
+[data-md-color-scheme="default"] .md-typeset details.structure {
+  border-color: rgb(63, 81, 181);
+}
+[data-md-color-scheme="default"] .md-typeset .structure > .admonition-title,
+[data-md-color-scheme="default"] .md-typeset .structure > summary {
+  background-color: rgba(63, 81, 181, 0.1);
+}
+[data-md-color-scheme="default"] .md-typeset .structure > .admonition-title::before,
+[data-md-color-scheme="default"] .md-typeset .structure > summary::before {
+  background-color: rgb(63, 81, 181);
+  -webkit-mask-image: var(--md-admonition-icon--structure);
+          mask-image: var(--md-admonition-icon--structure);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition.structure,
+[data-md-color-scheme="slate"] .md-typeset details.structure {
+  border-color: rgb(139, 0, 139);
+}
+[data-md-color-scheme="slate"] .md-typeset .structure > .admonition-title,
+[data-md-color-scheme="slate"] .md-typeset .structure > summary {
+  background-color: rgba(139, 0, 139, 0.1);
+}
+[data-md-color-scheme="slate"] .md-typeset .structure > .admonition-title::before,
+[data-md-color-scheme="slate"] .md-typeset .structure > summary::before {
+  background-color: rgb(139, 0, 139);
+  -webkit-mask-image: var(--md-admonition-icon--structure);
+          mask-image: var(--md-admonition-icon--structure);
+}
+
+.hidden-line {
+  display: none;
+}
+
+.doc-contents .sd {
+  display: none;
+}
+
+/* Hide admonition title when sourcecode-no-title class is applied */
+.md-typeset details.sourcecode > summary.sourcecode-no-title {
+  display: none;
+}
+
+/* Generous spacing before method/function headings for separation */
+.md-typeset .doc-heading {
+  margin-top: 3em;
+}
+
+/* Line under method/function headings only (not class headings) */
+.md-typeset .doc-function > .doc-heading {
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3);
+}
+
+/* PyCharm Dark scheme syntax highlighting (dark mode only) */
+[data-md-color-scheme="slate"] .highlight .k,
+[data-md-color-scheme="slate"] .highlight .kd,
+[data-md-color-scheme="slate"] .highlight .kn,
+[data-md-color-scheme="slate"] .highlight .kp,
+[data-md-color-scheme="slate"] .highlight .kr,
+[data-md-color-scheme="slate"] .highlight .kt,
+[data-md-color-scheme="slate"] .highlight .ow { color: #CF8E6D; }
+
+[data-md-color-scheme="slate"] .highlight .s,
+[data-md-color-scheme="slate"] .highlight .s1,
+[data-md-color-scheme="slate"] .highlight .s2,
+[data-md-color-scheme="slate"] .highlight .sb,
+[data-md-color-scheme="slate"] .highlight .sc,
+[data-md-color-scheme="slate"] .highlight .sd,
+[data-md-color-scheme="slate"] .highlight .se,
+[data-md-color-scheme="slate"] .highlight .sh,
+[data-md-color-scheme="slate"] .highlight .si,
+[data-md-color-scheme="slate"] .highlight .sx,
+[data-md-color-scheme="slate"] .highlight .sr,
+[data-md-color-scheme="slate"] .highlight .ss { color: #6AAB73; }
+
+[data-md-color-scheme="slate"] .highlight .m,
+[data-md-color-scheme="slate"] .highlight .mb,
+[data-md-color-scheme="slate"] .highlight .mf,
+[data-md-color-scheme="slate"] .highlight .mh,
+[data-md-color-scheme="slate"] .highlight .mi,
+[data-md-color-scheme="slate"] .highlight .mo,
+[data-md-color-scheme="slate"] .highlight .il { color: #2AACB8; }
+
+[data-md-color-scheme="slate"] .highlight .c,
+[data-md-color-scheme="slate"] .highlight .c1,
+[data-md-color-scheme="slate"] .highlight .cm,
+[data-md-color-scheme="slate"] .highlight .cp,
+[data-md-color-scheme="slate"] .highlight .cs,
+[data-md-color-scheme="slate"] .highlight .ch { color: #7A7E85; font-style: italic; }
+
+[data-md-color-scheme="slate"] .highlight .nf,
+[data-md-color-scheme="slate"] .highlight .fm { color: #56A8F5; }
+
+[data-md-color-scheme="slate"] .highlight .nc { color: #BCBEC4; }
+
+[data-md-color-scheme="slate"] .highlight .nd { color: #BBB529; }
+
+[data-md-color-scheme="slate"] .highlight .nb,
+[data-md-color-scheme="slate"] .highlight .bp { color: #C77DBB; }
+
+[data-md-color-scheme="slate"] .highlight .nn { color: #BCBEC4; }
+
+[data-md-color-scheme="slate"] .highlight .n,
+[data-md-color-scheme="slate"] .highlight .na,
+[data-md-color-scheme="slate"] .highlight .nv,
+[data-md-color-scheme="slate"] .highlight .no,
+[data-md-color-scheme="slate"] .highlight .ni { color: #BCBEC4; }
+
+[data-md-color-scheme="slate"] .highlight .o,
+[data-md-color-scheme="slate"] .highlight .p { color: #BCBEC4; }
+
+[data-md-color-scheme="slate"] .highlight .kc { color: #CF8E6D; }
+
+[data-md-color-scheme="slate"] .highlight .bp { color: #C77DBB; }
+
+[data-md-color-scheme="slate"] .highlight .kwarg-name { color: #C77840; }
