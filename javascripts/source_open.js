@@ -36,7 +36,7 @@ function italicizeFirstParagraph(container) {
         continue;
       }
 
-      if (el.tagName === 'P' && !el.classList.contains('doc-class-bases')) {
+      if (el.tagName === 'P' && !el.classList.contains('doc-class-components') && !el.classList.contains('doc-class-bases')) {
         if (isModuleDocstring && !foundHr) {
           continue;
         }

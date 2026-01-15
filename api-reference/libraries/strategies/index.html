@@ -8,26 +8,28 @@
       
       
       
-        <link rel="canonical" href="https://www.onesecondtrader.com/">
+        <link rel="canonical" href="https://www.onesecondtrader.com/api-reference/libraries/strategies/">
       
       
+        <link rel="prev" href="../indicators/">
       
-        <link rel="next" href="quickstart/">
+      
+        <link rel="next" href="../../observers/csvbookkeeper/">
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
     
     
       
-        <title>OneSecondTrader</title>
+        <title>Strategies - OneSecondTrader</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.7e37652d.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e37652d.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -46,18 +48,18 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="css/extra.css">
+      <link rel="stylesheet" href="../../../css/extra.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
     
     
     
-   <link href="assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+   <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
     html.glightbox-open { overflow: initial; height: 100%; }
     .gslide-title { margin-top: 0px; user-select: text; }
     .gslide-desc { color: #666; user-select: text; }
@@ -66,7 +68,7 @@
     .gdesc-inner { font-size: 0.75rem; }
     body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
     body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
-    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="assets/javascripts/glightbox.min.js"></script></head>
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../../../assets/javascripts/glightbox.min.js"></script></head>
   
   
     
@@ -85,7 +87,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#quickstart" class="md-skip">
+        <a href="#strategies" class="md-skip">
           Skip to content
         </a>
       
@@ -99,7 +101,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="OneSecondTrader" class="md-header__button md-logo" aria-label="OneSecondTrader" data-md-component="logo">
+    <a href="../../.." title="OneSecondTrader" class="md-header__button md-logo" aria-label="OneSecondTrader" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5zm2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63s2.59.23 3.5.63z"/></svg>
@@ -119,7 +121,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Strategies
             
           </span>
         </div>
@@ -238,11 +240,9 @@
   
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="." class="md-tabs__link">
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -261,7 +261,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="quickstart/" class="md-tabs__link">
+      <a href="../../../quickstart/" class="md-tabs__link">
         
   
   
@@ -278,11 +278,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="api-reference/overview/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../overview/" class="md-tabs__link">
           
   
   
@@ -305,9 +307,7 @@
           
             
               
-                
-              
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
@@ -318,7 +318,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="OneSecondTrader" class="md-nav__button md-logo" aria-label="OneSecondTrader" data-md-component="logo">
+    <a href="../../.." title="OneSecondTrader" class="md-nav__button md-logo" aria-label="OneSecondTrader" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5zm2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63s2.59.23 3.5.63z"/></svg>
@@ -345,30 +345,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Home
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -379,33 +359,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#quickstart" class="md-nav__link">
-    <span class="md-ellipsis">
-      Quickstart
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -417,7 +370,7 @@
   
   
     <li class="md-nav__item">
-      <a href="quickstart/" class="md-nav__link">
+      <a href="../../../quickstart/" class="md-nav__link">
         
   
   
@@ -436,24 +389,29 @@
       
   
   
+    
   
   
+  
     
     
     
     
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
@@ -466,7 +424,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             API Reference
@@ -480,7 +438,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/overview/" class="md-nav__link">
+      <a href="../../overview/" class="md-nav__link">
         
   
   
@@ -544,7 +502,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/analyst/charting/" class="md-nav__link">
+      <a href="../../analyst/charting/" class="md-nav__link">
         
   
   
@@ -616,7 +574,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/components/broker_base/" class="md-nav__link">
+      <a href="../../components/broker_base/" class="md-nav__link">
         
   
   
@@ -639,7 +597,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/components/datafeed_base/" class="md-nav__link">
+      <a href="../../components/datafeed_base/" class="md-nav__link">
         
   
   
@@ -662,7 +620,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/components/indicator_base/" class="md-nav__link">
+      <a href="../../components/indicator_base/" class="md-nav__link">
         
   
   
@@ -685,7 +643,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/components/strategy_base/" class="md-nav__link">
+      <a href="../../components/strategy_base/" class="md-nav__link">
         
   
   
@@ -757,7 +715,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/connectors/ib/" class="md-nav__link">
+      <a href="../../connectors/ib/" class="md-nav__link">
         
   
   
@@ -780,7 +738,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/connectors/mt5/" class="md-nav__link">
+      <a href="../../connectors/mt5/" class="md-nav__link">
         
   
   
@@ -803,7 +761,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/connectors/simulated/" class="md-nav__link">
+      <a href="../../connectors/simulated/" class="md-nav__link">
         
   
   
@@ -875,7 +833,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/core/domain_models/" class="md-nav__link">
+      <a href="../../core/domain_models/" class="md-nav__link">
         
   
   
@@ -898,7 +856,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/core/event_bus/" class="md-nav__link">
+      <a href="../../core/event_bus/" class="md-nav__link">
         
   
   
@@ -921,7 +879,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/core/event_messages/" class="md-nav__link">
+      <a href="../../core/event_messages/" class="md-nav__link">
         
   
   
@@ -944,7 +902,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/core/event_publisher/" class="md-nav__link">
+      <a href="../../core/event_publisher/" class="md-nav__link">
         
   
   
@@ -967,7 +925,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/core/event_subscriber/" class="md-nav__link">
+      <a href="../../core/event_subscriber/" class="md-nav__link">
         
   
   
@@ -995,6 +953,8 @@
                 
   
   
+    
+  
   
   
     
@@ -1005,11 +965,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" checked>
         
           
           <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
@@ -1025,7 +985,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_6">
             <span class="md-nav__icon md-icon"></span>
             Libraries
@@ -1039,7 +999,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/libraries/indicators/" class="md-nav__link">
+      <a href="../indicators/" class="md-nav__link">
         
   
   
@@ -1059,10 +1019,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="api-reference/libraries/strategies/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1073,6 +1042,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -1134,7 +1104,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api-reference/observers/csvbookkeeper/" class="md-nav__link">
+      <a href="../../observers/csvbookkeeper/" class="md-nav__link">
         
   
   
@@ -1173,9 +1143,7 @@
             
             
               
-                
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
@@ -1184,23 +1152,8 @@
   
   
   
+    
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#quickstart" class="md-nav__link">
-    <span class="md-ellipsis">
-      Quickstart
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
   
 </nav>
                   </div>
@@ -1213,67 +1166,44 @@
               <article class="md-content__inner md-typeset">
                 
                   
-  
-
-
-
-  
-  
-
-
-<h1 style="text-align: center; margin-bottom: 10px; font-weight: normal; color: var(--md-default-fg-color);">
-  The Trading Infrastructure Toolkit for Python
-</h1>
-
-<p style="text-align: center; font-size: 1.5em; color: var(--md-default-fg-color); margin-top: 0; margin-bottom: 60px;">
-  Research, simulate, and deploy algorithmic strategies — all in one place.
-</p>
-
-<div class="admonition warning">
-<p class="admonition-title">Under Construction</p>
-<p>This package is under construction! OneSecondTrader is still a work in progress, but don’t worry – a pre-release version is just around the corner. Grab a coffee and hang tight!</p>
-</div>
-<div class="image-grid-light" style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 20px; margin: 20px 0;">
-  <a class="glightbox" href="images/placeholder-light.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="images/placeholder-light.png" alt="Chart 1" style="width: 100%; height: auto;"></a>
-  <a class="glightbox" href="images/placeholder-light.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="images/placeholder-light.png" alt="Chart 2" style="width: 100%; height: auto;"></a>
-  <a class="glightbox" href="images/placeholder-light.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="images/placeholder-light.png" alt="Chart 3" style="width: 100%; height: auto;"></a>
-  <a class="glightbox" href="images/placeholder-light.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="images/placeholder-light.png" alt="Chart 4" style="width: 100%; height: auto;"></a>
-</div>
-
-<div class="image-grid-dark" style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 20px; margin: 20px 0;">
-  <a class="glightbox" href="images/placeholder-dark.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="images/placeholder-dark.png" alt="Chart 1" style="width: 100%; height: auto;"></a>
-  <a class="glightbox" href="images/placeholder-dark.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="images/placeholder-dark.png" alt="Chart 2" style="width: 100%; height: auto;"></a>
-  <a class="glightbox" href="images/placeholder-dark.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="images/placeholder-dark.png" alt="Chart 3" style="width: 100%; height: auto;"></a>
-  <a class="glightbox" href="images/placeholder-dark.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="images/placeholder-dark.png" alt="Chart 4" style="width: 100%; height: auto;"></a>
-</div>
-
-<h2 id="quickstart"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2.5 19h19v2h-19zm19.57-9.36c-.21-.8-1.04-1.28-1.84-1.06L14.92 10 8 3.57l-1.91.51 4.14 7.17-4.97 1.33-1.97-1.54-1.45.39 1.82 3.16.77 1.33 1.6-.42 5.31-1.43 4.35-1.16L21 11.5c.81-.24 1.28-1.06 1.07-1.86"/></svg></span> Quick<strong>start</strong></h2>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="pip" name="__tabbed_1" type="radio" /><input id="poetry" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="pip">pip</label><label for="poetry">poetry</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>onesecondtrader<span class="w"> </span>
-</span></code></pre></div>
-</div>
-<div class="tabbed-block">
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">poetry</span> <span class="n">add</span> <span class="n">onesecondtrader</span>
-</span></code></pre></div>
-</div>
-</div>
-</div>
-
-
-
-
-
 
 
   
   
 
 
+<h1 id="strategies">Strategies</h1>
 
 
-  
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+    </div>
+
+</div><details class="quote" open="open">
+<summary>Source code in <code>strategies.py</code></summary>
+<div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>
+</span></code></pre></div></td></tr></table></div>
+</details>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1320,14 +1250,14 @@ THIS SOFTWARE AND ITS DOCUMENTATION PAGES ARE PROVIDED "AS IS," WITHOUT ANY WARR
     
     
       
-      <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs", "content.code.copy", "content.code.select", "content.code.annotate", "content.footnote.tooltips", "content.tabs.linked", "navigation.top"], "search": "assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "content.code.copy", "content.code.select", "content.code.annotate", "content.footnote.tooltips", "content.tabs.linked", "navigation.top"], "search": "../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.50899def.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.50899def.min.js"></script>
       
-        <script src="javascripts/mathjax.js"></script>
+        <script src="../../../javascripts/mathjax.js"></script>
       
-        <script src="javascripts/source_open.js"></script>
+        <script src="../../../javascripts/source_open.js"></script>
       
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
