@@ -1,3 +1,6 @@
+## v0.24.0
+- feat: updated core
+
 ## v0.23.0
 - feat: reworked core
 
