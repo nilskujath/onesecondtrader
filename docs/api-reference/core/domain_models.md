@@ -1,6 +1,6 @@
-# Component
+# Domain Models
 
-::: onesecondtrader.core.component
+::: onesecondtrader.core.domain_models
     options:
       show_root_heading: False
       show_source: true

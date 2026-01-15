@@ -1,52 +1,43 @@
 {% extends "_base/class.html.jinja" %}
-{% import "language.html.jinja" as lang with context %}
 
-{% block source %}
-{% set has_user_methods = [] %}
-{% for func_name in class.functions %}
-{% if not func_name.startswith("__") %}
-{% set _ = has_user_methods.append(func_name) %}
+{% set ns = namespace(is_protocol=false, is_namespace_class=false) %}
+{% for base in class.bases %}
+{% if "Protocol" in base|string %}
+{% set ns.is_protocol = true %}
 {% endif %}
 {% endfor %}
 
-{% if config.extra.show_class_source or not has_user_methods %}
-{{ super() }}
-{% elif config.show_source and has_user_methods %}
-{%- set skeleton_lines = [] -%}
-{%- set _ = skeleton_lines.append("class " ~ class.name ~ ":") -%}
-{%- set _ = skeleton_lines.append("") -%}
-{%- for func_name, func in class.functions.items() -%}
-{%- for dec in func.decorators -%}
-{%- set _ = skeleton_lines.append("    @" ~ dec.value|string) -%}
-{%- endfor -%}
-{%- set params = [] -%}
-{%- for param in func.parameters -%}
-{%- if param.annotation -%}
-{%- set _ = params.append(param.name ~ ": " ~ param.annotation|string) -%}
-{%- else -%}
-{%- set _ = params.append(param.name) -%}
-{%- endif -%}
-{%- endfor -%}
-{%- if func.returns -%}
-{%- set _ = skeleton_lines.append("    def " ~ func_name ~ "(" ~ params|join(", ") ~ ") -> " ~ func.returns|string ~ ":") -%}
-{%- else -%}
-{%- set _ = skeleton_lines.append("    def " ~ func_name ~ "(" ~ params|join(", ") ~ "):") -%}
-{%- endif -%}
-{%- set _ = skeleton_lines.append("        ...") -%}
-{%- if not loop.last -%}
-{%- set _ = skeleton_lines.append("") -%}
-{%- endif -%}
-{%- endfor -%}
-{%- set skeleton = skeleton_lines|join("\n") -%}
-<details class="quote">
-<summary>{{ lang.t("Source code in") }} <code>
-{%- if class.relative_filepath.is_absolute() -%}
-{{ class.relative_package_filepath }}
-{%- else -%}
-{{ class.relative_filepath }}
-{%- endif -%}
-</code></summary>
-{{ skeleton|highlight(language="python", linenums=False) }}
-</details>
+{% set ns2 = namespace(has_non_dataclass_children=false, has_children=false) %}
+{% for child_name, child in class.classes.items() %}
+{% set ns2.has_children = true %}
+{% if "dataclass" not in child.labels %}
+{% set ns2.has_non_dataclass_children = true %}
+{% endif %}
+{% endfor %}
+
+{% if ns2.has_children and not ns2.has_non_dataclass_children %}
+{% set ns.is_namespace_class = true %}
+{% endif %}
+
+{% block source %}
+{% if ns.is_protocol or ns.is_namespace_class %}
+  {{ super() }}
+{% else %}
+  {% set ns3 = namespace(has_user_methods=false) %}
+  {% for func_name in class.functions %}
+    {% if not func_name.startswith("__") %}
+      {% set ns3.has_user_methods = true %}
+    {% endif %}
+  {% endfor %}
+
+  {% if not ns3.has_user_methods %}
+    {{ super() }}
+  {% endif %}
 {% endif %}
 {% endblock source %}
+
+{% block children scoped %}
+{% if not ns.is_protocol and not ns.is_namespace_class %}
+{{ super() }}
+{% endif %}
+{% endblock children %}

@@ -1,6 +1,6 @@
-# Events
+# Event Subscriber
 
-::: onesecondtrader.core.events
+::: onesecondtrader.core.event_subscriber
     options:
       show_root_heading: False
       show_source: true

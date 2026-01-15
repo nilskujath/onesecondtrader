@@ -19,11 +19,28 @@ nav:
 - "\u2192 Quickstart": quickstart.md
 - API Reference:
   - Overview: api-reference/overview.md
+  - Analyst:
+    - Charting: api-reference/analyst/charting.md
+  - Components:
+    - Broker Base: api-reference/components/broker_base.md
+    - Datafeed Base: api-reference/components/datafeed_base.md
+    - Indicator Base: api-reference/components/indicator_base.md
+    - Strategy Base: api-reference/components/strategy_base.md
+  - Connectors:
+    - IB: api-reference/connectors/ib.md
+    - MT5: api-reference/connectors/mt5.md
+    - Simulated: api-reference/connectors/simulated.md
   - Core:
-    - Component: api-reference/core/component.md
-    - Eventbus: api-reference/core/eventbus.md
-    - Events: api-reference/core/events.md
-    - Models: api-reference/core/models.md
+    - Domain Models: api-reference/core/domain_models.md
+    - Event Bus: api-reference/core/event_bus.md
+    - Event Messages: api-reference/core/event_messages.md
+    - Event Publisher: api-reference/core/event_publisher.md
+    - Event Subscriber: api-reference/core/event_subscriber.md
+  - Libraries:
+    - Indicators: api-reference/libraries/indicators.md
+    - Strategies: api-reference/libraries/strategies.md
+  - Observers:
+    - CSVbookkeeper: api-reference/observers/csvbookkeeper.md
 theme:
   name: material
   icon:
@@ -81,6 +98,7 @@ plugins:
           docstring_style: google
           members_order: source
           filters: []
+          show_if_no_docstring: true
           extra:
             show_class_source: false
 repo_url: https://github.com/NilsKujath/onesecondtrader

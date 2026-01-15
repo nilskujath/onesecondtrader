@@ -1,0 +1,10 @@
+{% set ns = namespace(is_dataclass_init=false) %}
+{% if function.name == "__init__" and function.parent.is_class %}
+  {% if "dataclass" in function.parent.labels %}
+    {% set ns.is_dataclass_init = true %}
+  {% endif %}
+{% endif %}
+
+{% if not ns.is_dataclass_init %}
+{% include "_base/function.html.jinja" %}
+{% endif %}

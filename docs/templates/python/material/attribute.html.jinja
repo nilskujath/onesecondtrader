@@ -1,0 +1,6 @@
+{# Hide instance-attribute members entirely (they tend to be noisy/empty in our docs). #}
+
+{% if "instance-attribute" in attribute.labels %}
+{% else %}
+  {% include "_base/attribute.html.jinja" %}
+{% endif %}
