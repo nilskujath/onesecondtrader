@@ -1,3 +1,6 @@
+## v0.27.0
+- feat: added broker base class
+
 ## v0.26.0
 - feat: added subscriber base class
 
