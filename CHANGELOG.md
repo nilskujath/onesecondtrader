@@ -1,3 +1,6 @@
+## v0.25.0
+- feat: restructured package
+
 ## v0.24.0
 - feat: updated core
 
