@@ -36,9 +36,11 @@ class Subscriber(abc.ABC):
             self._thread.join()
 
     def _subscribe(self, *event_types: type[events.bases.EventBase]) -> None:
-        # Call as last line of subclass __init__ to avoid receiving events before fully initialized
         for event_type in event_types:
             self._event_bus.subscribe(self, event_type)
+
+    def _publish(self, event: events.bases.EventBase) -> None:
+        self._event_bus.publish(event)
 
     def _event_loop(self) -> None:
         while True:

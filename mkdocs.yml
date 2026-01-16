@@ -19,6 +19,8 @@ nav:
 - "\u2192 Quickstart": quickstart.md
 - API Reference:
   - Overview: api-reference/overview.md
+  - Brokers:
+    - Base: api-reference/brokers/base.md
   - Events:
     - Bases: api-reference/events/bases.md
     - Market: api-reference/events/market.md

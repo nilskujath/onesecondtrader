@@ -9,6 +9,12 @@ hide:
 <div class="grid cards" markdown>
 
 
+-   __Brokers__&nbsp;&nbsp;
+
+    ---
+
+    [:material-link-variant: View `brokers` package API](brokers/base.md)
+
 -   __Events__&nbsp;&nbsp;
 
     ---
