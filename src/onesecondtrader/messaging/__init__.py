@@ -1,7 +1,7 @@
 __all__ = [
     "EventBus",
-    "EventSubscriberLike",
+    "Subscriber",
 ]
 
 from .eventbus import EventBus
-from .contracts import EventSubscriberLike
+from .subscriber import Subscriber

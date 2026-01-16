@@ -278,11 +278,7 @@ hide:
         if module in submodules:
             # This is a submodule
             if module in submodule_structure and submodule_structure[module]:
-                # Show submodule with its files
-                files_list = ", ".join(
-                    [f"`{f}.py`" for f in sorted(submodule_structure[module])]
-                )
-                link_text = f"View `{module}/` package API"
+                link_text = f"View `{module}` package API"
 
                 # Point to the alphabetically first submodule file
                 first_submodule = sorted(submodule_structure[module])[0]
@@ -293,16 +289,11 @@ hide:
 
     ---
 
-    Contains:
-
-    {files_list}
-
-
     [:material-link-variant: {link_text}]({link_target})
 """
             else:
                 # Fallback for submodules without discoverable files
-                link_text = f"View `{module}/` package API"
+                link_text = f"View `{module}` package API"
                 overview_content += f"""
 -   __{title}__&nbsp;&nbsp;
 

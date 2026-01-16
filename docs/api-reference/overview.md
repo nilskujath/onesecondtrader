@@ -13,33 +13,18 @@ hide:
 
     ---
 
-    Contains:
-
-    `bases.py`, `market.py`, `requests.py`, `responses.py`
-
-
-    [:material-link-variant: View `events/` package API](events/bases.md)
+    [:material-link-variant: View `events` package API](events/bases.md)
 
 -   __Messaging__&nbsp;&nbsp;
 
     ---
 
-    Contains:
-
-    `contracts.py`, `eventbus.py`
-
-
-    [:material-link-variant: View `messaging/` package API](messaging/contracts.md)
+    [:material-link-variant: View `messaging` package API](messaging/eventbus.md)
 
 -   __Models__&nbsp;&nbsp;
 
     ---
 
-    Contains:
-
-    `data.py`, `orders.py`
-
-
-    [:material-link-variant: View `models/` package API](models/data.md)
+    [:material-link-variant: View `models` package API](models/data.md)
 
 </div>

@@ -1,6 +1,6 @@
-# Contracts
+# Subscriber
 
-::: onesecondtrader.messaging.contracts
+::: onesecondtrader.messaging.subscriber
     options:
       show_root_heading: False
       show_source: true

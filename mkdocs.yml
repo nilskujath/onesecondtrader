@@ -25,8 +25,8 @@ nav:
     - Requests: api-reference/events/requests.md
     - Responses: api-reference/events/responses.md
   - Messaging:
-    - Contracts: api-reference/messaging/contracts.md
     - Eventbus: api-reference/messaging/eventbus.md
+    - Subscriber: api-reference/messaging/subscriber.md
   - Models:
     - Data: api-reference/models/data.md
     - Orders: api-reference/models/orders.md
