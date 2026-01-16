@@ -9,70 +9,37 @@ hide:
 <div class="grid cards" markdown>
 
 
--   __Analyst__&nbsp;&nbsp;
+-   __Events__&nbsp;&nbsp;
 
     ---
 
     Contains:
 
-    `charting.py`
+    `bases.py`, `market.py`, `requests.py`, `responses.py`
 
 
-    [:material-link-variant: View `analyst/` package API](analyst/charting.md)
+    [:material-link-variant: View `events/` package API](events/bases.md)
 
--   __Components__&nbsp;&nbsp;
-
-    ---
-
-    Contains:
-
-    `broker_base.py`, `datafeed_base.py`, `indicator_base.py`, `strategy_base.py`
-
-
-    [:material-link-variant: View `components/` package API](components/broker_base.md)
-
--   __Connectors__&nbsp;&nbsp;
+-   __Messaging__&nbsp;&nbsp;
 
     ---
 
     Contains:
 
-    `ib.py`, `mt5.py`, `simulated.py`
+    `contracts.py`, `eventbus.py`
 
 
-    [:material-link-variant: View `connectors/` package API](connectors/ib.md)
+    [:material-link-variant: View `messaging/` package API](messaging/contracts.md)
 
--   __Core__&nbsp;&nbsp;
-
-    ---
-
-    Contains:
-
-    `domain_models.py`, `event_bus.py`, `event_messages.py`, `event_publisher.py`, `event_subscriber.py`
-
-
-    [:material-link-variant: View `core/` package API](core/domain_models.md)
-
--   __Libraries__&nbsp;&nbsp;
+-   __Models__&nbsp;&nbsp;
 
     ---
 
     Contains:
 
-    `indicators.py`, `strategies.py`
+    `data.py`, `orders.py`
 
 
-    [:material-link-variant: View `libraries/` package API](libraries/indicators.md)
-
--   __Observers__&nbsp;&nbsp;
-
-    ---
-
-    Contains:
-
-    `csvbookkeeper.py`
-
-
-    [:material-link-variant: View `observers/` package API](observers/csvbookkeeper.md)
+    [:material-link-variant: View `models/` package API](models/data.md)
 
 </div>

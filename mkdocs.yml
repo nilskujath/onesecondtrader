@@ -19,28 +19,17 @@ nav:
 - "\u2192 Quickstart": quickstart.md
 - API Reference:
   - Overview: api-reference/overview.md
-  - Analyst:
-    - Charting: api-reference/analyst/charting.md
-  - Components:
-    - Broker Base: api-reference/components/broker_base.md
-    - Datafeed Base: api-reference/components/datafeed_base.md
-    - Indicator Base: api-reference/components/indicator_base.md
-    - Strategy Base: api-reference/components/strategy_base.md
-  - Connectors:
-    - IB: api-reference/connectors/ib.md
-    - MT5: api-reference/connectors/mt5.md
-    - Simulated: api-reference/connectors/simulated.md
-  - Core:
-    - Domain Models: api-reference/core/domain_models.md
-    - Event Bus: api-reference/core/event_bus.md
-    - Event Messages: api-reference/core/event_messages.md
-    - Event Publisher: api-reference/core/event_publisher.md
-    - Event Subscriber: api-reference/core/event_subscriber.md
-  - Libraries:
-    - Indicators: api-reference/libraries/indicators.md
-    - Strategies: api-reference/libraries/strategies.md
-  - Observers:
-    - CSVbookkeeper: api-reference/observers/csvbookkeeper.md
+  - Events:
+    - Bases: api-reference/events/bases.md
+    - Market: api-reference/events/market.md
+    - Requests: api-reference/events/requests.md
+    - Responses: api-reference/events/responses.md
+  - Messaging:
+    - Contracts: api-reference/messaging/contracts.md
+    - Eventbus: api-reference/messaging/eventbus.md
+  - Models:
+    - Data: api-reference/models/data.md
+    - Orders: api-reference/models/orders.md
 theme:
   name: material
   icon:
