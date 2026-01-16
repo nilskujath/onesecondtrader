@@ -1,3 +1,6 @@
+## v0.26.0
+- feat: added subscriber base class
+
 ## v0.25.0
 - feat: restructured package
 
