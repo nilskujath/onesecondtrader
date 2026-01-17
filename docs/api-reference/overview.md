@@ -21,6 +21,12 @@ hide:
 
     [:material-link-variant: View `events` package API](events/bases.md)
 
+-   __Indicators__&nbsp;&nbsp;
+
+    ---
+
+    [:material-link-variant: View `indicators` package API](indicators/base.md)
+
 -   __Messaging__&nbsp;&nbsp;
 
     ---

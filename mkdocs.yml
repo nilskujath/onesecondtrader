@@ -27,6 +27,8 @@ nav:
     - Market: api-reference/events/market.md
     - Requests: api-reference/events/requests.md
     - Responses: api-reference/events/responses.md
+  - Indicators:
+    - Base: api-reference/indicators/base.md
   - Messaging:
     - Eventbus: api-reference/messaging/eventbus.md
     - Subscriber: api-reference/messaging/subscriber.md
