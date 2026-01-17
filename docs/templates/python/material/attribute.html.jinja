@@ -1,6 +1,27 @@
-{# Hide instance-attribute members entirely (they tend to be noisy/empty in our docs). #}
+{#- Hide instance-attribute members entirely (they tend to be noisy/empty in our docs). -#}
+{#- For properties, show source code like functions do. -#}
 
-{% if "instance-attribute" in attribute.labels %}
-{% else %}
-  {% include "_base/attribute.html.jinja" %}
+{#- Only render non-instance-attributes. Instance attributes are completely skipped. -#}
+{% if "instance-attribute" not in attribute.labels %}
+
+{#- Import language module for translations -#}
+{% import "language.html.jinja" as lang with context %}
+
+{#- Render the base attribute template -#}
+{% include "_base/attribute.html.jinja" %}
+
+{#- Add source code block for properties -#}
+{% if "property" in attribute.labels and config.show_source and attribute.source %}
+<details class="quote">
+  <summary>{{ lang.t("Source code in") }} <code>
+    {%- if attribute.relative_filepath.is_absolute() -%}
+      {{ attribute.relative_package_filepath }}
+    {%- else -%}
+      {{ attribute.relative_filepath }}
+    {%- endif -%}
+  </code></summary>
+  {{ attribute.source|highlight(language="python", linestart=attribute.lineno or 0, linenums=True) }}
+</details>
+{% endif %}
+
 {% endif %}

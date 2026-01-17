@@ -25,7 +25,7 @@ hide:
 
     ---
 
-    [:material-link-variant: View `indicators` package API](indicators/base.md)
+    [:material-link-variant: View `indicators` package API](indicators/bar.md)
 
 -   __Messaging__&nbsp;&nbsp;
 

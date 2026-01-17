@@ -28,6 +28,7 @@ nav:
     - Requests: api-reference/events/requests.md
     - Responses: api-reference/events/responses.md
   - Indicators:
+    - Bar: api-reference/indicators/bar.md
     - Base: api-reference/indicators/base.md
   - Messaging:
     - Eventbus: api-reference/messaging/eventbus.md
@@ -91,6 +92,7 @@ plugins:
         options:
           docstring_style: google
           members_order: source
+          group_by_category: true
           filters: []
           show_if_no_docstring: true
           extra:
