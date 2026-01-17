@@ -1,3 +1,6 @@
+## v0.30.0
+- feat: added bar indicators
+
 ## v0.29.0
 - feat: added indicator base
 
