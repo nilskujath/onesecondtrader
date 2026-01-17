@@ -1,10 +1,30 @@
-{% set ns = namespace(is_dataclass_init=false) %}
-{% if function.name == "__init__" and function.parent.is_class %}
-  {% if "dataclass" in function.parent.labels %}
-    {% set ns.is_dataclass_init = true %}
-  {% endif %}
-{% endif %}
+{% extends "_base/function.html.jinja" %}
 
-{% if not ns.is_dataclass_init %}
-{% include "_base/function.html.jinja" %}
-{% endif %}
+{% block heading scoped %}
+  {% set is_dataclass_init = function.name == "__init__" and function.parent.is_class and "dataclass" in function.parent.labels %}
+  {% if is_dataclass_init %}
+    {# Skip rendering for dataclass __init__ #}
+  {% else %}
+    {% set symbol_type = "method" if function.parent.is_class else "function" %}
+    {% if config.show_symbol_type_heading %}<code class="doc-symbol doc-symbol-heading doc-symbol-{{ symbol_type }}"></code>{% endif %}
+    {% if config.heading and root %}
+      {{ config.heading }}
+    {% elif config.separate_signature %}
+      <span class="doc doc-object-name doc-function-name">{{ function_name }}</span>
+    {% else %}
+      {% set max_sig_len = 60 %}
+      {% set full_sig %}{{ function_name }}{%- include "signature.html.jinja" with context -%}{% endset %}
+      {% if full_sig|length > max_sig_len %}
+        {% set first_param = function.parameters|selectattr("name", "ne", "self")|selectattr("name", "ne", "cls")|first %}
+        {% if first_param %}
+          {% set truncated_sig = function_name ~ "(" ~ first_param.name ~ "=..., ...)" %}
+        {% else %}
+          {% set truncated_sig = function_name ~ "(...)" %}
+        {% endif %}
+        {%+ filter highlight(language="python", inline=True) %}{{ truncated_sig }}{% endfilter %}
+      {% else %}
+        {%+ filter highlight(language="python", inline=True) %}{{ full_sig }}{% endfilter %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+{% endblock heading %}

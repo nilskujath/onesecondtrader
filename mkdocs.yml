@@ -28,6 +28,7 @@ nav:
     - Requests: api-reference/events/requests.md
     - Responses: api-reference/events/responses.md
   - Indicators:
+    - Averages: api-reference/indicators/averages.md
     - Bar: api-reference/indicators/bar.md
     - Base: api-reference/indicators/base.md
   - Messaging:
