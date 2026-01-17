@@ -34,6 +34,7 @@ class EventBus:
             self._subscribers.discard(subscriber)
 
     def publish(self, event: events.bases.EventBase) -> None:
+        # Intentionally matches exact event types only, not parent classes
         with self._lock:
             subscribers = self._per_event_subscriptions[type(event)].copy()
         for subscriber in subscribers:
