@@ -1,3 +1,6 @@
+## v0.29.0
+- feat: added indicator base
+
 ## v0.28.0
 - feat: added simulated broker
 
