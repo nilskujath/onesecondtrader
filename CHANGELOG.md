@@ -1,3 +1,6 @@
+## v0.28.0
+- feat: added simulated broker
+
 ## v0.27.0
 - feat: added broker base class
 
