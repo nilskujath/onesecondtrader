@@ -1,3 +1,6 @@
+## v0.31.0
+- feat: added sma to averages
+
 ## v0.30.0
 - feat: added bar indicators
 
