@@ -45,6 +45,12 @@ hide:
 
     [:material-link-variant: View `models` package API](models/data.md)
 
+-   __Observers__&nbsp;&nbsp;
+
+    ---
+
+    [:material-link-variant: View `observers` package API](observers/csvbookkeeper.md)
+
 -   __Strategies__&nbsp;&nbsp;
 
     ---
