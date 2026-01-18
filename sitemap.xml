@@ -2,66 +2,74 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://www.onesecondtrader.com/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/quickstart/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/overview/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/brokers/base/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/brokers/simulated/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/events/bases/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/events/market/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/events/requests/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/events/responses/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/indicators/averages/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/indicators/bar/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/indicators/base/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/messaging/eventbus/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/messaging/subscriber/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/models/data/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/models/orders/</loc>
-         <lastmod>2026-01-17</lastmod>
+         <lastmod>2026-01-18</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/api-reference/models/records/</loc>
+         <lastmod>2026-01-18</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/api-reference/strategies/base/</loc>
+         <lastmod>2026-01-18</lastmod>
     </url>
 </urlset>
