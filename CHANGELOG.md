@@ -1,3 +1,6 @@
+## v0.32.0
+- feat: added strategy base class
+
 ## v0.31.0
 - feat: added sma to averages
 
