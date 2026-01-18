@@ -4,6 +4,7 @@ __all__ = [
     "BarReceived",
     "BrokerBase",
     "Close",
+    "Datafeed",
     "FillRecord",
     "High",
     "Indicator",
@@ -15,14 +16,16 @@ __all__ = [
     "OrderSide",
     "OrderSubmission",
     "OrderType",
-    "SimpleMovingAverage",
     "SimulatedBroker",
+    "SimulatedDatafeed",
+    "SimpleMovingAverage",
     "SMACrossover",
     "StrategyBase",
     "Volume",
 ]
 
 from onesecondtrader.brokers import BrokerBase, SimulatedBroker
+from onesecondtrader.datafeeds import Datafeed, SimulatedDatafeed
 from onesecondtrader.events import (
     BarProcessed,
     BarReceived,

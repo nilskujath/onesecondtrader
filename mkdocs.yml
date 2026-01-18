@@ -22,6 +22,9 @@ nav:
   - Brokers:
     - Base: api-reference/brokers/base.md
     - Simulated: api-reference/brokers/simulated.md
+  - Datafeeds:
+    - Base: api-reference/datafeeds/base.md
+    - Simulated: api-reference/datafeeds/simulated.md
   - Events:
     - Bases: api-reference/events/bases.md
     - Market: api-reference/events/market.md

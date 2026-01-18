@@ -15,6 +15,12 @@ hide:
 
     [:material-link-variant: View `brokers` package API](brokers/base.md)
 
+-   __Datafeeds__&nbsp;&nbsp;
+
+    ---
+
+    [:material-link-variant: View `datafeeds` package API](datafeeds/base.md)
+
 -   __Events__&nbsp;&nbsp;
 
     ---
