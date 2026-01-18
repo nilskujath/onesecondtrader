@@ -1,3 +1,6 @@
+## v0.34.0
+- feat: added datafeed base and simulated
+
 ## v0.33.0
 - feat: updated indicators and strategies
 
