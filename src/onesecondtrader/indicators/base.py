@@ -13,9 +13,8 @@ class Indicator(abc.ABC):
     def __init__(self, max_history: int = 100, plot_at: int = 99) -> None:
         self._lock = threading.Lock()
         self._max_history = max(1, int(max_history))
-        # Keyed by symbol only - each strategy subscribes to one timeframe, so the indicator only sees bars from that timeframe.
-        self._history: dict[str, collections.deque[float]] = {}
-        # 0 = main price chart, 1-98 = subcharts, 99 = no plot
+        self._current_symbol: str = ""
+        self._history_data: dict[str, collections.deque[float]] = {}
         self._plot_at = plot_at
 
     @property
@@ -29,21 +28,32 @@ class Indicator(abc.ABC):
 
     def update(self, incoming_bar: events.BarReceived) -> None:
         symbol = incoming_bar.symbol
+        self._current_symbol = symbol
         value = self._compute_indicator(incoming_bar)
         with self._lock:
-            if symbol not in self._history:
-                self._history[symbol] = collections.deque(maxlen=self._max_history)
-            self._history[symbol].append(value)
+            if symbol not in self._history_data:
+                self._history_data[symbol] = collections.deque(maxlen=self._max_history)
+            self._history_data[symbol].append(value)
 
-    def latest(self, symbol: str) -> float:
+    @property
+    def latest(self) -> float:
         with self._lock:
-            history = self._history.get(symbol, collections.deque())
-            return history[-1] if history else np.nan
+            h = self._history_data.get(self._current_symbol, collections.deque())
+            return h[-1] if h else np.nan
 
-    def history(self, symbol: str) -> collections.deque[float]:
+    @property
+    def history(self) -> collections.deque[float]:
         with self._lock:
-            h = self._history.get(symbol, collections.deque())
+            h = self._history_data.get(self._current_symbol, collections.deque())
             return collections.deque(h, maxlen=self._max_history)
+
+    def __getitem__(self, index: int) -> float:
+        # Returns np.nan on out-of-bounds access. Since np.nan comparisons always
+        # return False, strategies can skip explicit length checks.
+        try:
+            return self.history[index]
+        except IndexError:
+            return np.nan
 
     @property
     def plot_at(self) -> int:

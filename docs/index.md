@@ -32,6 +32,8 @@ hide:
 
 ## :material-airplane-takeoff: Quick**start**
 
+Step 1: Install package
+
 === "pip"
 
     ```bash
@@ -43,3 +45,34 @@ hide:
     ```python
     poetry add onesecondtrader
     ```
+---
+
+Step 2: Define strategy
+
+```python
+from onesecondtrader.strategies import StrategyBase
+from onesecondtrader.indicators import SimpleMovingAverage
+from onesecondtrader.models import OrderType, OrderSide
+from onesecondtrader.events import BarReceived
+
+
+class MySMACrossover(StrategyBase):
+    def setup(self) -> None:
+        self.fast_sma = self.add_indicator(SimpleMovingAverage(period=20))
+        self.slow_sma = self.add_indicator(SimpleMovingAverage(period=100))
+
+    def on_bar(self, event: BarReceived) -> None:
+        if (
+            self.fast_sma[-2] <= self.slow_sma[-2]
+            and self.fast_sma.latest > self.slow_sma.latest
+            and self.position <= 0
+        ):
+            self.submit_order(OrderType.MARKET, OrderSide.BUY, 1.0)
+
+        if (
+            self.fast_sma[-2] >= self.slow_sma[-2]
+            and self.fast_sma.latest < self.slow_sma.latest
+            and self.position >= 0
+        ):
+            self.submit_order(OrderType.MARKET, OrderSide.SELL, 1.0)
+```

@@ -40,6 +40,7 @@ nav:
     - Records: api-reference/models/records.md
   - Strategies:
     - Base: api-reference/strategies/base.md
+    - Sma Crossover: api-reference/strategies/sma_crossover.md
 theme:
   name: material
   icon:

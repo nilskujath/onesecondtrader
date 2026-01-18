@@ -39,7 +39,7 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
         self._submitted_modifications: dict[uuid.UUID, models.OrderRecord] = {}
         self._submitted_cancellations: dict[uuid.UUID, models.OrderRecord] = {}
 
-        # OHLCV as indicators for history access: self.bar.close.history(symbol)
+        # OHLCV as indicators for history access: self.bar.close.history
         self.bar = SimpleNamespace(
             open=self.add_indicator(indicators.Open()),
             high=self.add_indicator(indicators.High()),
@@ -195,7 +195,7 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
         ohlcv_names = {"OPEN", "HIGH", "LOW", "CLOSE", "VOLUME"}
 
         indicator_values = {
-            f"{ind.plot_at:02d}_{ind.name}": ind.latest(event.symbol)
+            f"{ind.plot_at:02d}_{ind.name}": ind.latest
             for ind in self._indicators
             if ind.name not in ohlcv_names
         }
