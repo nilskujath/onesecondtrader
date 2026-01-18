@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://www.onesecondtrader.com/api-reference/messaging/eventbus/">
+        <link rel="canonical" href="https://www.onesecondtrader.com/api-reference/datafeeds/simulated/">
       
       
-        <link rel="prev" href="../../indicators/base/">
+        <link rel="prev" href="../base/">
       
       
-        <link rel="next" href="../subscriber/">
+        <link rel="next" href="../../events/bases/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Eventbus - OneSecondTrader</title>
+        <title>Simulated - OneSecondTrader</title>
       
     
     
@@ -87,7 +87,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#eventbus" class="md-skip">
+        <a href="#simulated" class="md-skip">
           Skip to content
         </a>
       
@@ -121,7 +121,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Eventbus
+              Simulated
             
           </span>
         </div>
@@ -553,6 +553,8 @@
                 
   
   
+    
+  
   
   
     
@@ -563,11 +565,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
@@ -583,7 +585,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_3">
             <span class="md-nav__icon md-icon"></span>
             Datafeeds
@@ -597,7 +599,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../datafeeds/base/" class="md-nav__link">
+      <a href="../base/" class="md-nav__link">
         
   
   
@@ -617,10 +619,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../datafeeds/simulated/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Simulated
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -631,6 +655,95 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.simulated._RTYPE_MAP" class="md-nav__link">
+    <span class="md-ellipsis">
+      _RTYPE_MAP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.simulated.SimulatedDatafeed" class="md-nav__link">
+    <span class="md-ellipsis">
+      SimulatedDatafeed
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SimulatedDatafeed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.simulated.SimulatedDatafeed.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.simulated.SimulatedDatafeed.stream" class="md-nav__link">
+    <span class="md-ellipsis">
+      stream
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.simulated.SimulatedDatafeed.wait" class="md-nav__link">
+    <span class="md-ellipsis">
+      wait
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.simulated.SimulatedDatafeed.shutdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      shutdown
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.simulated.SimulatedDatafeed._stream" class="md-nav__link">
+    <span class="md-ellipsis">
+      _stream
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -907,8 +1020,6 @@
                 
   
   
-    
-  
   
   
     
@@ -919,11 +1030,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
         
           
           <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
@@ -939,7 +1050,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_6">
             <span class="md-nav__icon md-icon"></span>
             Messaging
@@ -950,32 +1061,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Eventbus
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../messaging/eventbus/" class="md-nav__link">
         
   
   
@@ -986,86 +1075,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#onesecondtrader.messaging.eventbus.EventBus" class="md-nav__link">
-    <span class="md-ellipsis">
-      EventBus
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="EventBus">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#onesecondtrader.messaging.eventbus.EventBus.__init__" class="md-nav__link">
-    <span class="md-ellipsis">
-      __init__
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#onesecondtrader.messaging.eventbus.EventBus.subscribe" class="md-nav__link">
-    <span class="md-ellipsis">
-      subscribe
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#onesecondtrader.messaging.eventbus.EventBus.unsubscribe" class="md-nav__link">
-    <span class="md-ellipsis">
-      unsubscribe
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#onesecondtrader.messaging.eventbus.EventBus.publish" class="md-nav__link">
-    <span class="md-ellipsis">
-      publish
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#onesecondtrader.messaging.eventbus.EventBus.wait_until_system_idle" class="md-nav__link">
-    <span class="md-ellipsis">
-      wait_until_system_idle
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1078,7 +1087,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../subscriber/" class="md-nav__link">
+      <a href="../../messaging/subscriber/" class="md-nav__link">
         
   
   
@@ -1349,17 +1358,26 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#onesecondtrader.messaging.eventbus.EventBus" class="md-nav__link">
+  <a href="#onesecondtrader.datafeeds.simulated._RTYPE_MAP" class="md-nav__link">
     <span class="md-ellipsis">
-      EventBus
+      _RTYPE_MAP
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="EventBus">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.simulated.SimulatedDatafeed" class="md-nav__link">
+    <span class="md-ellipsis">
+      SimulatedDatafeed
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SimulatedDatafeed">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#onesecondtrader.messaging.eventbus.EventBus.__init__" class="md-nav__link">
+  <a href="#onesecondtrader.datafeeds.simulated.SimulatedDatafeed.__init__" class="md-nav__link">
     <span class="md-ellipsis">
       __init__
     </span>
@@ -1368,36 +1386,36 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#onesecondtrader.messaging.eventbus.EventBus.subscribe" class="md-nav__link">
+  <a href="#onesecondtrader.datafeeds.simulated.SimulatedDatafeed.stream" class="md-nav__link">
     <span class="md-ellipsis">
-      subscribe
+      stream
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#onesecondtrader.messaging.eventbus.EventBus.unsubscribe" class="md-nav__link">
+  <a href="#onesecondtrader.datafeeds.simulated.SimulatedDatafeed.wait" class="md-nav__link">
     <span class="md-ellipsis">
-      unsubscribe
+      wait
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#onesecondtrader.messaging.eventbus.EventBus.publish" class="md-nav__link">
+  <a href="#onesecondtrader.datafeeds.simulated.SimulatedDatafeed.shutdown" class="md-nav__link">
     <span class="md-ellipsis">
-      publish
+      shutdown
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#onesecondtrader.messaging.eventbus.EventBus.wait_until_system_idle" class="md-nav__link">
+  <a href="#onesecondtrader.datafeeds.simulated.SimulatedDatafeed._stream" class="md-nav__link">
     <span class="md-ellipsis">
-      wait_until_system_idle
+      _stream
     </span>
   </a>
   
@@ -1427,7 +1445,7 @@
   
 
 
-<h1 id="eventbus">Eventbus</h1>
+<h1 id="simulated">Simulated</h1>
 
 
 <div class="doc doc-object doc-module">
@@ -1453,19 +1471,42 @@
 
 
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="onesecondtrader.datafeeds.simulated._RTYPE_MAP" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">_RTYPE_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="n">models</span><span class="o">.</span><span class="n">BarPeriod</span><span class="o">.</span><span class="n">SECOND</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">BarPeriod</span><span class="o">.</span><span class="n">MINUTE</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">BarPeriod</span><span class="o">.</span><span class="n">HOUR</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">BarPeriod</span><span class="o">.</span><span class="n">DAY</span><span class="p">:</span> <span class="mi">35</span><span class="p">}</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+
 
 <div class="doc doc-object doc-class">
 
 
 
-<h2 id="onesecondtrader.messaging.eventbus.EventBus" class="doc doc-heading">
-            <code>EventBus</code>
+<h2 id="onesecondtrader.datafeeds.simulated.SimulatedDatafeed" class="doc doc-heading">
+            <code>SimulatedDatafeed</code>
 
 
 </h2>
 
 
     <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Datafeed (onesecondtrader.datafeeds.base.Datafeed)" href="../base/#onesecondtrader.datafeeds.base.Datafeed">Datafeed</a></code></p>
 
 
 
@@ -1491,8 +1532,8 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="onesecondtrader.messaging.eventbus.EventBus.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">()</span></code>
+<h3 id="onesecondtrader.datafeeds.simulated.SimulatedDatafeed.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">event_bus</span><span class="p">)</span></code>
 
 </h3>
 
@@ -1501,18 +1542,14 @@
 
 
             <details class="quote">
-              <summary>Source code in <code>src/onesecondtrader/messaging/eventbus.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
-<span class="normal"><a href="#__codelineno-0-17">17</a></span>
-<span class="normal"><a href="#__codelineno-0-18">18</a></span>
-<span class="normal"><a href="#__codelineno-0-19">19</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_per_event_subscriptions</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">[</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a>        <span class="nb">type</span><span class="p">[</span><span class="n">events</span><span class="o">.</span><span class="n">bases</span><span class="o">.</span><span class="n">EventBase</span><span class="p">],</span> <span class="nb">set</span><span class="p">[</span><span class="n">Subscriber</span><span class="p">]</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a>    <span class="p">]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_subscribers</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Subscriber</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+              <summary>Source code in <code>src/onesecondtrader/datafeeds/simulated.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-20">20</a></span>
+<span class="normal"><a href="#__codelineno-0-21">21</a></span>
+<span class="normal"><a href="#__codelineno-0-22">22</a></span>
+<span class="normal"><a href="#__codelineno-0-23">23</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_bus</span><span class="p">:</span> <span class="n">messaging</span><span class="o">.</span><span class="n">EventBus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">event_bus</span><span class="p">)</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1522,8 +1559,8 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="onesecondtrader.messaging.eventbus.EventBus.subscribe" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">subscribe</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="n">event_type</span><span class="p">)</span></code>
+<h3 id="onesecondtrader.datafeeds.simulated.SimulatedDatafeed.stream" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">stream</span><span class="p">(</span><span class="n">symbols</span><span class="p">,</span> <span class="n">bar_period</span><span class="p">)</span></code>
 
 </h3>
 
@@ -1532,82 +1569,40 @@
 
 
             <details class="quote">
-              <summary>Source code in <code>src/onesecondtrader/messaging/eventbus.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
+              <summary>Source code in <code>src/onesecondtrader/datafeeds/simulated.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-25">25</a></span>
 <span class="normal"><a href="#__codelineno-0-26">26</a></span>
 <span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="k">def</span><span class="w"> </span><span class="nf">subscribe</span><span class="p">(</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="bp">self</span><span class="p">,</span>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="n">subscriber</span><span class="p">:</span> <span class="n">Subscriber</span><span class="p">,</span>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="n">event_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">events</span><span class="o">.</span><span class="n">bases</span><span class="o">.</span><span class="n">EventBase</span><span class="p">],</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_subscribers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">subscriber</span><span class="p">)</span>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_per_event_subscriptions</span><span class="p">[</span><span class="n">event_type</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">subscriber</span><span class="p">)</span>
-</span></code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="onesecondtrader.messaging.eventbus.EventBus.unsubscribe" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">unsubscribe</span><span class="p">(</span><span class="n">subscriber</span><span class="p">)</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-
-            <details class="quote">
-              <summary>Source code in <code>src/onesecondtrader/messaging/eventbus.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-30">30</a></span>
+<span class="normal"><a href="#__codelineno-0-28">28</a></span>
+<span class="normal"><a href="#__codelineno-0-29">29</a></span>
+<span class="normal"><a href="#__codelineno-0-30">30</a></span>
 <span class="normal"><a href="#__codelineno-0-31">31</a></span>
 <span class="normal"><a href="#__codelineno-0-32">32</a></span>
 <span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="k">def</span><span class="w"> </span><span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriber</span><span class="p">:</span> <span class="n">Subscriber</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a>    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a>        <span class="k">for</span> <span class="n">set_of_event_subscribers</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_per_event_subscriptions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a>            <span class="n">set_of_event_subscribers</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">subscriber</span><span class="p">)</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_subscribers</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">subscriber</span><span class="p">)</span>
-</span></code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="onesecondtrader.messaging.eventbus.EventBus.publish" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">publish</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-
-            <details class="quote">
-              <summary>Source code in <code>src/onesecondtrader/messaging/eventbus.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-36">36</a></span>
+<span class="normal"><a href="#__codelineno-0-34">34</a></span>
+<span class="normal"><a href="#__codelineno-0-35">35</a></span>
+<span class="normal"><a href="#__codelineno-0-36">36</a></span>
 <span class="normal"><a href="#__codelineno-0-37">37</a></span>
 <span class="normal"><a href="#__codelineno-0-38">38</a></span>
 <span class="normal"><a href="#__codelineno-0-39">39</a></span>
 <span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="k">def</span><span class="w"> </span><span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">events</span><span class="o">.</span><span class="n">bases</span><span class="o">.</span><span class="n">EventBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="c1"># Intentionally matches exact event types only, not parent classes</span>
-</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a>    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a>        <span class="n">subscribers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_per_event_subscriptions</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">event</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a>    <span class="k">for</span> <span class="n">subscriber</span> <span class="ow">in</span> <span class="n">subscribers</span><span class="p">:</span>
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a>        <span class="n">subscriber</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-41">41</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="k">def</span><span class="w"> </span><span class="nf">stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">bar_period</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">BarPeriod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="n">csv_path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csv_path</span><span class="p">)</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Already streaming&quot;</span><span class="p">)</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">csv_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a>        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CSV file not found: </span><span class="si">{</span><span class="n">csv_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">symbols</span><span class="p">:</span>
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;symbols list cannot be empty&quot;</span><span class="p">)</span>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a>        <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_stream</span><span class="p">,</span>
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a>        <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">symbols</span><span class="p">,</span> <span class="n">bar_period</span><span class="p">),</span>
+</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a>        <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a>        <span class="n">daemon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a>    <span class="p">)</span>
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1617,8 +1612,8 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="onesecondtrader.messaging.eventbus.EventBus.wait_until_system_idle" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">wait_until_system_idle</span><span class="p">()</span></code>
+<h3 id="onesecondtrader.datafeeds.simulated.SimulatedDatafeed.wait" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">wait</span><span class="p">()</span></code>
 
 </h3>
 
@@ -1627,16 +1622,154 @@
 
 
             <details class="quote">
-              <summary>Source code in <code>src/onesecondtrader/messaging/eventbus.py</code></summary>
+              <summary>Source code in <code>src/onesecondtrader/datafeeds/simulated.py</code></summary>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-43">43</a></span>
 <span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span>
-<span class="normal"><a href="#__codelineno-0-46">46</a></span>
-<span class="normal"><a href="#__codelineno-0-47">47</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="k">def</span><span class="w"> </span><span class="nf">wait_until_system_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a>    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
-</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a>        <span class="n">subscribers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subscribers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a>    <span class="k">for</span> <span class="n">subscriber</span> <span class="ow">in</span> <span class="n">subscribers</span><span class="p">:</span>
-</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a>        <span class="n">subscriber</span><span class="o">.</span><span class="n">wait_until_idle</span><span class="p">()</span>
+<span class="normal"><a href="#__codelineno-0-45">45</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="k">def</span><span class="w"> </span><span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="p">:</span>
+</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="onesecondtrader.datafeeds.simulated.SimulatedDatafeed.shutdown" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">shutdown</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/onesecondtrader/datafeeds/simulated.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-47">47</a></span>
+<span class="normal"><a href="#__codelineno-0-48">48</a></span>
+<span class="normal"><a href="#__codelineno-0-49">49</a></span>
+<span class="normal"><a href="#__codelineno-0-50">50</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="onesecondtrader.datafeeds.simulated.SimulatedDatafeed._stream" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">_stream</span><span class="p">(</span><span class="n">symbols</span><span class="p">,</span> <span class="n">bar_period</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/onesecondtrader/datafeeds/simulated.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-52">52</a></span>
+<span class="normal"><a href="#__codelineno-0-53">53</a></span>
+<span class="normal"><a href="#__codelineno-0-54">54</a></span>
+<span class="normal"><a href="#__codelineno-0-55">55</a></span>
+<span class="normal"><a href="#__codelineno-0-56">56</a></span>
+<span class="normal"><a href="#__codelineno-0-57">57</a></span>
+<span class="normal"><a href="#__codelineno-0-58">58</a></span>
+<span class="normal"><a href="#__codelineno-0-59">59</a></span>
+<span class="normal"><a href="#__codelineno-0-60">60</a></span>
+<span class="normal"><a href="#__codelineno-0-61">61</a></span>
+<span class="normal"><a href="#__codelineno-0-62">62</a></span>
+<span class="normal"><a href="#__codelineno-0-63">63</a></span>
+<span class="normal"><a href="#__codelineno-0-64">64</a></span>
+<span class="normal"><a href="#__codelineno-0-65">65</a></span>
+<span class="normal"><a href="#__codelineno-0-66">66</a></span>
+<span class="normal"><a href="#__codelineno-0-67">67</a></span>
+<span class="normal"><a href="#__codelineno-0-68">68</a></span>
+<span class="normal"><a href="#__codelineno-0-69">69</a></span>
+<span class="normal"><a href="#__codelineno-0-70">70</a></span>
+<span class="normal"><a href="#__codelineno-0-71">71</a></span>
+<span class="normal"><a href="#__codelineno-0-72">72</a></span>
+<span class="normal"><a href="#__codelineno-0-73">73</a></span>
+<span class="normal"><a href="#__codelineno-0-74">74</a></span>
+<span class="normal"><a href="#__codelineno-0-75">75</a></span>
+<span class="normal"><a href="#__codelineno-0-76">76</a></span>
+<span class="normal"><a href="#__codelineno-0-77">77</a></span>
+<span class="normal"><a href="#__codelineno-0-78">78</a></span>
+<span class="normal"><a href="#__codelineno-0-79">79</a></span>
+<span class="normal"><a href="#__codelineno-0-80">80</a></span>
+<span class="normal"><a href="#__codelineno-0-81">81</a></span>
+<span class="normal"><a href="#__codelineno-0-82">82</a></span>
+<span class="normal"><a href="#__codelineno-0-83">83</a></span>
+<span class="normal"><a href="#__codelineno-0-84">84</a></span>
+<span class="normal"><a href="#__codelineno-0-85">85</a></span>
+<span class="normal"><a href="#__codelineno-0-86">86</a></span>
+<span class="normal"><a href="#__codelineno-0-87">87</a></span>
+<span class="normal"><a href="#__codelineno-0-88">88</a></span>
+<span class="normal"><a href="#__codelineno-0-89">89</a></span>
+<span class="normal"><a href="#__codelineno-0-90">90</a></span>
+<span class="normal"><a href="#__codelineno-0-91">91</a></span>
+<span class="normal"><a href="#__codelineno-0-92">92</a></span>
+<span class="normal"><a href="#__codelineno-0-93">93</a></span>
+<span class="normal"><a href="#__codelineno-0-94">94</a></span>
+<span class="normal"><a href="#__codelineno-0-95">95</a></span>
+<span class="normal"><a href="#__codelineno-0-96">96</a></span>
+<span class="normal"><a href="#__codelineno-0-97">97</a></span>
+<span class="normal"><a href="#__codelineno-0-98">98</a></span>
+<span class="normal"><a href="#__codelineno-0-99">99</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="k">def</span><span class="w"> </span><span class="nf">_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">bar_period</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">BarPeriod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a>    <span class="n">symbols_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span>
+</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a>    <span class="n">rtype</span> <span class="o">=</span> <span class="n">_RTYPE_MAP</span><span class="p">[</span><span class="n">bar_period</span><span class="p">]</span>
+</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a>
+</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a>    <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">csv_path</span><span class="p">,</span>
+</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a>        <span class="n">usecols</span><span class="o">=</span><span class="p">[</span>
+</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a>            <span class="s2">&quot;ts_event&quot;</span><span class="p">,</span>
+</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>            <span class="s2">&quot;rtype&quot;</span><span class="p">,</span>
+</span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a>            <span class="s2">&quot;open&quot;</span><span class="p">,</span>
+</span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a>            <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a>            <span class="s2">&quot;low&quot;</span><span class="p">,</span>
+</span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a>            <span class="s2">&quot;close&quot;</span><span class="p">,</span>
+</span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65"></a>            <span class="s2">&quot;volume&quot;</span><span class="p">,</span>
+</span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66"></a>            <span class="s2">&quot;symbol&quot;</span><span class="p">,</span>
+</span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67"></a>        <span class="p">],</span>
+</span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68"></a>        <span class="n">dtype</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69"></a>            <span class="s2">&quot;ts_event&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70"></a>            <span class="s2">&quot;rtype&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a>            <span class="s2">&quot;open&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a>            <span class="s2">&quot;high&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a>            <span class="s2">&quot;low&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a>            <span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a>            <span class="s2">&quot;volume&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a>            <span class="s2">&quot;symbol&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a>        <span class="p">},</span>
+</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a>        <span class="n">chunksize</span><span class="o">=</span><span class="mi">10_000</span><span class="p">,</span>
+</span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a>    <span class="p">):</span>
+</span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80"></a>        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">chunk</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+</span><span id="__span-0-81"><a id="__codelineno-0-81" name="__codelineno-0-81"></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+</span><span id="__span-0-82"><a id="__codelineno-0-82" name="__codelineno-0-82"></a>                <span class="k">return</span>
+</span><span id="__span-0-83"><a id="__codelineno-0-83" name="__codelineno-0-83"></a>
+</span><span id="__span-0-84"><a id="__codelineno-0-84" name="__codelineno-0-84"></a>            <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">symbol</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">symbols_set</span> <span class="ow">or</span> <span class="n">row</span><span class="o">.</span><span class="n">rtype</span> <span class="o">!=</span> <span class="n">rtype</span><span class="p">:</span>
+</span><span id="__span-0-85"><a id="__codelineno-0-85" name="__codelineno-0-85"></a>                <span class="k">continue</span>
+</span><span id="__span-0-86"><a id="__codelineno-0-86" name="__codelineno-0-86"></a>
+</span><span id="__span-0-87"><a id="__codelineno-0-87" name="__codelineno-0-87"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_publish</span><span class="p">(</span>
+</span><span id="__span-0-88"><a id="__codelineno-0-88" name="__codelineno-0-88"></a>                <span class="n">events</span><span class="o">.</span><span class="n">BarReceived</span><span class="p">(</span>
+</span><span id="__span-0-89"><a id="__codelineno-0-89" name="__codelineno-0-89"></a>                    <span class="n">ts_event</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">ts_event</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ns&quot;</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="s2">&quot;UTC&quot;</span><span class="p">),</span>
+</span><span id="__span-0-90"><a id="__codelineno-0-90" name="__codelineno-0-90"></a>                    <span class="n">symbol</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>
+</span><span id="__span-0-91"><a id="__codelineno-0-91" name="__codelineno-0-91"></a>                    <span class="n">bar_period</span><span class="o">=</span><span class="n">bar_period</span><span class="p">,</span>
+</span><span id="__span-0-92"><a id="__codelineno-0-92" name="__codelineno-0-92"></a>                    <span class="nb">open</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">open</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span>
+</span><span id="__span-0-93"><a id="__codelineno-0-93" name="__codelineno-0-93"></a>                    <span class="n">high</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">high</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span>
+</span><span id="__span-0-94"><a id="__codelineno-0-94" name="__codelineno-0-94"></a>                    <span class="n">low</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">low</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span>
+</span><span id="__span-0-95"><a id="__codelineno-0-95" name="__codelineno-0-95"></a>                    <span class="n">close</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">close</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span>
+</span><span id="__span-0-96"><a id="__codelineno-0-96" name="__codelineno-0-96"></a>                    <span class="n">volume</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">volume</span><span class="p">,</span>
+</span><span id="__span-0-97"><a id="__codelineno-0-97" name="__codelineno-0-97"></a>                <span class="p">)</span>
+</span><span id="__span-0-98"><a id="__codelineno-0-98" name="__codelineno-0-98"></a>            <span class="p">)</span>
+</span><span id="__span-0-99"><a id="__codelineno-0-99" name="__codelineno-0-99"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_event_bus</span><span class="o">.</span><span class="n">wait_until_system_idle</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
