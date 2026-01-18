@@ -39,4 +39,10 @@ hide:
 
     [:material-link-variant: View `models` package API](models/data.md)
 
+-   __Strategies__&nbsp;&nbsp;
+
+    ---
+
+    [:material-link-variant: View `strategies` package API](strategies/base.md)
+
 </div>

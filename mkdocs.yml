@@ -37,6 +37,9 @@ nav:
   - Models:
     - Data: api-reference/models/data.md
     - Orders: api-reference/models/orders.md
+    - Records: api-reference/models/records.md
+  - Strategies:
+    - Base: api-reference/strategies/base.md
 theme:
   name: material
   icon:
