@@ -1,3 +1,6 @@
+## v0.33.0
+- feat: updated indicators and strategies
+
 ## v0.32.0
 - feat: added strategy base class
 
