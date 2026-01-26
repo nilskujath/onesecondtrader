@@ -24,15 +24,16 @@ __all__ = [
     "Volume",
 ]
 
-from onesecondtrader.brokers import BrokerBase, SimulatedBroker
-from onesecondtrader.datafeeds import Datafeed, SimulatedDatafeed
-from onesecondtrader.events import (
+from onesecondtrader.core.brokers import BrokerBase
+from onesecondtrader.connectors.brokers import SimulatedBroker
+from onesecondtrader.connectors.datafeeds import Datafeed, SimulatedDatafeed
+from onesecondtrader.core.events import (
     BarProcessed,
     BarReceived,
     OrderFilled,
     OrderSubmission,
 )
-from onesecondtrader.indicators import (
+from onesecondtrader.core.indicators import (
     Close,
     High,
     Indicator,
@@ -41,7 +42,7 @@ from onesecondtrader.indicators import (
     SimpleMovingAverage,
     Volume,
 )
-from onesecondtrader.models import (
+from onesecondtrader.core.models import (
     BarPeriod,
     FillRecord,
     InputSource,
@@ -49,4 +50,4 @@ from onesecondtrader.models import (
     OrderSide,
     OrderType,
 )
-from onesecondtrader.strategies import SMACrossover, StrategyBase
+from onesecondtrader.core.strategies import SMACrossover, StrategyBase
