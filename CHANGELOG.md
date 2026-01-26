@@ -1,3 +1,7 @@
+## v0.37.0
+- feat: fixed imports
+- feat: fixed module structure
+
 ## v0.36.0
 - feat: update
 - chore(ci): release 0.35.0
