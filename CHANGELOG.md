@@ -1,3 +1,8 @@
+## v0.36.0
+- feat: update
+- chore(ci): release 0.35.0
+- feat: restructure
+
 ## v0.35.0
 - feat: restructure
 
