@@ -7,7 +7,7 @@ import sqlite3
 def init_secmaster(db_path: pathlib.Path) -> None:
     """Initialize a new secmaster database at the specified path.
 
-    Creates the database file with the secmaster schema (publishers, instruments,
+    Creates the database file with the schema defined in schema.sql (publishers, instruments,
     and ohlcv tables) but does not populate any data.
 
     Args:
