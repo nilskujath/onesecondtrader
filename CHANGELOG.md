@@ -1,3 +1,6 @@
+## v0.38.0
+- feat: fixed documentation
+
 ## v0.37.0
 - feat: fixed imports
 - feat: fixed module structure
