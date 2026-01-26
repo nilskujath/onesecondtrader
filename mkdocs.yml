@@ -17,38 +17,15 @@ extra:
 nav:
 - Home: index.md
 - "\u2192 Quickstart": quickstart.md
+- Documentation:
+  - Overview: documentation/overview.md
 - API Reference:
   - Overview: api-reference/overview.md
-  - Brokers:
-    - Base: api-reference/brokers/base.md
-    - Simulated: api-reference/brokers/simulated.md
   - Connectors: api-reference/connectors.md
   - Core: api-reference/core.md
   - Dashboard: api-reference/dashboard.md
-  - Datafeeds:
-    - Base: api-reference/datafeeds/base.md
-    - Simulated: api-reference/datafeeds/simulated.md
-  - Events:
-    - Bases: api-reference/events/bases.md
-    - Market: api-reference/events/market.md
-    - Requests: api-reference/events/requests.md
-    - Responses: api-reference/events/responses.md
-  - Indicators:
-    - Averages: api-reference/indicators/averages.md
-    - Bar: api-reference/indicators/bar.md
-    - Base: api-reference/indicators/base.md
-  - Messaging:
-    - Eventbus: api-reference/messaging/eventbus.md
-    - Subscriber: api-reference/messaging/subscriber.md
-  - Models:
-    - Data: api-reference/models/data.md
-    - Orders: api-reference/models/orders.md
-    - Records: api-reference/models/records.md
   - Secmaster:
     - Utils: api-reference/secmaster/utils.md
-  - Strategies:
-    - Base: api-reference/strategies/base.md
-    - Sma Crossover: api-reference/strategies/sma_crossover.md
 theme:
   name: material
   icon:
