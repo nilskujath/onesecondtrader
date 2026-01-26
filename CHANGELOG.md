@@ -1,3 +1,6 @@
+## v0.35.0
+- feat: restructure
+
 ## v0.34.0
 - feat: added datafeed base and simulated
 
