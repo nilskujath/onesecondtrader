@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 import logging
 import shutil
+import sys
 from pathlib import Path
 
 import yaml
+
+sys.path.insert(0, str(Path(__file__).parent.parent / "docs"))
+from hooks import parse_sql_schema, generate_markdown
 
 # SETUP LOGGER
 # --------------------------------------------------------------------------------------
@@ -98,6 +102,19 @@ def generate_api_docs():
         logger.info(f"Cleaned existing documentation directory: {docs_path}")
     docs_path.mkdir(parents=True, exist_ok=True)
 
+    # GENERATE SCHEMA DOCUMENTATION FROM SQL
+    # ----------------------------------------------------------------------------------
+
+    sql_path = Path("src/onesecondtrader/secmaster/schema.sql")
+    if sql_path.exists():
+        schema_output_path = docs_path / "secmaster" / "schema.md"
+        schema_output_path.parent.mkdir(parents=True, exist_ok=True)
+        sql_content = sql_path.read_text()
+        parsed = parse_sql_schema(sql_content)
+        markdown = generate_markdown(parsed)
+        schema_output_path.write_text(markdown)
+        logger.info(f"Generated schema documentation: {schema_output_path}")
+
     # DISCOVER ALL PYTHON MODULES AND SUBMODULES IN src/onesecondtrader
     # ----------------------------------------------------------------------------------
 
@@ -148,12 +165,28 @@ def generate_api_docs():
                 if py_file.name != "__init__.py":
                     submodule_files.append(py_file.stem)
 
+            # Find nested submodules (directories with __init__.py)
+            nested_submodules = {}
+            for nested_dir in submodule_dir.iterdir():
+                if nested_dir.is_dir() and (nested_dir / "__init__.py").exists():
+                    nested_name = nested_dir.name
+                    nested_files = []
+                    for py_file in nested_dir.glob("*.py"):
+                        if py_file.name != "__init__.py":
+                            nested_files.append(py_file.stem)
+                    if nested_files:
+                        nested_submodules[nested_name] = nested_files
+
             logger.info(
-                f"Processing submodule {module} with files: {', '.join(submodule_files)}"
+                f"Processing submodule {module} with files: {', '.join(submodule_files)}, "
+                f"nested: {list(nested_submodules.keys())}"
             )
 
-            # Store submodule structure for navigation
-            submodule_structure[module] = submodule_files
+            # Store submodule structure for navigation (include nested)
+            submodule_structure[module] = {
+                "files": submodule_files,
+                "nested": nested_submodules,
+            }
 
             # Generate documentation for each file in the submodule
             for subfile in submodule_files:
@@ -161,13 +194,11 @@ def generate_api_docs():
                 subfile_path = submodule_dir / f"{subfile}.py"
                 subfile_content = subfile_path.read_text()
 
-                # Check if this subfile has substantial content
                 has_classes_or_functions = (
                     "def " in subfile_content or "class " in subfile_content
                 )
 
                 if has_classes_or_functions:
-                    # Use mkdocstrings for files with classes/functions
                     md_content = f"""# {subfile_title}
 
 ::: onesecondtrader.{module}.{subfile}
@@ -178,7 +209,6 @@ def generate_api_docs():
       show_root_toc_entry: False
 """
                 else:
-                    # Manual source code display for simple files
                     indented_content = "\n".join(
                         "    " + line for line in subfile_content.split("\n")
                     )
@@ -202,6 +232,55 @@ def generate_api_docs():
                 subfile_md = submodule_docs_dir / f"{subfile}.md"
                 subfile_md.write_text(md_content)
                 logger.debug(f"Generated {subfile_md}")
+
+            # Generate documentation for nested submodules
+            for nested_name, nested_files in nested_submodules.items():
+                nested_docs_dir = submodule_docs_dir / nested_name
+                nested_docs_dir.mkdir(exist_ok=True)
+
+                for nested_file in nested_files:
+                    nested_file_title = format_module_title(nested_file)
+                    nested_file_path = submodule_dir / nested_name / f"{nested_file}.py"
+                    nested_file_content = nested_file_path.read_text()
+
+                    has_classes_or_functions = (
+                        "def " in nested_file_content or "class " in nested_file_content
+                    )
+
+                    if has_classes_or_functions:
+                        md_content = f"""# {nested_file_title}
+
+::: onesecondtrader.{module}.{nested_name}.{nested_file}
+    options:
+      show_root_heading: False
+      show_source: true
+      heading_level: 2
+      show_root_toc_entry: False
+"""
+                    else:
+                        indented_content = "\n".join(
+                            "    " + line for line in nested_file_content.split("\n")
+                        )
+
+                        md_content = f"""# {nested_file_title}
+
+::: onesecondtrader.{module}.{nested_name}.{nested_file}
+    options:
+      show_root_heading: False
+      show_source: false
+      heading_level: 2
+      show_root_toc_entry: False
+
+???+ quote "Source code in `{nested_file}.py`"
+
+    ```python linenums="1"
+{indented_content}
+    ```
+"""
+
+                    nested_file_md = nested_docs_dir / f"{nested_file}.md"
+                    nested_file_md.write_text(md_content)
+                    logger.debug(f"Generated {nested_file_md}")
 
         elif module_file.exists():
             # This is a regular .py file - check if it has substantial content
@@ -278,11 +357,22 @@ hide:
         if module in submodules:
             # This is a submodule
             if module in submodule_structure and submodule_structure[module]:
+                structure = submodule_structure[module]
                 link_text = f"View `{module}` package API"
 
-                # Point to the alphabetically first submodule file
-                first_submodule = sorted(submodule_structure[module])[0]
-                link_target = f"{module}/{first_submodule}.md"
+                # Find the first available file to link to
+                files = structure.get("files", [])
+                nested = structure.get("nested", {})
+
+                if files:
+                    first_file = sorted(files)[0]
+                    link_target = f"{module}/{first_file}.md"
+                elif nested:
+                    first_nested = sorted(nested.keys())[0]
+                    first_nested_file = sorted(nested[first_nested])[0]
+                    link_target = f"{module}/{first_nested}/{first_nested_file}.md"
+                else:
+                    continue  # Skip empty modules
 
                 overview_content += f"""
 -   __{title}__&nbsp;&nbsp;
@@ -292,15 +382,8 @@ hide:
     [:material-link-variant: {link_text}]({link_target})
 """
             else:
-                # Fallback for submodules without discoverable files
-                link_text = f"View `{module}` package API"
-                overview_content += f"""
--   __{title}__&nbsp;&nbsp;
-
-    ---
-
-    [:material-link-variant: {link_text}]({module}.md)
-"""
+                # Skip submodules without discoverable files
+                continue
         else:
             # This is a regular Python file
             link_text = f"View `{module}.py` API"
@@ -340,21 +423,46 @@ hide:
         if module in submodules:
             # This is a submodule - create hierarchical navigation
             if module in submodule_structure and submodule_structure[module]:
-                # Create hierarchical navigation for submodules with files
+                structure = submodule_structure[module]
                 submodule_nav = []
-                for subfile in sorted(submodule_structure[module]):
+
+                # Special case: add schema.md for secmaster if it exists
+                if module == "secmaster":
+                    schema_path = docs_path / "secmaster" / "schema.md"
+                    if schema_path.exists():
+                        submodule_nav.append(
+                            {"Schema": "api-reference/secmaster/schema.md"}
+                        )
+
+                # Add direct files
+                for subfile in sorted(structure.get("files", [])):
                     subfile_title = format_module_title(subfile)
                     submodule_nav.append(
                         {subfile_title: f"api-reference/{module}/{subfile}.md"}
                     )
 
-                api_nav.append({title: submodule_nav})
-                logger.debug(
-                    f"Created hierarchical navigation for {module}: {len(submodule_nav)} files"
-                )
+                # Add nested submodules
+                for nested_name in sorted(structure.get("nested", {}).keys()):
+                    nested_files = structure["nested"][nested_name]
+                    nested_title = format_module_title(nested_name)
+                    nested_nav = []
+                    for nested_file in sorted(nested_files):
+                        nested_file_title = format_module_title(nested_file)
+                        nested_nav.append(
+                            {
+                                nested_file_title: f"api-reference/{module}/{nested_name}/{nested_file}.md"
+                            }
+                        )
+                    submodule_nav.append({nested_title: nested_nav})
+
+                if submodule_nav:
+                    api_nav.append({title: submodule_nav})
+                    logger.debug(
+                        f"Created hierarchical navigation for {module}: {len(submodule_nav)} items"
+                    )
             else:
-                # Fallback for submodules without discoverable files
-                api_nav.append({title: f"api-reference/{module}.md"})
+                # Fallback for submodules without discoverable files - skip
+                logger.debug(f"Skipping empty submodule {module}")
         else:
             # This is a regular Python file
             api_nav.append({title: f"api-reference/{module}.md"})
@@ -378,8 +486,13 @@ hide:
     logger.info(f"  - {len(py_files)} Python files, {len(submodules)} submodules")
 
     # Log the hierarchical structure created
-    for module, files in submodule_structure.items():
-        logger.info(f"  - Submodule {module}: {len(files)} files ({', '.join(files)})")
+    for module, structure in submodule_structure.items():
+        files = structure.get("files", [])
+        nested = structure.get("nested", {})
+        nested_count = sum(len(v) for v in nested.values())
+        logger.info(
+            f"  - Submodule {module}: {len(files)} files, {len(nested)} nested packages ({nested_count} files)"
+        )
 
 
 if __name__ == "__main__":

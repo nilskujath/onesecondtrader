@@ -21,11 +21,39 @@ nav:
   - Overview: documentation/overview.md
 - API Reference:
   - Overview: api-reference/overview.md
-  - Connectors: api-reference/connectors.md
-  - Core: api-reference/core.md
-  - Dashboard: api-reference/dashboard.md
+  - Connectors:
+    - Brokers:
+      - Simulated: api-reference/connectors/brokers/simulated.md
+    - Datafeeds:
+      - Base: api-reference/connectors/datafeeds/base.md
+      - Simulated: api-reference/connectors/datafeeds/simulated.md
+  - Core:
+    - Brokers:
+      - Base: api-reference/core/brokers/base.md
+    - Events:
+      - Bases: api-reference/core/events/bases.md
+      - Market: api-reference/core/events/market.md
+      - Requests: api-reference/core/events/requests.md
+      - Responses: api-reference/core/events/responses.md
+    - Indicators:
+      - Averages: api-reference/core/indicators/averages.md
+      - Bar: api-reference/core/indicators/bar.md
+      - Base: api-reference/core/indicators/base.md
+    - Messaging:
+      - Eventbus: api-reference/core/messaging/eventbus.md
+      - Subscriber: api-reference/core/messaging/subscriber.md
+    - Models:
+      - Data: api-reference/core/models/data.md
+      - Orders: api-reference/core/models/orders.md
+      - Records: api-reference/core/models/records.md
+    - Strategies:
+      - Base: api-reference/core/strategies/base.md
+      - Examples: api-reference/core/strategies/examples.md
   - Secmaster:
+    - Schema: api-reference/secmaster/schema.md
     - Utils: api-reference/secmaster/utils.md
+hooks:
+- docs/hooks.py
 theme:
   name: material
   icon:

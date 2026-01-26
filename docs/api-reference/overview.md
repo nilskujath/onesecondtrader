@@ -13,19 +13,13 @@ hide:
 
     ---
 
-    [:material-link-variant: View `connectors` package API](connectors.md)
+    [:material-link-variant: View `connectors` package API](connectors/brokers/simulated.md)
 
 -   __Core__&nbsp;&nbsp;
 
     ---
 
-    [:material-link-variant: View `core` package API](core.md)
-
--   __Dashboard__&nbsp;&nbsp;
-
-    ---
-
-    [:material-link-variant: View `dashboard` package API](dashboard.md)
+    [:material-link-variant: View `core` package API](core/brokers/base.md)
 
 -   __Secmaster__&nbsp;&nbsp;
 
