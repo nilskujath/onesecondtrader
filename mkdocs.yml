@@ -22,6 +22,9 @@ nav:
   - Brokers:
     - Base: api-reference/brokers/base.md
     - Simulated: api-reference/brokers/simulated.md
+  - Connectors: api-reference/connectors.md
+  - Core: api-reference/core.md
+  - Dashboard: api-reference/dashboard.md
   - Datafeeds:
     - Base: api-reference/datafeeds/base.md
     - Simulated: api-reference/datafeeds/simulated.md
@@ -41,6 +44,8 @@ nav:
     - Data: api-reference/models/data.md
     - Orders: api-reference/models/orders.md
     - Records: api-reference/models/records.md
+  - Secmaster:
+    - Utils: api-reference/secmaster/utils.md
   - Strategies:
     - Base: api-reference/strategies/base.md
     - Sma Crossover: api-reference/strategies/sma_crossover.md

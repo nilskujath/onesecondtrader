@@ -17,3 +17,4 @@ tutorials/
 # Data files
 data/
 *.csv
+runs/

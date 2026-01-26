@@ -15,6 +15,24 @@ hide:
 
     [:material-link-variant: View `brokers` package API](brokers/base.md)
 
+-   __Connectors__&nbsp;&nbsp;
+
+    ---
+
+    [:material-link-variant: View `connectors` package API](connectors.md)
+
+-   __Core__&nbsp;&nbsp;
+
+    ---
+
+    [:material-link-variant: View `core` package API](core.md)
+
+-   __Dashboard__&nbsp;&nbsp;
+
+    ---
+
+    [:material-link-variant: View `dashboard` package API](dashboard.md)
+
 -   __Datafeeds__&nbsp;&nbsp;
 
     ---
@@ -44,6 +62,12 @@ hide:
     ---
 
     [:material-link-variant: View `models` package API](models/data.md)
+
+-   __Secmaster__&nbsp;&nbsp;
+
+    ---
+
+    [:material-link-variant: View `secmaster` package API](secmaster/utils.md)
 
 -   __Strategies__&nbsp;&nbsp;
 
