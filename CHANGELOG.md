@@ -1,3 +1,6 @@
+## v0.39.0
+- feat: secmaster complete
+
 ## v0.38.0
 - feat: fixed documentation
 
