@@ -56,6 +56,15 @@ def parse_sql_schema(sql_content: str) -> dict:
     return {"module_docstring": "\n".join(module_docstring_lines), "blocks": blocks}
 
 
+ABBREVIATIONS = {"mbo", "bbo", "ohlcv", "mbp10"}
+
+
+def format_heading(name: str) -> str:
+    if name.lower() in ABBREVIATIONS:
+        return name.upper()
+    return name.capitalize()
+
+
 def extract_block_name(sql: str) -> str:
     match = re.search(
         r"CREATE\s+(?:TABLE|INDEX|VIEW)\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)",
@@ -76,7 +85,8 @@ def generate_markdown(parsed: dict) -> str:
 
     for block in parsed["blocks"]:
         name = extract_block_name(block["sql"])
-        lines.append(f"## {name}\n")
+        heading = format_heading(name)
+        lines.append(f"## {heading}\n")
 
         if block["docstring"]:
             lines.append(block["docstring"])

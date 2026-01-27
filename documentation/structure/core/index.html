@@ -8,24 +8,28 @@
       
       
       
-        <link rel="canonical" href="https://www.onesecondtrader.com/sql_primer/">
+        <link rel="canonical" href="https://www.onesecondtrader.com/documentation/structure/core/">
       
       
+        <link rel="prev" href="../overview/">
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+        <link rel="next" href="../secmaster/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
     
     
       
-        <title>SQL Primer - OneSecondTrader</title>
+        <title>Core - OneSecondTrader</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e37652d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -44,18 +48,18 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../css/extra.css">
+      <link rel="stylesheet" href="../../../css/extra.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
     
     
     
-   <link href="../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+   <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
     html.glightbox-open { overflow: initial; height: 100%; }
     .gslide-title { margin-top: 0px; user-select: text; }
     .gslide-desc { color: #666; user-select: text; }
@@ -64,7 +68,7 @@
     .gdesc-inner { font-size: 0.75rem; }
     body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
     body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
-    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../assets/javascripts/glightbox.min.js"></script></head>
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../../../assets/javascripts/glightbox.min.js"></script></head>
   
   
     
@@ -83,7 +87,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#sql-primer" class="md-skip">
+        <a href="#core-package-documentation" class="md-skip">
           Skip to content
         </a>
       
@@ -97,7 +101,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="OneSecondTrader" class="md-header__button md-logo" aria-label="OneSecondTrader" data-md-component="logo">
+    <a href="../../.." title="OneSecondTrader" class="md-header__button md-logo" aria-label="OneSecondTrader" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5zm2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63s2.59.23 3.5.63z"/></svg>
@@ -117,7 +121,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              SQL Primer
+              Core
             
           </span>
         </div>
@@ -238,7 +242,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -257,7 +261,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../quickstart/" class="md-tabs__link">
+      <a href="../../../quickstart/" class="md-tabs__link">
         
   
   
@@ -274,11 +278,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../documentation/overview/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../overview/" class="md-tabs__link">
           
   
   
@@ -298,7 +304,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../api-reference/overview/" class="md-tabs__link">
+        <a href="../../../api-reference/overview/" class="md-tabs__link">
           
   
   
@@ -332,7 +338,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="OneSecondTrader" class="md-nav__button md-logo" aria-label="OneSecondTrader" data-md-component="logo">
+    <a href="../../.." title="OneSecondTrader" class="md-nav__button md-logo" aria-label="OneSecondTrader" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5zm2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63s2.59.23 3.5.63z"/></svg>
@@ -362,7 +368,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -384,7 +390,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../quickstart/" class="md-nav__link">
+      <a href="../../../quickstart/" class="md-nav__link">
         
   
   
@@ -403,24 +409,29 @@
       
   
   
+    
   
   
+  
     
     
     
     
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
@@ -433,7 +444,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Documentation
@@ -447,7 +458,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../documentation/overview/" class="md-nav__link">
+      <a href="../../overview/" class="md-nav__link">
         
   
   
@@ -458,6 +469,182 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Package Structure
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Package Structure
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Core
+    
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../secmaster/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Securities Master
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connectors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Connectors
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dashboard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dashboard
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -518,7 +705,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/overview/" class="md-nav__link">
+      <a href="../../../api-reference/overview/" class="md-nav__link">
         
   
   
@@ -623,7 +810,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/connectors/brokers/simulated/" class="md-nav__link">
+      <a href="../../../api-reference/connectors/brokers/simulated/" class="md-nav__link">
         
   
   
@@ -695,7 +882,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/connectors/datafeeds/base/" class="md-nav__link">
+      <a href="../../../api-reference/connectors/datafeeds/base/" class="md-nav__link">
         
   
   
@@ -718,7 +905,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/connectors/datafeeds/simulated/" class="md-nav__link">
+      <a href="../../../api-reference/connectors/datafeeds/simulated/" class="md-nav__link">
         
   
   
@@ -839,7 +1026,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/core/brokers/base/" class="md-nav__link">
+      <a href="../../../api-reference/core/brokers/base/" class="md-nav__link">
         
   
   
@@ -911,7 +1098,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/core/events/bases/" class="md-nav__link">
+      <a href="../../../api-reference/core/events/bases/" class="md-nav__link">
         
   
   
@@ -934,7 +1121,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/core/events/market/" class="md-nav__link">
+      <a href="../../../api-reference/core/events/market/" class="md-nav__link">
         
   
   
@@ -957,7 +1144,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/core/events/requests/" class="md-nav__link">
+      <a href="../../../api-reference/core/events/requests/" class="md-nav__link">
         
   
   
@@ -980,7 +1167,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/core/events/responses/" class="md-nav__link">
+      <a href="../../../api-reference/core/events/responses/" class="md-nav__link">
         
   
   
@@ -1052,7 +1239,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/core/indicators/averages/" class="md-nav__link">
+      <a href="../../../api-reference/core/indicators/averages/" class="md-nav__link">
         
   
   
@@ -1075,7 +1262,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/core/indicators/bar/" class="md-nav__link">
+      <a href="../../../api-reference/core/indicators/bar/" class="md-nav__link">
         
   
   
@@ -1098,7 +1285,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/core/indicators/base/" class="md-nav__link">
+      <a href="../../../api-reference/core/indicators/base/" class="md-nav__link">
         
   
   
@@ -1170,7 +1357,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/core/messaging/eventbus/" class="md-nav__link">
+      <a href="../../../api-reference/core/messaging/eventbus/" class="md-nav__link">
         
   
   
@@ -1193,7 +1380,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/core/messaging/subscriber/" class="md-nav__link">
+      <a href="../../../api-reference/core/messaging/subscriber/" class="md-nav__link">
         
   
   
@@ -1265,7 +1452,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/core/models/data/" class="md-nav__link">
+      <a href="../../../api-reference/core/models/data/" class="md-nav__link">
         
   
   
@@ -1288,7 +1475,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/core/models/orders/" class="md-nav__link">
+      <a href="../../../api-reference/core/models/orders/" class="md-nav__link">
         
   
   
@@ -1311,7 +1498,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/core/models/records/" class="md-nav__link">
+      <a href="../../../api-reference/core/models/records/" class="md-nav__link">
         
   
   
@@ -1383,7 +1570,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/core/strategies/base/" class="md-nav__link">
+      <a href="../../../api-reference/core/strategies/base/" class="md-nav__link">
         
   
   
@@ -1406,7 +1593,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/core/strategies/examples/" class="md-nav__link">
+      <a href="../../../api-reference/core/strategies/examples/" class="md-nav__link">
         
   
   
@@ -1486,7 +1673,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/secmaster/schema/" class="md-nav__link">
+      <a href="../../../api-reference/secmaster/schema/" class="md-nav__link">
         
   
   
@@ -1509,7 +1696,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/secmaster/utils/" class="md-nav__link">
+      <a href="../../../api-reference/secmaster/utils/" class="md-nav__link">
         
   
   
@@ -1560,131 +1747,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#tables" class="md-nav__link">
-    <span class="md-ellipsis">
-      Tables
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#primary-keys" class="md-nav__link">
-    <span class="md-ellipsis">
-      Primary Keys
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#foreign-keys" class="md-nav__link">
-    <span class="md-ellipsis">
-      Foreign Keys
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#constraints" class="md-nav__link">
-    <span class="md-ellipsis">
-      Constraints
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#indexes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Indexes
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#normalization" class="md-nav__link">
-    <span class="md-ellipsis">
-      Normalization
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#one-to-many-relationships" class="md-nav__link">
-    <span class="md-ellipsis">
-      One-to-Many Relationships
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#composite-primary-keys" class="md-nav__link">
-    <span class="md-ellipsis">
-      Composite Primary Keys
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#b-trees" class="md-nav__link">
-    <span class="md-ellipsis">
-      B-trees
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-indexes-work" class="md-nav__link">
-    <span class="md-ellipsis">
-      How Indexes Work
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-leftmost-prefix-rule" class="md-nav__link">
-    <span class="md-ellipsis">
-      The Leftmost Prefix Rule
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#without-rowid-tables" class="md-nav__link">
-    <span class="md-ellipsis">
-      WITHOUT ROWID Tables
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#index-tradeoffs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Index Tradeoffs
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1702,79 +1764,12 @@
   
 
 
-<h1 id="sql-primer">SQL Primer</h1>
-<p>SQL (Structured Query Language) is the language used to interact with databases.
-This page covers the SQL concepts needed to understand the schema of the securities master database.</p>
-<h2 id="tables">Tables</h2>
-<p>A table is a collection of related data organized into rows and columns.
-A table is created by using the <code>CREATE TABLE</code> statement:</p>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">publishers</span><span class="w"> </span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="n">publisher_id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">UNIQUE</span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="n">dataset</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="n">venue</span><span class="w"> </span><span class="nb">TEXT</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">);</span>
-</span></code></pre></div>
-<p>This creates a table called <code>publishers</code> with four columns.
-Every column has a data type that specifies what kind of values it can hold.
-<code>NULL</code> is a special value meaning "no data" or "unknown".
-<code>NOT NULL</code> is a constraint that specifies that a column must not contain NULL values.</p>
-<h2 id="primary-keys">Primary Keys</h2>
-<p>A primary key is a column (or combination of columns) that uniquely identifies each row in a table. No two rows can have the same primary key value, and the primary key cannot be NULL.</p>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">publisher_id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span>
-</span></code></pre></div>
-<p>When a column is declared as <code>INTEGER PRIMARY KEY</code> in SQLite, it becomes an auto-incrementing identifier—if no value is specified during insertion, SQLite automatically assigns the next available number. Primary keys guarantee each row can be individually identified, and SQLite automatically creates an efficient lookup structure for primary key columns.</p>
-<h2 id="foreign-keys">Foreign Keys</h2>
-<p>A foreign key is a column that references the primary key of another table, creating a relationship between the tables.</p>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">instruments</span><span class="w"> </span><span class="p">(</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="n">instrument_id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="n">publisher_id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="p">...</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">publisher_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">publishers</span><span class="p">(</span><span class="n">publisher_id</span><span class="p">)</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">);</span>
-</span></code></pre></div>
-<p>This declaration means the <code>publisher_id</code> column in the <code>instruments</code> table must contain a value that exists in the <code>publisher_id</code> column of the <code>publishers</code> table. Foreign keys enforce referential integrity—preventing the creation of an instrument that references a non-existent publisher, or the deletion of a publisher that still has instruments associated with it.</p>
-<h2 id="constraints">Constraints</h2>
-<p>Constraints are rules that limit what data can be stored in a column. <code>NOT NULL</code> means the column must have a value. <code>UNIQUE</code> means no two rows can have the same value in this column. <code>DEFAULT</code> specifies a fallback value if none is provided during insertion. Constraints can also span multiple columns:</p>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">UNIQUE</span><span class="p">(</span><span class="n">publisher_id</span><span class="p">,</span><span class="w"> </span><span class="n">raw_symbol</span><span class="p">)</span>
-</span></code></pre></div>
-<p>This means the <em>combination</em> of publisher_id and raw_symbol must be unique. The same symbol (like 'ESH5') can appear multiple times in the table, as long as each occurrence is from a different publisher.</p>
-<h2 id="indexes">Indexes</h2>
-<p>An index is a data structure that speeds up searches on specific columns—like the index at the back of a book that allows jumping directly to a topic instead of reading every page.</p>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_instruments_symbol</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">instruments</span><span class="p">(</span><span class="n">raw_symbol</span><span class="p">);</span>
-</span></code></pre></div>
-<p>This creates an index named <code>idx_instruments_symbol</code> on the <code>raw_symbol</code> column of the <code>instruments</code> table. When searching for instruments by symbol, the database can find them quickly without scanning every row.</p>
-<h2 id="normalization">Normalization</h2>
-<p>The schema uses separate <code>publishers</code> and <code>instruments</code> tables rather than storing publisher names directly in each instrument row. This design principle is called normalization. Without it, publisher information would be duplicated in every row, wasting storage, creating update anomalies (changing a dataset name requires updating every row), and risking inconsistency from typos. With normalization, publisher information is stored once, and each instrument stores only a reference (the publisher_id) to the publisher.</p>
-<h2 id="one-to-many-relationships">One-to-Many Relationships</h2>
-<p>The relationship between publishers and instruments is called one-to-many: one publisher can have many instruments, but each instrument belongs to exactly one publisher. This is implemented through the foreign key: <code>instruments.publisher_id</code> references <code>publishers.publisher_id</code>. Similarly, the relationship between instruments and OHLCV bars is one-to-many: one instrument can have millions of bars, but each bar belongs to exactly one instrument.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>publishers (1) ──────&lt; instruments (many) ──────&lt; ohlcv (many)
-</span></code></pre></div>
-<h2 id="composite-primary-keys">Composite Primary Keys</h2>
-<p>Sometimes a single column isn't enough to uniquely identify a row. The <code>ohlcv</code> table uses a composite primary key—a primary key made up of multiple columns:</p>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">instrument_id</span><span class="p">,</span><span class="w"> </span><span class="n">rtype</span><span class="p">,</span><span class="w"> </span><span class="n">ts_event</span><span class="p">)</span>
-</span></code></pre></div>
-<p>This means the <em>combination</em> of these three values must be unique—multiple bars for the same instrument with different timestamps, multiple bars at the same timestamp for different instruments, and multiple bar types for the same instrument and time are all allowed, but two rows with the same instrument_id, rtype, AND ts_event would be a duplicate bar.</p>
-<h2 id="b-trees">B-trees</h2>
-<p>A B-tree (balanced tree) is the data structure that databases use to organize data for fast lookups. It works like searching a phone book—instead of reading every name from page 1, the search opens to the middle, determines which half contains the target, and repeats until the entry is found. Each step eliminates half the remaining possibilities. A B-tree organizes data into a tree structure with a root node at the top, branch nodes that guide the search, and leaf nodes containing the actual data. Finding one row among a billion takes the same number of steps as finding one among a thousand.</p>
-<h2 id="how-indexes-work">How Indexes Work</h2>
-<p>When a table is created with a primary key, SQLite automatically creates a B-tree index for that key. Additional indexes created with <code>CREATE INDEX</code> are additional B-trees. Each index stores the indexed column value(s) and a pointer to the full row. When searching by an indexed column, the database searches the index B-tree (fast—logarithmic time) and follows the pointer to retrieve the full row. Without an index, the database must perform a full table scan—reading every row to find matches.</p>
-<h2 id="the-leftmost-prefix-rule">The Leftmost Prefix Rule</h2>
-<p>For composite indexes (indexes on multiple columns), the index can only be used efficiently if the query filters on a leftmost prefix of the indexed columns. The <code>ohlcv</code> table has a primary key of <code>(instrument_id, rtype, ts_event)</code>, creating a B-tree sorted first by instrument_id, then by rtype within each instrument, then by ts_event within each rtype. Queries filtering on <code>instrument_id</code> alone, or <code>instrument_id AND rtype</code>, or all three columns can use this index efficiently. However, queries filtering only on <code>ts_event</code> or only on <code>rtype</code> cannot use the primary key index because they skip the leftmost column(s)—the B-tree is sorted by instrument_id first. This is why the schema includes a separate index on <code>ts_event</code>:</p>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_ohlcv_ts</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">ohlcv</span><span class="p">(</span><span class="n">ts_event</span><span class="p">);</span>
-</span></code></pre></div>
-<p>This creates a second B-tree sorted by timestamp, enabling fast time-based queries across all instruments.</p>
-<h2 id="without-rowid-tables">WITHOUT ROWID Tables</h2>
-<p>In a normal SQLite table, data is stored in a B-tree organized by an internal rowid (a hidden auto-incrementing integer). If a primary key is defined, SQLite creates a <em>second</em> B-tree for that key, which stores the primary key values and their corresponding rowids. Looking up a row by primary key requires searching the primary key B-tree to find the rowid, then searching the rowid B-tree to find the actual data. This double lookup is fine for most tables, but for a table with billions of rows accessed primarily by its composite key (like <code>ohlcv</code>), it's wasteful.</p>
-<p>The <code>WITHOUT ROWID</code> optimization changes this:</p>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">ohlcv</span><span class="w"> </span><span class="p">(</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="p">...</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">instrument_id</span><span class="p">,</span><span class="w"> </span><span class="n">rtype</span><span class="p">,</span><span class="w"> </span><span class="n">ts_event</span><span class="p">)</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p">)</span><span class="w"> </span><span class="k">WITHOUT</span><span class="w"> </span><span class="n">ROWID</span><span class="p">;</span>
-</span></code></pre></div>
-<p>Now the table data is stored directly in the primary key B-tree. There's no separate rowid B-tree, no double lookup—resulting in ~50% storage reduction (primary key values aren't stored twice), faster lookups (one B-tree search instead of two), and better locality (data for the same instrument is physically adjacent on disk). The tradeoff is that WITHOUT ROWID tables can't use some SQLite optimizations that depend on rowids, but for time-series data accessed by composite key, this is the right choice.</p>
-<h2 id="index-tradeoffs">Index Tradeoffs</h2>
-<p>Indexes aren't free—each index consumes storage, slows down writes (every INSERT must update all indexes), and requires maintenance to stay in sync with data. The schema includes only two additional indexes beyond the primary keys: <code>idx_ohlcv_ts</code> on <code>ohlcv(ts_event)</code> to enable time-range queries across instruments, and <code>idx_instruments_symbol</code> on <code>instruments(raw_symbol)</code> to enable symbol lookups. Each was added because the query pattern it supports is common enough to justify the overhead.</p>
+<h1 id="core-package-documentation">Core Package Documentation</h1>
+<div class="admonition warning">
+<p class="admonition-title">Under Construction</p>
+<p>This part of the documentation is still under construction!
+If necessary, have a look at the API reference for now.</p>
+</div>
 
 
 
@@ -1830,14 +1825,14 @@ THIS SOFTWARE AND ITS DOCUMENTATION PAGES ARE PROVIDED "AS IS," WITHOUT ANY WARR
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "content.code.copy", "content.code.select", "content.code.annotate", "content.footnote.tooltips", "content.tabs.linked", "navigation.top"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "content.code.copy", "content.code.select", "content.code.annotate", "content.footnote.tooltips", "content.tabs.linked", "navigation.top"], "search": "../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.50899def.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.50899def.min.js"></script>
       
-        <script src="../javascripts/mathjax.js"></script>
+        <script src="../../../javascripts/mathjax.js"></script>
       
-        <script src="../javascripts/source_open.js"></script>
+        <script src="../../../javascripts/source_open.js"></script>
       
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
