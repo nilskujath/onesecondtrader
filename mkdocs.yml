@@ -19,6 +19,12 @@ nav:
 - "\u2192 Quickstart": quickstart.md
 - Documentation:
   - Overview: documentation/overview.md
+  - Package Structure:
+    - Overview: documentation/structure/overview.md
+    - Core: documentation/structure/core.md
+    - Securities Master: documentation/structure/secmaster.md
+    - Connectors: documentation/structure/connectors.md
+    - Dashboard: documentation/structure/dashboard.md
 - API Reference:
   - Overview: api-reference/overview.md
   - Connectors:

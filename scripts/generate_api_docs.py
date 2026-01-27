@@ -56,7 +56,7 @@ def generate_api_docs():
     Automatically discovers Python modules and submodules in src/onesecondtrader and generates
     corresponding markdown documentation files. Handles both:
     - Top-level .py files (like monitoring.py)
-    - Submodule packages (like domain/ with __init__.py)
+    - Submodule structure (like domain/ with __init__.py)
 
     Modules with substantial content use mkdocstrings for automatic API documentation, while
     simple modules display their source code directly. This is done in the following steps:
@@ -491,7 +491,7 @@ hide:
         nested = structure.get("nested", {})
         nested_count = sum(len(v) for v in nested.values())
         logger.info(
-            f"  - Submodule {module}: {len(files)} files, {len(nested)} nested packages ({nested_count} files)"
+            f"  - Submodule {module}: {len(files)} files, {len(nested)} nested structure ({nested_count} files)"
         )
 
 
