@@ -85,6 +85,10 @@
          <lastmod>2026-01-28</lastmod>
     </url>
     <url>
+         <loc>https://www.onesecondtrader.com/api-reference/core/models/params/</loc>
+         <lastmod>2026-01-28</lastmod>
+    </url>
+    <url>
          <loc>https://www.onesecondtrader.com/api-reference/core/models/records/</loc>
          <lastmod>2026-01-28</lastmod>
     </url>
@@ -94,6 +98,22 @@
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/api-reference/core/strategies/examples/</loc>
+         <lastmod>2026-01-28</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/api-reference/dashboard/app/</loc>
+         <lastmod>2026-01-28</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/api-reference/dashboard/registry/</loc>
+         <lastmod>2026-01-28</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/api-reference/orchestrator/orchestrator/</loc>
+         <lastmod>2026-01-28</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/api-reference/orchestrator/recorder/</loc>
          <lastmod>2026-01-28</lastmod>
     </url>
     <url>
