@@ -1,17 +1,30 @@
 from __future__ import annotations
 
 import enum
+import json
 import os
+import pathlib
+import shutil
 import sqlite3
 
 from fastapi import FastAPI, BackgroundTasks
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from matplotlib.patches import Rectangle
+import pandas as pd
 
 from onesecondtrader.orchestrator import Orchestrator
 from onesecondtrader.connectors.brokers import SimulatedBroker
 from onesecondtrader.connectors.datafeeds import SimulatedDatafeed
 from . import registry
+
+CHARTS_DIR = pathlib.Path(os.environ.get("CHARTS_DIR", "charts"))
 
 app = FastAPI(title="OneSecondTrader Dashboard")
 
@@ -338,6 +351,15 @@ RUN_DETAIL_STYLE = """
 .positions-filter select { background: #21262d; border: 1px solid #30363d; border-radius: 6px; padding: 8px 12px; color: #c9d1d9; font-size: 14px; min-width: 150px; }
 .positions-filter select:focus { outline: none; border-color: #58a6ff; }
 .positions-filter label { color: #8b949e; font-size: 14px; }
+.position-row { cursor: pointer; }
+.position-row:hover { background: #21262d !important; }
+.chart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+.chart-modal-content { background: #161b22; border: 1px solid #30363d; border-radius: 8px; max-width: 95%; max-height: 95%; overflow: auto; }
+.chart-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #30363d; }
+.chart-modal-header h3 { margin: 0; font-size: 16px; }
+.chart-modal-close { background: none; border: none; color: #8b949e; font-size: 24px; cursor: pointer; padding: 0; line-height: 1; }
+.chart-modal-close:hover { color: #e6edf3; }
+.chart-modal-body { padding: 20px; }
 """
 
 RUN_DETAIL_SCRIPT = """
@@ -371,7 +393,7 @@ function renderPositions(positions, selectedSymbol) {
     document.getElementById('summary-winrate').textContent = winRate;
     const tbody = document.getElementById('positions-tbody');
     tbody.innerHTML = filtered.map((p, i) => `
-        <tr>
+        <tr class="position-row" data-symbol="${p.symbol}" data-position-id="${p.position_id}">
             <td>${i + 1}</td>
             <td>${p.symbol}</td>
             <td class="${p.side === 'LONG' ? 'side-long' : 'side-short'}">${p.side}</td>
@@ -383,6 +405,13 @@ function renderPositions(positions, selectedSymbol) {
             <td>${formatPnl(p.pnl)}</td>
         </tr>
     `).join('');
+    tbody.querySelectorAll('.position-row').forEach(row => {
+        row.addEventListener('click', () => {
+            const symbol = row.dataset.symbol;
+            const positionId = row.dataset.positionId;
+            showPositionChart(symbol, positionId);
+        });
+    });
 }
 function onSymbolFilterChange() {
     const sel = document.getElementById('symbol-filter');
@@ -504,6 +533,34 @@ async function loadRunDetail() {
         renderPositions(allPositions, '');
     }
 }
+function showPositionChart(symbol, positionId) {
+    const modal = document.getElementById('chart-modal');
+    const modalTitle = document.getElementById('chart-modal-title');
+    const modalBody = document.getElementById('chart-modal-body');
+    const runId = window.location.pathname.split('/run/')[1];
+
+    modalTitle.textContent = `Position Chart - ${symbol} #${positionId}`;
+    modalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><p>Generating chart...</p></div>';
+    modal.style.display = 'flex';
+
+    fetch(`/api/run/${runId}/positions/${encodeURIComponent(symbol)}/${positionId}/chart`)
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => { throw new Error(data.error || 'Failed to load chart'); });
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const url = URL.createObjectURL(blob);
+            modalBody.innerHTML = `<img src="${url}" style="max-width: 100%; max-height: 80vh;">`;
+        })
+        .catch(error => {
+            modalBody.innerHTML = `<div style="color: #f85149; padding: 20px;">${error.message}</div>`;
+        });
+}
+function closeChartModal() {
+    document.getElementById('chart-modal').style.display = 'none';
+}
 document.addEventListener('DOMContentLoaded', loadRunDetail);
 """
 
@@ -529,6 +586,15 @@ async def run_detail_page(run_id: str):
                 </div>
             </div>
         </main>
+        <div id="chart-modal" class="chart-modal" onclick="if(event.target===this)closeChartModal()">
+            <div class="chart-modal-content">
+                <div class="chart-modal-header">
+                    <h3 id="chart-modal-title">Position Chart</h3>
+                    <button class="chart-modal-close" onclick="closeChartModal()">&times;</button>
+                </div>
+                <div id="chart-modal-body" class="chart-modal-body"></div>
+            </div>
+        </div>
         <script>{RUN_DETAIL_SCRIPT}</script>
     </body>
     </html>
@@ -671,6 +737,9 @@ async def delete_run(run_id: str):
     cursor.execute("DELETE FROM runs WHERE run_id = ?", (run_id,))
     conn.commit()
     conn.close()
+    charts_path = CHARTS_DIR / run_id
+    if charts_path.exists():
+        shutil.rmtree(charts_path)
     return {"status": "deleted"}
 
 
@@ -796,6 +865,505 @@ async def get_run_positions(run_id: str):
             "win_rate": winners / len(positions) if positions else 0,
         },
     }
+
+
+def _load_bars_for_chart(run_id: str, symbol: str) -> pd.DataFrame | None:
+    db_path = _get_runs_db_path()
+    if not os.path.exists(db_path):
+        return None
+    conn = sqlite3.connect(db_path)
+    bars_df = pd.read_sql(
+        "SELECT * FROM bars WHERE run_id = ? AND symbol = ? ORDER BY ts_event",
+        conn,
+        params=(run_id, symbol),
+    )
+    conn.close()
+    if bars_df.empty:
+        return None
+    bars_df["ts_event"] = pd.to_datetime(bars_df["ts_event"])
+    if "indicators" in bars_df.columns:
+        indicator_rows = []
+        for _, row in bars_df.iterrows():
+            indicators_json = row.get("indicators")
+            if indicators_json and isinstance(indicators_json, str):
+                try:
+                    indicators = json.loads(indicators_json)
+                    indicator_rows.append(indicators)
+                except json.JSONDecodeError:
+                    indicator_rows.append({})
+            else:
+                indicator_rows.append({})
+        if indicator_rows:
+            indicators_df = pd.DataFrame(indicator_rows)
+            for col in indicators_df.columns:
+                bars_df[col] = indicators_df[col].values
+    return bars_df
+
+
+def _load_fills_for_chart(run_id: str, symbol: str) -> list[dict]:
+    db_path = _get_runs_db_path()
+    if not os.path.exists(db_path):
+        return []
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(
+        """SELECT ts_event, symbol, side, quantity, price, commission, order_id
+           FROM fills WHERE run_id = ? AND symbol = ? ORDER BY ts_event""",
+        (run_id, symbol),
+    )
+    rows = cursor.fetchall()
+    conn.close()
+    return [
+        {
+            "ts_event": pd.to_datetime(row[0]),
+            "symbol": row[1],
+            "side": row[2],
+            "quantity": row[3],
+            "price": row[4],
+            "commission": row[5] or 0.0,
+            "order_id": row[6],
+        }
+        for row in rows
+    ]
+
+
+_OHLCV_COLUMNS = {
+    "ts_event",
+    "symbol",
+    "bar_period",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "run_id",
+    "indicators",
+}
+_MAIN_COLORS = ["orange", "purple", "brown", "pink", "gray", "cyan", "magenta"]
+_SUBPLOT_COLORS = [
+    "#1f77b4",
+    "#ff7f0e",
+    "#2ca02c",
+    "#d62728",
+    "#9467bd",
+    "#8c564b",
+    "#e377c2",
+    "#7f7f7f",
+]
+
+
+def _parse_indicator_column(col: str) -> tuple[int, str] | None:
+    if col in _OHLCV_COLUMNS or len(col) < 4 or col[2] != "_":
+        return None
+    try:
+        plot_at = int(col[:2])
+        display_name = col[3:]
+        return (plot_at, display_name)
+    except ValueError:
+        return None
+
+
+def _get_indicator_columns(data: pd.DataFrame) -> dict[str, tuple[int, str]]:
+    result = {}
+    for col in data.columns:
+        parsed = _parse_indicator_column(col)
+        if parsed is not None:
+            result[col] = parsed
+    return result
+
+
+def _main_indicator_columns(data: pd.DataFrame) -> list[tuple[str, str]]:
+    indicators = _get_indicator_columns(data)
+    return [(col, name) for col, (plot_at, name) in indicators.items() if plot_at == 0]
+
+
+def _subplot_groups_from_data(data: pd.DataFrame) -> dict[int, list[tuple[str, str]]]:
+    indicators = _get_indicator_columns(data)
+    groups: dict[int, list[tuple[str, str]]] = {}
+    for col, (plot_at, name) in indicators.items():
+        if 1 <= plot_at <= 98:
+            groups.setdefault(plot_at, []).append((col, name))
+    return groups
+
+
+def _extract_positions_for_chart(run_id: str) -> list[dict]:
+    db_path = _get_runs_db_path()
+    if not os.path.exists(db_path):
+        return []
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(
+        """SELECT ts_event, symbol, side, quantity, price, commission, order_id
+           FROM fills WHERE run_id = ? ORDER BY ts_event""",
+        (run_id,),
+    )
+    rows = cursor.fetchall()
+    conn.close()
+    fills = [
+        {
+            "ts_event": pd.to_datetime(row[0]),
+            "symbol": row[1],
+            "side": _normalize_side(row[2]),
+            "quantity": row[3],
+            "price": row[4],
+            "commission": row[5] or 0.0,
+            "order_id": row[6],
+        }
+        for row in rows
+    ]
+    by_symbol: dict[str, list] = {}
+    for f in fills:
+        by_symbol.setdefault(f["symbol"], []).append(f)
+    positions = []
+    for symbol, symbol_fills in by_symbol.items():
+        symbol_fills.sort(key=lambda x: x["ts_event"])
+        position = 0.0
+        position_fills: list = []
+        position_id = 0
+        for fill in symbol_fills:
+            qty = fill["quantity"]
+            signed_qty = qty if fill["side"] == "BUY" else -qty
+            new_position = position + signed_qty
+            position_fills.append(fill)
+            if new_position == 0.0 and position != 0.0:
+                position_id += 1
+                pnl = 0.0
+                total_commission = 0.0
+                for pf in position_fills:
+                    value = pf["price"] * pf["quantity"]
+                    commission = pf.get("commission") or 0.0
+                    total_commission += commission
+                    if pf["side"] == "BUY":
+                        pnl -= value
+                    else:
+                        pnl += value
+                pnl -= total_commission
+                positions.append(
+                    {
+                        "position_id": position_id,
+                        "symbol": symbol,
+                        "fills": list(position_fills),
+                        "first_fill_time": position_fills[0]["ts_event"],
+                        "last_fill_time": position_fills[-1]["ts_event"],
+                        "pnl": pnl,
+                    }
+                )
+                position_fills = []
+            position = new_position
+    positions.sort(key=lambda x: x["first_fill_time"])
+    return positions
+
+
+def _format_indicator_name(raw_name: str) -> str:
+    name_with_spaces = raw_name.replace("_", " ")
+    words = name_with_spaces.split()
+    formatted_words = []
+    for word in words:
+        if word.isupper():
+            formatted_words.append(word)
+        elif word.islower():
+            formatted_words.append(word.capitalize())
+        else:
+            formatted_words.append(word)
+    return " ".join(formatted_words)
+
+
+def _generate_position_chart(
+    output_path: pathlib.Path,
+    data: pd.DataFrame,
+    target_pos: dict,
+    symbol: str,
+    position_id: int,
+    highlight_start: int,
+    highlight_end: int,
+) -> None:
+    groups = _subplot_groups_from_data(data)
+    n = 2 + len(groups)
+    ratios = [1, 4] + [1] * len(groups)
+    fig, axes = plt.subplots(
+        n, 1, figsize=(16, 12), sharex=True, gridspec_kw={"height_ratios": ratios}
+    )
+    axes = [axes] if n == 1 else list(axes)
+
+    ax_pnl = axes[0]
+    ax_main = axes[1]
+
+    _plot_pnl_tracking(ax_pnl, data, target_pos, highlight_start, highlight_end)
+    _plot_price_data(ax_main, data, highlight_start, highlight_end)
+    _plot_main_indicators(ax_main, data)
+    _plot_trade_markers(ax_main, target_pos)
+
+    for i, (_, ind_cols) in enumerate(sorted(groups.items())):
+        ax_sub = axes[i + 2]
+        for j, (col, display_name) in enumerate(ind_cols):
+            if col in data.columns:
+                ax_sub.plot(
+                    data["ts_event"],
+                    data[col],
+                    label=display_name,
+                    linewidth=1.5,
+                    alpha=0.8,
+                    color=_SUBPLOT_COLORS[j % len(_SUBPLOT_COLORS)],
+                )
+        ax_sub.legend(loc="upper left", fontsize=8)
+        ax_sub.grid(True, alpha=0.3)
+
+    label = (
+        "WIN"
+        if target_pos["pnl"] > 0
+        else "LOSS"
+        if target_pos["pnl"] < 0
+        else "BREAK-EVEN"
+    )
+    duration_secs = (
+        target_pos["last_fill_time"] - target_pos["first_fill_time"]
+    ).total_seconds()
+    duration_mins = duration_secs / 60
+    ax_pnl.set_title(
+        f"Position #{position_id} - {symbol} - {label} - P&L: ${target_pos['pnl']:.2f} - Duration: {duration_mins:.0f}min",
+        fontsize=14,
+        fontweight="bold",
+    )
+
+    total_seconds = (
+        data["ts_event"].iloc[-1] - data["ts_event"].iloc[0]
+    ).total_seconds()
+    hours = total_seconds / 3600
+    days = total_seconds / 86400
+
+    for a in axes:
+        if days > 30:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+            a.xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
+        elif days > 7:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d"))
+            a.xaxis.set_major_locator(mdates.DayLocator(interval=2))
+        elif days > 2:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d"))
+            a.xaxis.set_major_locator(mdates.DayLocator(interval=1))
+        elif hours > 24:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d %H:%M"))
+            a.xaxis.set_major_locator(mdates.HourLocator(interval=6))
+        elif hours > 8:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+            a.xaxis.set_major_locator(mdates.HourLocator(interval=2))
+        elif hours > 2:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+            a.xaxis.set_major_locator(mdates.HourLocator(interval=1))
+        elif hours > 0.5:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+            a.xaxis.set_major_locator(mdates.MinuteLocator(interval=15))
+        else:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
+            a.xaxis.set_major_locator(mdates.MinuteLocator(interval=5))
+
+    plt.xticks(rotation=45, fontsize=9)
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
+def _plot_pnl_tracking(
+    ax, data: pd.DataFrame, target_pos: dict, highlight_start: int, highlight_end: int
+) -> None:
+    pnl_series = []
+    max_pnl = 0
+    drawdown_series = []
+
+    entry_price = target_pos["fills"][0]["price"] if target_pos["fills"] else 0
+    direction = target_pos["fills"][0]["side"] if target_pos["fills"] else "BUY"
+    in_position = False
+
+    for i in range(len(data)):
+        ts = data["ts_event"].iloc[i]
+        close = data["close"].iloc[i]
+
+        if ts >= target_pos["first_fill_time"] and ts <= target_pos["last_fill_time"]:
+            in_position = True
+            if direction == "BUY":
+                pnl = close - entry_price
+            else:
+                pnl = entry_price - close
+        else:
+            in_position = False
+            pnl = 0
+
+        if in_position:
+            max_pnl = max(max_pnl, pnl)
+            drawdown = pnl - max_pnl
+        else:
+            drawdown = 0
+
+        pnl_series.append(pnl)
+        drawdown_series.append(drawdown)
+
+    ax.plot(
+        data["ts_event"],
+        pnl_series,
+        color="blue",
+        linewidth=2,
+        label="Unrealized P&L",
+        alpha=0.8,
+    )
+    ax.fill_between(
+        data["ts_event"], drawdown_series, 0, color="red", alpha=0.3, label="Drawdown"
+    )
+    ax.axhline(y=0, color="black", linestyle="-", alpha=0.5, linewidth=0.8)
+
+    if 0 <= highlight_start < len(data) and 0 <= highlight_end < len(data):
+        start_time = mdates.date2num(data["ts_event"].iloc[highlight_start])
+        end_time = mdates.date2num(data["ts_event"].iloc[highlight_end])
+        y_min, y_max = ax.get_ylim()
+        rect = Rectangle(
+            (start_time, y_min),
+            end_time - start_time,
+            y_max - y_min,
+            facecolor="lightblue",
+            alpha=0.2,
+        )
+        ax.add_patch(rect)
+
+    ax.legend(loc="upper left", fontsize=8)
+    ax.grid(True, alpha=0.3)
+    ax.set_ylabel("P&L ($)", fontsize=10)
+
+
+def _plot_price_data(
+    ax, data: pd.DataFrame, highlight_start: int, highlight_end: int
+) -> None:
+    for i in range(len(data)):
+        date = data["ts_event"].iloc[i]
+        ax.plot(
+            [date, date],
+            [data["low"].iloc[i], data["high"].iloc[i]],
+            color="black",
+            linewidth=0.8,
+            alpha=0.7,
+        )
+        ax.plot([date], [data["close"].iloc[i]], marker="_", color="blue", markersize=3)
+
+    if 0 <= highlight_start < len(data) and 0 <= highlight_end < len(data):
+        start_time = mdates.date2num(data["ts_event"].iloc[highlight_start])
+        end_time = mdates.date2num(data["ts_event"].iloc[highlight_end])
+        y_min, y_max = ax.get_ylim()
+        rect = Rectangle(
+            (start_time, y_min),
+            end_time - start_time,
+            y_max - y_min,
+            facecolor="lightblue",
+            alpha=0.2,
+            label="Position Period",
+        )
+        ax.add_patch(rect)
+
+    ax.set_ylabel("Price", fontsize=10)
+    ax.grid(True, alpha=0.3)
+
+
+def _plot_main_indicators(ax, data: pd.DataFrame) -> None:
+    main_indicators = _main_indicator_columns(data)
+    for i, (col, display_name) in enumerate(main_indicators):
+        if col in data.columns:
+            ax.plot(
+                data["ts_event"],
+                data[col],
+                label=display_name,
+                linewidth=1.5,
+                alpha=0.8,
+                color=_MAIN_COLORS[i % len(_MAIN_COLORS)],
+            )
+    if main_indicators:
+        ax.legend(loc="upper right", fontsize=8)
+
+
+def _plot_trade_markers(ax, target_pos: dict) -> None:
+    for fill in target_pos["fills"]:
+        marker = "^" if fill["side"] == "BUY" else "v"
+        color = "green" if fill["side"] == "BUY" else "red"
+        qty = fill.get("quantity", 1)
+        base_size = 120
+        quantity_multiplier = min(3.0, max(0.5, qty))
+        size = base_size * quantity_multiplier
+
+        ax.scatter(
+            fill["ts_event"],
+            fill["price"],
+            marker=marker,
+            color=color,
+            s=size,
+            edgecolors="black",
+            linewidth=1,
+            zorder=5,
+            alpha=0.8,
+        )
+
+        y_lim = ax.get_ylim()
+        offset_y = (y_lim[1] - y_lim[0]) * 0.02
+        ax.annotate(
+            f"{qty}",
+            (fill["ts_event"], fill["price"] + offset_y),
+            ha="center",
+            va="bottom",
+            fontsize=8,
+            fontweight="bold",
+            bbox=dict(boxstyle="round,pad=0.2", facecolor="white", alpha=0.7),
+        )
+
+
+@app.get("/api/run/{run_id}/positions/{symbol}/{position_id}/chart")
+async def get_position_chart(run_id: str, symbol: str, position_id: int):
+    from fastapi import HTTPException
+
+    chart_dir = CHARTS_DIR / run_id
+    chart_path = chart_dir / f"{symbol}_{position_id}.png"
+
+    if chart_path.exists():
+        return FileResponse(chart_path, media_type="image/png")
+
+    bars_df = _load_bars_for_chart(run_id, symbol)
+    if bars_df is None or bars_df.empty:
+        raise HTTPException(status_code=404, detail="No bar data found for this symbol")
+
+    all_positions = _extract_positions_for_chart(run_id)
+    target_pos = None
+    for p in all_positions:
+        if p["symbol"] == symbol and p["position_id"] == position_id:
+            target_pos = p
+            break
+
+    if target_pos is None:
+        raise HTTPException(
+            status_code=404, detail=f"Position {position_id} not found for {symbol}"
+        )
+
+    bars_before, bars_after = 100, 100
+    mask_start = bars_df["ts_event"] >= target_pos["first_fill_time"]
+    mask_end = bars_df["ts_event"] <= target_pos["last_fill_time"]
+    if not mask_start.any() or not mask_end.any():
+        raise HTTPException(
+            status_code=404, detail="Position time range not found in bar data"
+        )
+
+    start_idx = int(bars_df.index.get_loc(bars_df[mask_start].index[0]))  # type: ignore[arg-type]
+    end_idx = int(bars_df.index.get_loc(bars_df[mask_end].index[-1]))  # type: ignore[arg-type]
+    chart_start = max(0, start_idx - bars_before)
+    chart_end = min(len(bars_df) - 1, end_idx + bars_after)
+    data = bars_df.iloc[chart_start : chart_end + 1].copy()
+    highlight_start = start_idx - chart_start
+    highlight_end = end_idx - chart_start
+
+    chart_dir.mkdir(parents=True, exist_ok=True)
+    _generate_position_chart(
+        chart_path,
+        data,
+        target_pos,
+        symbol,
+        position_id,
+        highlight_start,
+        highlight_end,
+    )
+
+    return FileResponse(chart_path, media_type="image/png")
 
 
 @app.get("/health")

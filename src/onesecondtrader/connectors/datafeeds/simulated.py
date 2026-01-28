@@ -88,12 +88,16 @@ class SimulatedDatafeed(DatafeedBase):
 
         cursor = self._connection.cursor()
 
-        instrument_ids = self._resolve_instrument_ids(cursor, symbols)
-        if not instrument_ids:
+        symbology_map = self._load_symbology(cursor, symbols)
+        if not symbology_map:
             return
 
-        instrument_to_symbol = {v: k for k, v in instrument_ids.items()}
-        id_list = list(instrument_ids.values())
+        all_instrument_ids = set()
+        for entries in symbology_map.values():
+            for entry in entries:
+                all_instrument_ids.add(entry["instrument_id"])
+
+        id_list = list(all_instrument_ids)
         rtype_list = list(set(rtype_by_symbol.values()))
 
         placeholders_ids = ",".join("?" * len(id_list))
@@ -128,7 +132,10 @@ class SimulatedDatafeed(DatafeedBase):
                 break
 
             instrument_id, rtype, ts_event, open_, high, low, close, volume = row
-            symbol = instrument_to_symbol.get(instrument_id)
+
+            symbol = self._resolve_symbol_for_bar(
+                symbology_map, instrument_id, ts_event
+            )
             if symbol is None:
                 continue
 
@@ -152,16 +159,40 @@ class SimulatedDatafeed(DatafeedBase):
             )
             self._event_bus.wait_until_system_idle()
 
-    def _resolve_instrument_ids(
+    def _load_symbology(
         self, cursor: sqlite3.Cursor, symbols: list[str]
-    ) -> dict[str, int]:
+    ) -> dict[str, list[dict]]:
         placeholders = ",".join("?" * len(symbols))
         query = f"""
-            SELECT symbol, instrument_id
+            SELECT symbol, instrument_id, start_date, end_date
             FROM symbology
             WHERE symbol IN ({placeholders})
-            GROUP BY symbol
-            HAVING start_date = MAX(start_date)
+            ORDER BY symbol, start_date
         """
         cursor.execute(query, symbols)
-        return {row[0]: row[1] for row in cursor.fetchall()}
+
+        result: dict[str, list[dict]] = {}
+        for row in cursor.fetchall():
+            symbol, instrument_id, start_date, end_date = row
+            start_ns = int(pd.Timestamp(start_date, tz="UTC").value)
+            end_ns = int(pd.Timestamp(end_date, tz="UTC").value)
+            if symbol not in result:
+                result[symbol] = []
+            result[symbol].append(
+                {
+                    "instrument_id": instrument_id,
+                    "start_ns": start_ns,
+                    "end_ns": end_ns,
+                }
+            )
+        return result
+
+    def _resolve_symbol_for_bar(
+        self, symbology_map: dict[str, list[dict]], instrument_id: int, ts_event: int
+    ) -> str | None:
+        for symbol, entries in symbology_map.items():
+            for entry in entries:
+                if entry["instrument_id"] == instrument_id:
+                    if entry["start_ns"] <= ts_event < entry["end_ns"]:
+                        return symbol
+        return None
