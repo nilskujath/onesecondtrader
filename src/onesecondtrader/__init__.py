@@ -4,9 +4,11 @@ __all__ = [
     "BarReceived",
     "BrokerBase",
     "Close",
-    "Datafeed",
+    "DatafeedBase",
     "FillRecord",
     "High",
+    "IBBroker",
+    "IBDatafeed",
     "Indicator",
     "InputSource",
     "Low",
@@ -25,8 +27,9 @@ __all__ = [
 ]
 
 from onesecondtrader.core.brokers import BrokerBase
-from onesecondtrader.connectors.brokers import SimulatedBroker
-from onesecondtrader.connectors.datafeeds import Datafeed, SimulatedDatafeed
+from onesecondtrader.connectors.brokers import IBBroker, SimulatedBroker
+from onesecondtrader.core.datafeeds import DatafeedBase
+from onesecondtrader.connectors.datafeeds import IBDatafeed, SimulatedDatafeed
 from onesecondtrader.core.events import (
     BarProcessed,
     BarReceived,

@@ -13,7 +13,7 @@ hide:
 
     ---
 
-    [:material-link-variant: View `connectors` package API](connectors/brokers/simulated.md)
+    [:material-link-variant: View `connectors` package API](connectors/brokers/ib.md)
 
 -   __Core__&nbsp;&nbsp;
 

@@ -32,6 +32,9 @@ class SimulatedBroker(BrokerBase):
         super().__init__(event_bus)
         self._subscribe(events.BarReceived)
 
+    def connect(self) -> None:
+        pass
+
     def _on_event(self, event: events.EventBase) -> None:
         match event:
             case events.BarReceived() as bar:

@@ -12,6 +12,13 @@ class BrokerBase(messaging.Subscriber):
             events.requests.OrderModification,
         )
 
+    @abc.abstractmethod
+    def connect(self) -> None:
+        pass
+
+    def disconnect(self) -> None:
+        self.shutdown()
+
     def _on_event(self, event: events.bases.EventBase) -> None:
         match event:
             case events.requests.OrderSubmission() as submit_order:

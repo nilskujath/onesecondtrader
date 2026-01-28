@@ -16,3 +16,7 @@ For a complete overview and explanation of the schema used by the securities mas
 [:material-link-variant: View Securities Master Database Schema Documentation](../../api-reference/secmaster/schema.md).
 
 ## Utility Functions
+
+For a complete overview and explanation of the utility functions provided to create and populate the securities master database, please refer to the API reference documentation.
+
+[:material-link-variant: View Securities Master Database Utility Functions Documentation](../../api-reference/secmaster/utils.md).

@@ -1,4 +1,4 @@
-__all__ = ["Datafeed", "SimulatedDatafeed"]
+__all__ = ["IBDatafeed", "SimulatedDatafeed"]
 
-from .base import Datafeed
+from .ib import IBDatafeed
 from .simulated import SimulatedDatafeed

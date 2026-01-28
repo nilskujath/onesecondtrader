@@ -14,6 +14,7 @@ dependencies = [
     "databento (>=0.69.0,<0.70.0)",
     "tqdm (>=4.67.1,<5.0.0)",
     "mplfinance (>=0.12.10b0,<0.13.0)",
+    "ib-async (>=2.1.0,<3.0.0)",
 ]
 
 [tool.poetry]

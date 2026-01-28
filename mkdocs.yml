@@ -29,13 +29,18 @@ nav:
   - Overview: api-reference/overview.md
   - Connectors:
     - Brokers:
+      - IB: api-reference/connectors/brokers/ib.md
       - Simulated: api-reference/connectors/brokers/simulated.md
     - Datafeeds:
-      - Base: api-reference/connectors/datafeeds/base.md
+      - IB: api-reference/connectors/datafeeds/ib.md
       - Simulated: api-reference/connectors/datafeeds/simulated.md
+    - Gateways:
+      - IB: api-reference/connectors/gateways/ib.md
   - Core:
     - Brokers:
       - Base: api-reference/core/brokers/base.md
+    - Datafeeds:
+      - Base: api-reference/core/datafeeds/base.md
     - Events:
       - Bases: api-reference/core/events/bases.md
       - Market: api-reference/core/events/market.md

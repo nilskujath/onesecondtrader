@@ -1,6 +1,6 @@
-# Base
+# IB
 
-::: onesecondtrader.connectors.datafeeds.base
+::: onesecondtrader.connectors.gateways.ib
     options:
       show_root_heading: False
       show_source: true
