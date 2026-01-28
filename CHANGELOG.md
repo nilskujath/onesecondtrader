@@ -1,3 +1,6 @@
+## v0.40.0
+- feat: added connectors simulated and IB
+
 ## v0.39.0
 - feat: secmaster complete
 
