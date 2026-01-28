@@ -1,3 +1,6 @@
+## v0.41.0
+- feat: Added dashboard
+
 ## v0.40.0
 - feat: added connectors simulated and IB
 
