@@ -21,6 +21,18 @@ hide:
 
     [:material-link-variant: View `core` package API](core/brokers/base.md)
 
+-   __Dashboard__&nbsp;&nbsp;
+
+    ---
+
+    [:material-link-variant: View `dashboard` package API](dashboard/app.md)
+
+-   __Orchestrator__&nbsp;&nbsp;
+
+    ---
+
+    [:material-link-variant: View `orchestrator` package API](orchestrator/orchestrator.md)
+
 -   __Secmaster__&nbsp;&nbsp;
 
     ---

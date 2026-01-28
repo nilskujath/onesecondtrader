@@ -187,6 +187,8 @@ def ingest_dbzip(zip_path: pathlib.Path, db_path: pathlib.Path) -> tuple[int, in
         _disable_bulk_loading(connection)
         connection.close()
 
+    update_meta(db_path)
+    update_symbol_coverage(db_path)
     return dbn_count, symbology_count
 
 
@@ -217,6 +219,8 @@ def ingest_dbn(dbn_path: pathlib.Path, db_path: pathlib.Path) -> int:
     finally:
         _disable_bulk_loading(connection)
         connection.close()
+    update_meta(db_path)
+    update_symbol_coverage(db_path)
     return count
 
 
@@ -645,3 +649,89 @@ def _instrument_to_tuple(record: databento.InstrumentDefMsg) -> tuple:
         record.group,
         record.ts_recv,
     )
+
+
+def update_meta(db_path: pathlib.Path) -> None:
+    """
+    Compute and store aggregate statistics in the meta table.
+
+    This function runs expensive COUNT/MIN/MAX queries once and stores the results
+    in the meta table for fast retrieval by the dashboard.
+
+    Args:
+        db_path: Path to the secmaster SQLite database.
+    """
+    import time
+
+    connection = sqlite3.connect(str(db_path))
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT COUNT(DISTINCT instrument_id) FROM symbology")
+    symbol_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM ohlcv")
+    ohlcv_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT MIN(ts_event), MAX(ts_event) FROM ohlcv")
+    row = cursor.fetchone()
+    min_ts, max_ts = row[0] or 0, row[1] or 0
+
+    cursor.execute("SELECT DISTINCT rtype FROM ohlcv ORDER BY rtype")
+    rtypes = ",".join(str(r[0]) for r in cursor.fetchall())
+
+    stats = [
+        ("symbol_count", str(symbol_count)),
+        ("ohlcv_record_count", str(ohlcv_count)),
+        ("ohlcv_min_ts", str(min_ts)),
+        ("ohlcv_max_ts", str(max_ts)),
+        ("ohlcv_schemas", rtypes),
+        ("last_updated", str(int(time.time()))),
+    ]
+
+    cursor.executemany(
+        "INSERT OR REPLACE INTO meta (key, value) VALUES (?, ?)",
+        stats,
+    )
+
+    connection.commit()
+    connection.close()
+
+
+def update_symbol_coverage(db_path: pathlib.Path) -> int:
+    """
+    Compute and store per-symbol coverage statistics in the symbol_coverage table.
+
+    This function aggregates OHLCV data per instrument_id/rtype first (fast, uses
+    primary key), then joins with symbology to get symbols.
+
+    Args:
+        db_path: Path to the secmaster SQLite database.
+
+    Returns:
+        The number of symbol/rtype combinations stored.
+    """
+    connection = sqlite3.connect(str(db_path))
+    cursor = connection.cursor()
+
+    cursor.execute("DELETE FROM symbol_coverage")
+
+    cursor.execute(
+        """
+        INSERT INTO symbol_coverage (symbol, rtype, min_ts, max_ts, record_count)
+        SELECT s.symbol, agg.rtype, MIN(agg.min_ts), MAX(agg.max_ts), SUM(agg.cnt)
+        FROM (
+            SELECT instrument_id, rtype, MIN(ts_event) as min_ts, MAX(ts_event) as max_ts, COUNT(*) as cnt
+            FROM ohlcv
+            GROUP BY instrument_id, rtype
+        ) agg
+        JOIN (
+            SELECT DISTINCT instrument_id, symbol FROM symbology
+        ) s ON agg.instrument_id = s.instrument_id
+        GROUP BY s.symbol, agg.rtype
+    """
+    )
+
+    count = cursor.rowcount
+    connection.commit()
+    connection.close()
+    return count

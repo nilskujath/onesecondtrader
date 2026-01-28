@@ -21,6 +21,8 @@ _PRICE_SCALE = 1e9
 
 class SimulatedDatafeed(DatafeedBase):
     db_path: str = ""
+    start_ts: int | None = None
+    end_ts: int | None = None
 
     def __init__(self, event_bus: messaging.EventBus) -> None:
         super().__init__(event_bus)
@@ -51,9 +53,14 @@ class SimulatedDatafeed(DatafeedBase):
         self._connected = False
 
     def subscribe(self, symbol: str, bar_period: models.BarPeriod) -> None:
-        if (symbol, bar_period) in self._subscriptions:
-            return
         self._subscriptions.add((symbol, bar_period))
+
+    def unsubscribe(self, symbol: str, bar_period: models.BarPeriod) -> None:
+        self._subscriptions.discard((symbol, bar_period))
+
+    def wait_until_complete(self) -> None:
+        if not self._subscriptions:
+            return
         if self._thread is None or not self._thread.is_alive():
             self._stop_event.clear()
             self._thread = threading.Thread(
@@ -62,9 +69,7 @@ class SimulatedDatafeed(DatafeedBase):
                 daemon=False,
             )
             self._thread.start()
-
-    def unsubscribe(self, symbol: str, bar_period: models.BarPeriod) -> None:
-        self._subscriptions.discard((symbol, bar_period))
+        self._thread.join()
 
     def _stream(self) -> None:
         if not self._connection:
@@ -94,15 +99,25 @@ class SimulatedDatafeed(DatafeedBase):
         placeholders_ids = ",".join("?" * len(id_list))
         placeholders_rtypes = ",".join("?" * len(rtype_list))
 
+        date_filter = ""
+        params = id_list + rtype_list
+        if self.start_ts is not None:
+            date_filter += " AND ts_event >= ?"
+            params.append(self.start_ts)
+        if self.end_ts is not None:
+            date_filter += " AND ts_event <= ?"
+            params.append(self.end_ts)
+
         query = f"""
             SELECT instrument_id, rtype, ts_event, open, high, low, close, volume
             FROM ohlcv
             WHERE instrument_id IN ({placeholders_ids})
               AND rtype IN ({placeholders_rtypes})
+              {date_filter}
             ORDER BY ts_event
         """
 
-        cursor.execute(query, id_list + rtype_list)
+        cursor.execute(query, params)
 
         while True:
             if self._stop_event.is_set():

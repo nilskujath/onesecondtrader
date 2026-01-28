@@ -18,6 +18,7 @@ __all__ = [
     "OrderSide",
     "OrderSubmission",
     "OrderType",
+    "ParamSpec",
     "SimulatedBroker",
     "SimulatedDatafeed",
     "SimpleMovingAverage",
@@ -52,5 +53,6 @@ from onesecondtrader.core.models import (
     OrderRecord,
     OrderSide,
     OrderType,
+    ParamSpec,
 )
 from onesecondtrader.core.strategies import SMACrossover, StrategyBase

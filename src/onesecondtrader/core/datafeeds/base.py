@@ -27,3 +27,6 @@ class DatafeedBase(abc.ABC):
     @abc.abstractmethod
     def unsubscribe(self, symbol: str, bar_period: models.BarPeriod) -> None:
         pass
+
+    def wait_until_complete(self) -> None:
+        pass

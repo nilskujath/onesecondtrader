@@ -56,10 +56,17 @@ nav:
     - Models:
       - Data: api-reference/core/models/data.md
       - Orders: api-reference/core/models/orders.md
+      - Params: api-reference/core/models/params.md
       - Records: api-reference/core/models/records.md
     - Strategies:
       - Base: api-reference/core/strategies/base.md
       - Examples: api-reference/core/strategies/examples.md
+  - Dashboard:
+    - App: api-reference/dashboard/app.md
+    - Registry: api-reference/dashboard/registry.md
+  - Orchestrator:
+    - Orchestrator: api-reference/orchestrator/orchestrator.md
+    - Recorder: api-reference/orchestrator/recorder.md
   - Secmaster:
     - Schema: api-reference/secmaster/schema.md
     - Utils: api-reference/secmaster/utils.md

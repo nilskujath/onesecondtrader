@@ -3,16 +3,20 @@ from .base import StrategyBase
 
 
 class SMACrossover(StrategyBase):
-    fast_period: int = 20
-    slow_period: int = 100
-    quantity: float = 1.0
+    name = "SMA Crossover"
+    parameters = {
+        "bar_period": models.ParamSpec(default=models.BarPeriod.SECOND),
+        "fast_period": models.ParamSpec(default=20, min=5, max=100, step=1),
+        "slow_period": models.ParamSpec(default=100, min=10, max=500, step=1),
+        "quantity": models.ParamSpec(default=1.0, min=0.1, max=100.0, step=0.1),
+    }
 
     def setup(self) -> None:
         self.fast_sma = self.add_indicator(
-            indicators.SimpleMovingAverage(period=self.fast_period)
+            indicators.SimpleMovingAverage(period=self.fast_period)  # type: ignore[attr-defined]
         )
         self.slow_sma = self.add_indicator(
-            indicators.SimpleMovingAverage(period=self.slow_period)
+            indicators.SimpleMovingAverage(period=self.slow_period)  # type: ignore[attr-defined]
         )
 
     def on_bar(self, event: events.BarReceived) -> None:
@@ -22,7 +26,9 @@ class SMACrossover(StrategyBase):
             and self.position <= 0
         ):
             self.submit_order(
-                models.OrderType.MARKET, models.OrderSide.BUY, self.quantity
+                models.OrderType.MARKET,
+                models.OrderSide.BUY,
+                self.quantity,  # type: ignore[attr-defined]
             )
 
         if (
@@ -31,5 +37,7 @@ class SMACrossover(StrategyBase):
             and self.position >= 0
         ):
             self.submit_order(
-                models.OrderType.MARKET, models.OrderSide.SELL, self.quantity
+                models.OrderType.MARKET,
+                models.OrderSide.SELL,
+                self.quantity,  # type: ignore[attr-defined]
             )

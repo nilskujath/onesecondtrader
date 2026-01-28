@@ -690,3 +690,51 @@ CREATE TABLE symbology (
     end_date TEXT NOT NULL,
     PRIMARY KEY (symbol, instrument_id, start_date)
 );
+
+-- Precomputed database metadata for fast dashboard queries.
+--
+-- This table stores aggregate statistics about the database contents that would
+-- otherwise require expensive COUNT(*) queries on large tables. Stats are updated
+-- after each data ingestion operation.
+--
+-- | Field | Type | Constraints | Description |
+-- |-------|------|-------------|-------------|
+-- | `key` | TEXT | PRIMARY KEY | The name of the statistic (e.g., 'symbol_count', 'ohlcv_record_count') |
+-- | `value` | TEXT | NOT NULL | The value of the statistic, stored as text for flexibility |
+CREATE TABLE meta (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+-- Precomputed per-symbol coverage statistics for fast search queries.
+--
+-- This table stores aggregate statistics for each symbol/rtype combination,
+-- eliminating the need for expensive JOIN and GROUP BY queries on the large
+-- ohlcv table during symbol search. Stats are updated after each data ingestion.
+--
+-- | Field | Type | Constraints | Description |
+-- |-------|------|-------------|-------------|
+-- | `symbol` | TEXT | NOT NULL, PK | The ticker symbol |
+-- | `rtype` | INTEGER | NOT NULL, PK | The bar duration type (32=1s, 33=1m, 34=1h, 35=1d) |
+-- | `min_ts` | INTEGER | NOT NULL | The earliest timestamp for this symbol/rtype |
+-- | `max_ts` | INTEGER | NOT NULL | The latest timestamp for this symbol/rtype |
+-- | `record_count` | INTEGER | NOT NULL | Total number of records for this symbol/rtype |
+CREATE TABLE symbol_coverage (
+    symbol TEXT NOT NULL,
+    rtype INTEGER NOT NULL,
+    min_ts INTEGER NOT NULL,
+    max_ts INTEGER NOT NULL,
+    record_count INTEGER NOT NULL,
+    PRIMARY KEY (symbol, rtype)
+);
+
+-- User-defined symbol presets for quick selection in the dashboard.
+--
+-- | Field | Type | Constraints | Description |
+-- |-------|------|-------------|-------------|
+-- | `name` | TEXT | PRIMARY KEY | Unique name for the preset (e.g., 'Tech Stocks', 'My Watchlist') |
+-- | `symbols` | TEXT | NOT NULL | JSON array of symbol strings (e.g., '["AAPL", "GOOGL", "MSFT"]') |
+CREATE TABLE symbol_presets (
+    name TEXT PRIMARY KEY,
+    symbols TEXT NOT NULL
+);

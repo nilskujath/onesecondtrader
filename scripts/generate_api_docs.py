@@ -7,7 +7,7 @@ from pathlib import Path
 import yaml
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "docs"))
-from hooks import parse_sql_schema, generate_markdown
+from hooks import parse_sql_schema, generate_markdown  # type: ignore[import-not-found]
 
 # SETUP LOGGER
 # --------------------------------------------------------------------------------------

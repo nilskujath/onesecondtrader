@@ -10,11 +10,17 @@ from onesecondtrader.core import events, indicators, messaging, models
 
 
 class StrategyBase(messaging.Subscriber, abc.ABC):
+    name: str = ""
     symbols: list[str] = []
-    bar_period: models.BarPeriod = models.BarPeriod.SECOND
+    parameters: dict[str, models.ParamSpec] = {}
 
-    def __init__(self, event_bus: messaging.EventBus) -> None:
+    def __init__(self, event_bus: messaging.EventBus, **overrides) -> None:
         super().__init__(event_bus)
+
+        for name, spec in self.parameters.items():
+            value = overrides.get(name, spec.default)
+            setattr(self, name, value)
+
         self._subscribe(
             events.BarReceived,
             events.OrderSubmissionAccepted,
@@ -179,7 +185,7 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
     def _on_bar_received(self, event: events.BarReceived) -> None:
         if event.symbol not in self.symbols:
             return
-        if event.bar_period != self.bar_period:
+        if event.bar_period != self.bar_period:  # type: ignore[attr-defined]
             return
 
         self._current_symbol = event.symbol
