@@ -1,3 +1,6 @@
+## v0.42.0
+- feat: added charting to dashboard
+
 ## v0.41.0
 - feat: Added dashboard
 
