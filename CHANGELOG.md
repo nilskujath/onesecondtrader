@@ -1,3 +1,6 @@
+## v0.43.0
+- feat: added signal validation to dashboard
+
 ## v0.42.0
 - feat: added charting to dashboard
 
