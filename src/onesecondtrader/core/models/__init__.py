@@ -1,4 +1,5 @@
 __all__ = [
+    "ActionType",
     "BarPeriod",
     "InputSource",
     "OrderSide",
@@ -9,6 +10,6 @@ __all__ = [
 ]
 
 from .data import BarPeriod, InputSource
-from .orders import OrderSide, OrderType
+from .orders import ActionType, OrderSide, OrderType
 from .records import OrderRecord, FillRecord
 from .params import ParamSpec

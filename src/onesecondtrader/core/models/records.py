@@ -17,6 +17,8 @@ class OrderRecord:
     quantity: float
     limit_price: float | None = None
     stop_price: float | None = None
+    action: orders.ActionType | None = None
+    signal: str | None = None
     filled_quantity: float = 0.0
 
 

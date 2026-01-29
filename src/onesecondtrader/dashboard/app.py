@@ -22,6 +22,7 @@ import pandas as pd
 from onesecondtrader.orchestrator import Orchestrator
 from onesecondtrader.connectors.brokers import SimulatedBroker
 from onesecondtrader.connectors.datafeeds import SimulatedDatafeed
+from onesecondtrader.core.models.orders import ActionType
 from . import registry
 
 CHARTS_DIR = pathlib.Path(os.environ.get("CHARTS_DIR", "charts"))
@@ -168,6 +169,49 @@ body {
     height: 16px;
     flex-shrink: 0;
 }
+.nav-group {
+    margin-bottom: 2px;
+}
+.nav-group-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    color: #8b949e;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    background: none;
+    border: none;
+}
+.nav-group-toggle:hover {
+    background: #21262d;
+    color: #e6edf3;
+}
+.nav-group-toggle.active {
+    background: #21262d;
+    color: #e6edf3;
+}
+.nav-group-toggle .chevron {
+    margin-left: auto;
+    transition: transform 0.2s;
+}
+.nav-group.open .chevron {
+    transform: rotate(90deg);
+}
+.nav-group-items {
+    display: none;
+    padding-left: 26px;
+}
+.nav-group.open .nav-group-items {
+    display: block;
+}
+.nav-group-items a {
+    padding: 8px 12px;
+    font-size: 13px;
+}
 .main-content {
     margin-left: 220px;
     flex: 1;
@@ -228,6 +272,17 @@ SIDEBAR_HTML = """
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
             Securities Master
         </a>
+        <div class="nav-group {pipeline_open}">
+            <button class="nav-group-toggle {pipeline_active}" onclick="this.parentElement.classList.toggle('open')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                Dev Pipeline
+                <svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="12" height="12"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+            <div class="nav-group-items">
+                <a href="/pipeline/signal-validation" class="{pipeline_sub1_active}">Signal Validation</a>
+                <a href="/pipeline/sub2" class="{pipeline_sub2_active}">Sub Tab 2</a>
+            </div>
+        </div>
     </nav>
 </aside>
 """
@@ -297,7 +352,13 @@ document.addEventListener('DOMContentLoaded', loadRuns);
 @app.get("/", response_class=HTMLResponse)
 async def index():
     sidebar = SIDEBAR_HTML.format(
-        runs_active="active", backtest_active="", secmaster_active=""
+        runs_active="active",
+        backtest_active="",
+        secmaster_active="",
+        pipeline_active="",
+        pipeline_open="",
+        pipeline_sub1_active="",
+        pipeline_sub2_active="",
     )
     return f"""
     <!DOCTYPE html>
@@ -565,10 +626,226 @@ document.addEventListener('DOMContentLoaded', loadRunDetail);
 """
 
 
+SIGNAL_VALIDATION_STYLE = """
+.sv-layout { display: flex; gap: 0; height: calc(100vh - 40px); }
+.sv-sidebar { width: 280px; background: #161b22; border-right: 1px solid #30363d; overflow-y: auto; flex-shrink: 0; }
+.sv-main { flex: 1; overflow-y: auto; padding: 20px; }
+.sv-run-selector { padding: 16px; border-bottom: 1px solid #30363d; }
+.sv-run-selector select { width: 100%; background: #21262d; border: 1px solid #30363d; border-radius: 6px; padding: 10px 12px; color: #c9d1d9; font-size: 14px; }
+.sv-run-selector select:focus { outline: none; border-color: #58a6ff; }
+.sv-run-selector label { display: block; color: #8b949e; font-size: 12px; text-transform: uppercase; margin-bottom: 8px; }
+.sv-action-group { border-bottom: 1px solid #30363d; }
+.sv-action-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; cursor: pointer; color: #c9d1d9; font-weight: 500; }
+.sv-action-header:hover { background: #21262d; }
+.sv-action-header .count { background: #30363d; color: #8b949e; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: normal; }
+.sv-action-header .chevron { transition: transform 0.2s; }
+.sv-action-group.open .sv-action-header .chevron { transform: rotate(90deg); }
+.sv-action-signals { display: none; padding: 8px 16px 12px; }
+.sv-action-group.open .sv-action-signals { display: block; }
+.sv-signal-pill { display: inline-block; background: #21262d; border: 1px solid #30363d; border-radius: 16px; padding: 4px 12px; margin: 4px; font-size: 13px; color: #c9d1d9; cursor: pointer; transition: all 0.15s; }
+.sv-signal-pill:hover { border-color: #58a6ff; background: #1f6feb22; }
+.sv-signal-pill.active { background: #1f6feb; border-color: #1f6feb; color: white; }
+.sv-signal-pill .pill-count { color: #8b949e; font-size: 11px; margin-left: 4px; }
+.sv-signal-pill.active .pill-count { color: rgba(255,255,255,0.7); }
+.sv-content-header { margin-bottom: 20px; }
+.sv-content-header h2 { margin: 0 0 4px; font-size: 20px; }
+.sv-content-header .subtitle { color: #8b949e; font-size: 14px; }
+.sv-empty { color: #8b949e; text-align: center; padding: 60px 20px; }
+.sv-table { width: 100%; border-collapse: collapse; }
+.sv-table th, .sv-table td { padding: 12px; text-align: left; border-bottom: 1px solid #30363d; }
+.sv-table th { font-size: 12px; color: #8b949e; text-transform: uppercase; font-weight: 500; }
+.sv-table tbody tr { cursor: pointer; }
+.sv-table tbody tr:hover { background: #21262d; }
+.sv-status { padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+.sv-status-filled { background: #23863633; color: #3fb950; }
+.sv-status-accepted { background: #1f6feb33; color: #58a6ff; }
+.sv-status-rejected { background: #f8514933; color: #f85149; }
+.sv-status-expired { background: #6e768133; color: #8b949e; }
+.sv-status-cancelled { background: #6e768133; color: #8b949e; }
+.sv-status-pending { background: #d29922; color: #0d1117; }
+.sv-side-buy { color: #3fb950; }
+.sv-side-sell { color: #f85149; }
+"""
+
+SIGNAL_VALIDATION_SCRIPT = """
+let currentRun = null;
+let currentAction = null;
+let currentSignal = null;
+let signalData = {};
+
+async function loadRuns() {
+    const select = document.getElementById('run-select');
+    const res = await fetch('/api/runs');
+    const data = await res.json();
+    select.innerHTML = '<option value="">Select a run...</option>' +
+        data.runs.map(r => `<option value="${r.run_id}">${r.run_id}</option>`).join('');
+}
+
+async function onRunChange() {
+    const runId = document.getElementById('run-select').value;
+    if (!runId) {
+        currentRun = null;
+        signalData = {};
+        renderSidebar();
+        renderContent();
+        return;
+    }
+    currentRun = runId;
+    currentAction = null;
+    currentSignal = null;
+    const res = await fetch(`/api/signals/${runId}`);
+    signalData = await res.json();
+    renderSidebar();
+    renderContent();
+}
+
+function renderSidebar() {
+    const container = document.getElementById('action-groups');
+    if (!currentRun || !signalData.actions) {
+        container.innerHTML = '<div class="sv-empty">Select a run to view signals</div>';
+        return;
+    }
+    const actions = signalData.action_types || [];
+    container.innerHTML = actions.map(action => {
+        const signals = signalData.actions[action] || {};
+        const signalNames = Object.keys(signals);
+        const totalCount = signalNames.reduce((sum, s) => sum + signals[s].length, 0);
+        const isOpen = currentAction === action ? 'open' : '';
+        const pillsHtml = signalNames.length > 0
+            ? signalNames.map(sig => {
+                const isActive = currentAction === action && currentSignal === sig ? 'active' : '';
+                return `<span class="sv-signal-pill ${isActive}" onclick="selectSignal('${action}', '${sig}')">${sig}<span class="pill-count">(${signals[sig].length})</span></span>`;
+            }).join('')
+            : '<span style="color: #6e7681; font-size: 13px;">No signals</span>';
+        return `
+            <div class="sv-action-group ${isOpen}">
+                <div class="sv-action-header" onclick="toggleAction('${action}')">
+                    <span>${action}</span>
+                    <span>
+                        <span class="count">${totalCount}</span>
+                        <svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </span>
+                </div>
+                <div class="sv-action-signals">${pillsHtml}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function toggleAction(action) {
+    if (currentAction === action) {
+        currentAction = null;
+        currentSignal = null;
+    } else {
+        currentAction = action;
+        currentSignal = null;
+    }
+    renderSidebar();
+    renderContent();
+}
+
+function selectSignal(action, signal) {
+    currentAction = action;
+    currentSignal = signal;
+    renderSidebar();
+    renderContent();
+}
+
+function formatTime(ts) {
+    if (!ts) return '-';
+    return ts.split('T')[0] + ' ' + ts.split('T')[1].split('.')[0];
+}
+
+function renderContent() {
+    const container = document.getElementById('sv-content');
+    if (!currentRun) {
+        container.innerHTML = '<div class="sv-empty">Select a run from the dropdown to begin</div>';
+        return;
+    }
+    if (!currentAction || !currentSignal) {
+        container.innerHTML = '<div class="sv-empty">Select an action and signal from the sidebar</div>';
+        return;
+    }
+    const orders = signalData.actions[currentAction]?.[currentSignal] || [];
+    if (orders.length === 0) {
+        container.innerHTML = '<div class="sv-empty">No orders for this signal</div>';
+        return;
+    }
+    container.innerHTML = `
+        <div class="sv-content-header">
+            <h2>${currentSignal}</h2>
+            <div class="subtitle">Action: ${currentAction} &bull; ${orders.length} order(s)</div>
+        </div>
+        <table class="sv-table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Symbol</th>
+                    <th>Side</th>
+                    <th>Type</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${orders.map(o => `
+                    <tr onclick="showSignalChart('${o.order_id}', '${o.symbol}')">
+                        <td>${formatTime(o.ts_event)}</td>
+                        <td style="font-family: monospace;">${o.symbol}</td>
+                        <td class="sv-side-${o.side.toLowerCase()}">${o.side}</td>
+                        <td>${o.order_type || '-'}</td>
+                        <td>${o.quantity || '-'}</td>
+                        <td>${o.limit_price ? '$' + o.limit_price.toFixed(2) : (o.stop_price ? 'Stop $' + o.stop_price.toFixed(2) : 'MKT')}</td>
+                        <td><span class="sv-status sv-status-${o.status.toLowerCase()}">${o.status}</span></td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+function showSignalChart(orderId, symbol) {
+    const modal = document.getElementById('chart-modal');
+    const modalTitle = document.getElementById('chart-modal-title');
+    const modalBody = document.getElementById('chart-modal-body');
+    modalTitle.textContent = `Signal Chart - ${symbol}`;
+    modalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><p>Generating chart...</p></div>';
+    modal.style.display = 'flex';
+    fetch(`/api/signals/${currentRun}/chart/${orderId}`)
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => { throw new Error(data.detail || 'Failed to load chart'); });
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const url = URL.createObjectURL(blob);
+            modalBody.innerHTML = `<img src="${url}" style="max-width: 100%; max-height: 80vh;">`;
+        })
+        .catch(error => {
+            modalBody.innerHTML = `<div style="color: #f85149; padding: 20px;">${error.message}</div>`;
+        });
+}
+
+function closeChartModal() {
+    document.getElementById('chart-modal').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', loadRuns);
+"""
+
+
 @app.get("/run/{run_id}", response_class=HTMLResponse)
 async def run_detail_page(run_id: str):
     sidebar = SIDEBAR_HTML.format(
-        runs_active="active", backtest_active="", secmaster_active=""
+        runs_active="active",
+        backtest_active="",
+        secmaster_active="",
+        pipeline_active="",
+        pipeline_open="",
+        pipeline_sub1_active="",
+        pipeline_sub2_active="",
     )
     return f"""
     <!DOCTYPE html>
@@ -1949,7 +2226,13 @@ document.addEventListener('DOMContentLoaded', () => {
 @app.get("/backtest", response_class=HTMLResponse)
 async def backtest_form():
     sidebar = SIDEBAR_HTML.format(
-        runs_active="", backtest_active="active", secmaster_active=""
+        runs_active="",
+        backtest_active="active",
+        secmaster_active="",
+        pipeline_active="",
+        pipeline_open="",
+        pipeline_sub1_active="",
+        pipeline_sub2_active="",
     )
     return f"""
     <!DOCTYPE html>
@@ -2223,7 +2506,13 @@ document.addEventListener('DOMContentLoaded', loadSummary);
 @app.get("/secmaster", response_class=HTMLResponse)
 async def secmaster_page():
     sidebar = SIDEBAR_HTML.format(
-        runs_active="", backtest_active="", secmaster_active="active"
+        runs_active="",
+        backtest_active="",
+        secmaster_active="active",
+        pipeline_active="",
+        pipeline_open="",
+        pipeline_sub1_active="",
+        pipeline_sub2_active="",
     )
     return f"""
     <!DOCTYPE html>
@@ -2240,6 +2529,444 @@ async def secmaster_page():
             </div>
         </main>
         <script>{SECMASTER_SCRIPT}</script>
+    </body>
+    </html>
+    """
+
+
+@app.get("/api/signals/{run_id}")
+async def get_signals_for_run(run_id: str):
+    db_path = _get_runs_db_path()
+    if not os.path.exists(db_path):
+        return {"actions": {}}
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(
+        """SELECT id, ts_event, order_id, symbol, order_type, side, quantity,
+                  limit_price, stop_price, action, signal
+           FROM order_requests
+           WHERE run_id = ? AND request_type = 'submission'
+           ORDER BY ts_event""",
+        (run_id,),
+    )
+    requests = cursor.fetchall()
+    cursor.execute(
+        """SELECT order_id, response_type FROM order_responses WHERE run_id = ?""",
+        (run_id,),
+    )
+    responses = {row[0]: row[1] for row in cursor.fetchall()}
+    cursor.execute(
+        """SELECT order_id FROM fills WHERE run_id = ?""",
+        (run_id,),
+    )
+    filled_orders = {row[0] for row in cursor.fetchall()}
+    conn.close()
+
+    actions: dict[str, dict[str, list]] = {}
+    for row in requests:
+        (
+            _,
+            ts_event,
+            order_id,
+            symbol,
+            order_type,
+            side,
+            quantity,
+            limit_price,
+            stop_price,
+            action,
+            signal,
+        ) = row
+        action = action or "UNKNOWN"
+        signal = signal or "unnamed"
+        if action not in actions:
+            actions[action] = {}
+        if signal not in actions[action]:
+            actions[action][signal] = []
+        if order_id in filled_orders:
+            status = "FILLED"
+        elif order_id in responses:
+            resp = responses[order_id]
+            if "accepted" in resp:
+                status = "ACCEPTED"
+            elif "rejected" in resp:
+                status = "REJECTED"
+            elif resp == "expired":
+                status = "EXPIRED"
+            elif "cancellation" in resp:
+                status = "CANCELLED"
+            else:
+                status = resp.upper()
+        else:
+            status = "PENDING"
+        actions[action][signal].append(
+            {
+                "order_id": order_id,
+                "ts_event": ts_event,
+                "symbol": symbol,
+                "order_type": order_type,
+                "side": side or "BUY",
+                "quantity": quantity,
+                "limit_price": limit_price,
+                "stop_price": stop_price,
+                "status": status,
+            }
+        )
+    action_types = [at.name for at in ActionType]
+    return {"actions": actions, "action_types": action_types}
+
+
+@app.get("/api/signals/{run_id}/chart/{order_id}")
+async def get_signal_chart(run_id: str, order_id: str):
+    from fastapi import HTTPException
+
+    db_path = _get_runs_db_path()
+    if not os.path.exists(db_path):
+        raise HTTPException(status_code=404, detail="Database not found")
+
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(
+        """SELECT ts_event, symbol, order_type, side, quantity, limit_price, stop_price, action, signal
+           FROM order_requests
+           WHERE run_id = ? AND order_id = ? AND request_type = 'submission'""",
+        (run_id, order_id),
+    )
+    req_row = cursor.fetchone()
+    if not req_row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    (
+        ts_event,
+        symbol,
+        order_type,
+        side,
+        quantity,
+        limit_price,
+        stop_price,
+        action,
+        signal,
+    ) = req_row
+    submission_time = pd.to_datetime(ts_event)
+
+    cursor.execute(
+        """SELECT ts_event, response_type FROM order_responses
+           WHERE run_id = ? AND order_id = ?
+           ORDER BY ts_event""",
+        (run_id, order_id),
+    )
+    response_rows = cursor.fetchall()
+
+    cursor.execute(
+        """SELECT ts_event, price, quantity FROM fills
+           WHERE run_id = ? AND order_id = ?
+           ORDER BY ts_event""",
+        (run_id, order_id),
+    )
+    fill_rows = cursor.fetchall()
+    conn.close()
+
+    resolution_time = None
+    resolution_type = None
+    fill_price = None
+    if fill_rows:
+        resolution_time = pd.to_datetime(fill_rows[-1][0])
+        resolution_type = "FILLED"
+        fill_price = fill_rows[-1][1]
+    elif response_rows:
+        for ts, resp_type in response_rows:
+            if resp_type in ("expired", "cancellation_accepted", "submission_rejected"):
+                resolution_time = pd.to_datetime(ts)
+                resolution_type = resp_type.upper().replace("_", " ")
+                break
+
+    bars_df = _load_bars_for_chart(run_id, symbol)
+    if bars_df is None or bars_df.empty:
+        raise HTTPException(status_code=404, detail="No bar data found for this symbol")
+
+    bars_before, bars_after = 100, 100
+    mask_start = bars_df["ts_event"] >= submission_time
+    if not mask_start.any():
+        raise HTTPException(
+            status_code=404, detail="Submission time not found in bar data"
+        )
+
+    loc_result = bars_df.index.get_loc(bars_df[mask_start].index[0])
+    start_idx = (
+        int(loc_result)
+        if isinstance(loc_result, int)
+        else int(loc_result.start)
+        if isinstance(loc_result, slice)
+        else int(loc_result.argmax())
+    )
+    if resolution_time:
+        mask_end = bars_df["ts_event"] <= resolution_time
+        if mask_end.any():
+            loc_result_end = bars_df.index.get_loc(bars_df[mask_end].index[-1])
+            end_idx = (
+                int(loc_result_end)
+                if isinstance(loc_result_end, int)
+                else int(loc_result_end.start)
+                if isinstance(loc_result_end, slice)
+                else int(loc_result_end.argmax())
+            )
+        else:
+            end_idx = start_idx
+    else:
+        end_idx = min(start_idx + 50, len(bars_df) - 1)
+
+    chart_start = max(0, start_idx - bars_before)
+    chart_end = min(len(bars_df) - 1, end_idx + bars_after)
+    data = bars_df.iloc[chart_start : chart_end + 1].copy()
+    highlight_start = start_idx - chart_start
+    highlight_end = end_idx - chart_start
+
+    chart_dir = CHARTS_DIR / run_id / "signals"
+    chart_dir.mkdir(parents=True, exist_ok=True)
+    chart_path = chart_dir / f"{order_id}.png"
+
+    order_info = {
+        "submission_time": submission_time,
+        "resolution_time": resolution_time,
+        "resolution_type": resolution_type,
+        "side": side or "BUY",
+        "order_type": order_type,
+        "quantity": quantity,
+        "limit_price": limit_price,
+        "stop_price": stop_price,
+        "fill_price": fill_price,
+        "action": action,
+        "signal": signal,
+    }
+    _generate_signal_chart(
+        chart_path, data, order_info, symbol, highlight_start, highlight_end
+    )
+    return FileResponse(chart_path, media_type="image/png")
+
+
+def _generate_signal_chart(
+    output_path: pathlib.Path,
+    data: pd.DataFrame,
+    order_info: dict,
+    symbol: str,
+    highlight_start: int,
+    highlight_end: int,
+) -> None:
+    groups = _subplot_groups_from_data(data)
+    n = 1 + len(groups)
+    ratios = [4] + [1] * len(groups)
+    fig, axes = plt.subplots(
+        n, 1, figsize=(16, 10), sharex=True, gridspec_kw={"height_ratios": ratios}
+    )
+    axes = [axes] if n == 1 else list(axes)
+    ax_main = axes[0]
+
+    _plot_price_data(ax_main, data, highlight_start, highlight_end)
+    _plot_main_indicators(ax_main, data)
+    _plot_signal_markers(ax_main, data, order_info)
+
+    for i, (_, ind_cols) in enumerate(sorted(groups.items())):
+        ax_sub = axes[i + 1]
+        for j, (col, display_name) in enumerate(ind_cols):
+            if col in data.columns:
+                ax_sub.plot(
+                    data["ts_event"],
+                    data[col],
+                    label=display_name,
+                    linewidth=1.5,
+                    alpha=0.8,
+                    color=_SUBPLOT_COLORS[j % len(_SUBPLOT_COLORS)],
+                )
+        ax_sub.legend(loc="upper left", fontsize=8)
+        ax_sub.grid(True, alpha=0.3)
+
+    status = order_info["resolution_type"] or "PENDING"
+    title = f"Signal: {order_info['signal'] or 'unnamed'} - {symbol} - {order_info['action'] or 'UNKNOWN'} - {status}"
+    ax_main.set_title(title, fontsize=14, fontweight="bold")
+
+    total_seconds = (
+        data["ts_event"].iloc[-1] - data["ts_event"].iloc[0]
+    ).total_seconds()
+    hours = total_seconds / 3600
+    days = total_seconds / 86400
+
+    for a in axes:
+        if days > 30:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+            a.xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
+        elif days > 7:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d"))
+            a.xaxis.set_major_locator(mdates.DayLocator(interval=2))
+        elif days > 2:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d"))
+            a.xaxis.set_major_locator(mdates.DayLocator(interval=1))
+        elif hours > 24:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d %H:%M"))
+            a.xaxis.set_major_locator(mdates.HourLocator(interval=6))
+        elif hours > 8:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+            a.xaxis.set_major_locator(mdates.HourLocator(interval=2))
+        elif hours > 2:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+            a.xaxis.set_major_locator(mdates.HourLocator(interval=1))
+        elif hours > 0.5:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+            a.xaxis.set_major_locator(mdates.MinuteLocator(interval=15))
+        else:
+            a.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
+            a.xaxis.set_major_locator(mdates.MinuteLocator(interval=5))
+
+    plt.xticks(rotation=45, fontsize=9)
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
+def _plot_signal_markers(ax, data: pd.DataFrame, order_info: dict) -> None:
+    submission_time = order_info["submission_time"]
+    mask = data["ts_event"] >= submission_time
+    if mask.any():
+        idx = data[mask].index[0]
+        price = data.loc[idx, "close"]
+        marker = "^" if order_info["side"] == "BUY" else "v"
+        color = "blue"
+        ax.scatter(
+            submission_time,
+            price,
+            marker=marker,
+            color=color,
+            s=200,
+            edgecolors="black",
+            linewidth=1.5,
+            zorder=5,
+            alpha=0.9,
+            label="Submission",
+        )
+        y_lim = ax.get_ylim()
+        offset_y = (y_lim[1] - y_lim[0]) * 0.03
+        label_text = f"{order_info['side']} {order_info['quantity'] or ''}"
+        ax.annotate(
+            label_text,
+            (submission_time, price + offset_y),
+            ha="center",
+            va="bottom",
+            fontsize=9,
+            fontweight="bold",
+            bbox=dict(boxstyle="round,pad=0.3", facecolor="lightyellow", alpha=0.9),
+        )
+
+    if order_info["resolution_time"]:
+        res_time = order_info["resolution_time"]
+        mask_res = data["ts_event"] >= res_time
+        if mask_res.any():
+            idx_res = data[mask_res].index[0]
+            if order_info["fill_price"]:
+                res_price = order_info["fill_price"]
+            else:
+                res_price = data.loc[idx_res, "close"]
+            if order_info["resolution_type"] == "FILLED":
+                res_marker = "o"
+                res_color = "green"
+            else:
+                res_marker = "x"
+                res_color = "red"
+            ax.scatter(
+                res_time,
+                res_price,
+                marker=res_marker,
+                color=res_color,
+                s=200,
+                edgecolors="black",
+                linewidth=1.5,
+                zorder=5,
+                alpha=0.9,
+                label=order_info["resolution_type"],
+            )
+    ax.legend(loc="upper right", fontsize=8)
+
+
+@app.get("/pipeline/signal-validation", response_class=HTMLResponse)
+async def signal_validation_page():
+    sidebar = SIDEBAR_HTML.format(
+        runs_active="",
+        backtest_active="",
+        secmaster_active="",
+        pipeline_active="active",
+        pipeline_open="open",
+        pipeline_sub1_active="active",
+        pipeline_sub2_active="",
+    )
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Signal Validation - OneSecondTrader</title>
+        <style>{BASE_STYLE}{SIGNAL_VALIDATION_STYLE}{RUN_DETAIL_STYLE}</style>
+    </head>
+    <body>
+        {sidebar}
+        <main class="main-content" style="padding: 0;">
+            <div class="sv-layout">
+                <div class="sv-sidebar">
+                    <div class="sv-run-selector">
+                        <label>Run</label>
+                        <select id="run-select" onchange="onRunChange()">
+                            <option value="">Loading...</option>
+                        </select>
+                    </div>
+                    <div id="action-groups"></div>
+                </div>
+                <div class="sv-main">
+                    <div id="sv-content">
+                        <div class="sv-empty">Select a run from the dropdown to begin</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div id="chart-modal" class="chart-modal" onclick="if(event.target===this)closeChartModal()">
+            <div class="chart-modal-content">
+                <div class="chart-modal-header">
+                    <h3 id="chart-modal-title">Signal Chart</h3>
+                    <button class="chart-modal-close" onclick="closeChartModal()">&times;</button>
+                </div>
+                <div id="chart-modal-body" class="chart-modal-body"></div>
+            </div>
+        </div>
+        <script>{SIGNAL_VALIDATION_SCRIPT}</script>
+    </body>
+    </html>
+    """
+
+
+@app.get("/pipeline/sub2", response_class=HTMLResponse)
+async def pipeline_sub2():
+    sidebar = SIDEBAR_HTML.format(
+        runs_active="",
+        backtest_active="",
+        secmaster_active="",
+        pipeline_active="active",
+        pipeline_open="open",
+        pipeline_sub1_active="",
+        pipeline_sub2_active="active",
+    )
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Sub Tab 2 - OneSecondTrader</title>
+        <style>{BASE_STYLE}</style>
+    </head>
+    <body>
+        {sidebar}
+        <main class="main-content">
+            <div class="container">
+                <div class="card">
+                    <h2>Sub Tab 2</h2>
+                    <p style="color: #8b949e;">This is Sub Tab 2 of the Dev Pipeline.</p>
+                </div>
+            </div>
+        </main>
     </body>
     </html>
     """

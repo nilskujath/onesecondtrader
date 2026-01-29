@@ -122,10 +122,11 @@ class RunRecorder(Subscriber):
     ) -> None:
         order_type = getattr(event, "order_type", None)
         side = getattr(event, "side", None)
+        action = getattr(event, "action", None)
         self._conn.execute(
             """
-            INSERT INTO order_requests (run_id, ts_event, request_type, order_id, symbol, order_type, side, quantity, limit_price, stop_price)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO order_requests (run_id, ts_event, request_type, order_id, symbol, order_type, side, quantity, limit_price, stop_price, action, signal)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 self._run_id,
@@ -138,6 +139,8 @@ class RunRecorder(Subscriber):
                 getattr(event, "quantity", None),
                 getattr(event, "limit_price", None),
                 getattr(event, "stop_price", None),
+                action.name if action else None,
+                getattr(event, "signal", None),
             ),
         )
         self._conn.commit()

@@ -16,6 +16,8 @@ class OrderSubmission(bases.BrokerRequestEvent):
     quantity: float
     limit_price: float | None = None
     stop_price: float | None = None
+    action: models.orders.ActionType | None = None
+    signal: str | None = None
 
 
 @dataclasses.dataclass(kw_only=True, frozen=True)

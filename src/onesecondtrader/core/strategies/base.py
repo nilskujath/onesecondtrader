@@ -76,8 +76,9 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
         quantity: float,
         limit_price: float | None = None,
         stop_price: float | None = None,
+        action: models.ActionType | None = None,
+        signal: str | None = None,
     ) -> uuid.UUID:
-        # Uses bar timestamp for backtest compatibility; ts_created tracks real wall-clock time
         order_id = uuid.uuid4()
 
         event = events.OrderSubmission(
@@ -89,6 +90,8 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
             quantity=quantity,
             limit_price=limit_price,
             stop_price=stop_price,
+            action=action,
+            signal=signal,
         )
 
         order = models.OrderRecord(
@@ -99,6 +102,8 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
             quantity=quantity,
             limit_price=limit_price,
             stop_price=stop_price,
+            action=action,
+            signal=signal,
         )
 
         self._submitted_orders[order_id] = order
@@ -137,6 +142,8 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
             stop_price=(
                 stop_price if stop_price is not None else original_order.stop_price
             ),
+            action=original_order.action,
+            signal=original_order.signal,
             filled_quantity=original_order.filled_quantity,
         )
 

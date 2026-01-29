@@ -64,6 +64,7 @@ build-backend = "poetry.core.masonry.api"
 explicit_package_bases = true
 mypy_path = "src"
 namespace_packages = true
+exclude = ["ignore/"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

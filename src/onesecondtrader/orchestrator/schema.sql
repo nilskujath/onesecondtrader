@@ -107,6 +107,8 @@ CREATE TABLE IF NOT EXISTS bars (
 -- | `quantity` | REAL | | Order quantity (submission and modification) |
 -- | `limit_price` | REAL | | Limit price for LIMIT and STOP_LIMIT orders |
 -- | `stop_price` | REAL | | Stop trigger price for STOP and STOP_LIMIT orders |
+-- | `action` | TEXT | | Strategy action type: `ENTRY`, `EXIT`, `ADD`, `REDUCE`, `REVERSE` |
+-- | `signal` | TEXT | | Strategy-defined signal label identifying which condition triggered the order |
 
 CREATE TABLE IF NOT EXISTS order_requests (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -119,7 +121,9 @@ CREATE TABLE IF NOT EXISTS order_requests (
     side TEXT,
     quantity REAL,
     limit_price REAL,
-    stop_price REAL
+    stop_price REAL,
+    action TEXT,
+    signal TEXT
 );
 
 

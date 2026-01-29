@@ -1,4 +1,5 @@
 __all__ = [
+    "ActionType",
     "BarPeriod",
     "BarProcessed",
     "BarReceived",
@@ -47,6 +48,7 @@ from onesecondtrader.core.indicators import (
     Volume,
 )
 from onesecondtrader.core.models import (
+    ActionType,
     BarPeriod,
     FillRecord,
     InputSource,
