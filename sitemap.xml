@@ -2,150 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://www.onesecondtrader.com/</loc>
-         <lastmod>2026-01-29</lastmod>
+         <lastmod>2026-01-30</lastmod>
     </url>
     <url>
-         <loc>https://www.onesecondtrader.com/quickstart/</loc>
-         <lastmod>2026-01-29</lastmod>
+         <loc>https://www.onesecondtrader.com/explanation/overview/</loc>
+         <lastmod>2026-01-30</lastmod>
     </url>
     <url>
-         <loc>https://www.onesecondtrader.com/api-reference/overview/</loc>
-         <lastmod>2026-01-29</lastmod>
+         <loc>https://www.onesecondtrader.com/reference/overview/</loc>
+         <lastmod>2026-01-30</lastmod>
     </url>
     <url>
-         <loc>https://www.onesecondtrader.com/api-reference/connectors/brokers/ib/</loc>
-         <lastmod>2026-01-29</lastmod>
+         <loc>https://www.onesecondtrader.com/reference/models/bar_fields/</loc>
+         <lastmod>2026-01-30</lastmod>
     </url>
     <url>
-         <loc>https://www.onesecondtrader.com/api-reference/connectors/brokers/simulated/</loc>
-         <lastmod>2026-01-29</lastmod>
+         <loc>https://www.onesecondtrader.com/reference/models/bar_period/</loc>
+         <lastmod>2026-01-30</lastmod>
     </url>
     <url>
-         <loc>https://www.onesecondtrader.com/api-reference/connectors/datafeeds/ib/</loc>
-         <lastmod>2026-01-29</lastmod>
+         <loc>https://www.onesecondtrader.com/reference/models/order_types/</loc>
+         <lastmod>2026-01-30</lastmod>
     </url>
     <url>
-         <loc>https://www.onesecondtrader.com/api-reference/connectors/datafeeds/simulated/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/connectors/gateways/ib/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/brokers/base/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/datafeeds/base/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/events/bases/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/events/market/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/events/requests/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/events/responses/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/indicators/averages/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/indicators/bar/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/indicators/base/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/messaging/eventbus/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/messaging/subscriber/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/models/data/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/models/orders/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/models/params/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/models/records/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/strategies/base/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/core/strategies/examples/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/dashboard/app/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/dashboard/registry/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/orchestrator/orchestrator/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/orchestrator/recorder/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/secmaster/schema/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/api-reference/secmaster/utils/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/documentation/overview/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/documentation/structure/connectors/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/documentation/structure/core/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/documentation/structure/dashboard/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/documentation/structure/overview/</loc>
-         <lastmod>2026-01-29</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/documentation/structure/secmaster/</loc>
-         <lastmod>2026-01-29</lastmod>
+         <loc>https://www.onesecondtrader.com/reference/models/trade_sides/</loc>
+         <lastmod>2026-01-30</lastmod>
     </url>
 </urlset>

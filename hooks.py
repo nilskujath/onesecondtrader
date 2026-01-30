@@ -101,7 +101,7 @@ def generate_markdown(parsed: dict) -> str:
 
 def on_pre_build(config, **kwargs):
     sql_path = Path("src/onesecondtrader/secmaster/schema.sql")
-    output_path = Path("docs/api-reference/secmaster/schema.md")
+    output_path = Path("docs/reference/secmaster/schema.md")
 
     if not sql_path.exists():
         return

@@ -21,38 +21,6 @@ function highlightKeywordArgs(container) {
   });
 }
 
-// Italicize the first paragraph of each docstring description.
-function italicizeFirstParagraph(container) {
-  container.querySelectorAll('.doc-contents').forEach(contents => {
-    const children = contents.children;
-    let foundHr = false;
-    const isModuleDocstring = contents.classList.contains('first');
-
-    for (let i = 0; i < children.length; i++) {
-      const el = children[i];
-
-      if (isModuleDocstring && el.tagName === 'HR') {
-        foundHr = true;
-        continue;
-      }
-
-      if (el.tagName === 'P' && !el.classList.contains('doc-class-components') && !el.classList.contains('doc-class-bases')) {
-        if (isModuleDocstring && !foundHr) {
-          continue;
-        }
-        if (!el.querySelector('em:only-child')) {
-          const em = document.createElement('em');
-          while (el.firstChild) {
-            em.appendChild(el.firstChild);
-          }
-          el.appendChild(em);
-        }
-        break;
-      }
-    }
-  });
-}
-
 // Hide docstring lines in a code block.
 // Pygments wraps each line in a span with id like "__span-0-14" (block-linenum).
 // Docstring content is marked with class "sd" (string doc).
@@ -154,7 +122,4 @@ document$.subscribe(() => {
 
   // Highlight keyword argument names in all code blocks on the page
   highlightKeywordArgs(document);
-
-  // Italicize first paragraph of each docstring
-  italicizeFirstParagraph(document);
 });
