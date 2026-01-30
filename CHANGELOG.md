@@ -1,3 +1,6 @@
+## v0.45.0
+- feat: added events package with EventBase class
+
 ## v0.44.0
 - feat: complete rework, integrated models package
 
