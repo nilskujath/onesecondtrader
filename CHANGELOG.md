@@ -1,3 +1,6 @@
+## v0.44.0
+- feat: complete rework, integrated models package
+
 ## v0.43.0
 - feat: added signal validation to dashboard
 
