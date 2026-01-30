@@ -14,7 +14,7 @@
         <link rel="prev" href="../../overview/">
       
       
-        <link rel="next" href="../../models/bar_fields/">
+        <link rel="next" href="../requests/order_cancellation/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -621,6 +621,124 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2_2" id="__nav_3_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Requests
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Requests
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requests/order_cancellation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Order Cancellation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requests/order_modification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Order Modification
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requests/order_submission/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Order Submission
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -887,17 +1005,18 @@
 </thead>
 <tbody>
 <tr>
-<td>ts_event_ns</td>
-<td>int</td>
+<td><code>ts_event_ns</code></td>
+<td><code>int</code></td>
 <td>Time at which the represented fact occurred, as UTC epoch nanoseconds.</td>
 </tr>
 <tr>
-<td>ts_created_ns</td>
-<td>int</td>
+<td><code>ts_created_ns</code></td>
+<td><code>int</code></td>
 <td>Time at which the event object was created, as UTC epoch nanoseconds.</td>
 </tr>
 </tbody>
 </table>
+<p>If not provided, <code>ts_created_ns</code> is assigned automatically at object creation.</p>
 
 
 
@@ -920,19 +1039,23 @@
 <span class="normal"><a href="#__codelineno-0-16">16</a></span>
 <span class="normal"><a href="#__codelineno-0-17">17</a></span>
 <span class="normal"><a href="#__codelineno-0-18">18</a></span>
-<span class="normal"><a href="#__codelineno-0-19">19</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-19">19</a></span>
+<span class="normal"><a href="#__codelineno-0-20">20</a></span>
+<span class="normal"><a href="#__codelineno-0-21">21</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="k">class</span><span class="w"> </span><span class="nc">EventBase</span><span class="p">:</span>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="sd">    Base class for immutable event message objects, using Unix epoch nanoseconds.</span>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">    | Field         | Type | Semantics                                                              |</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    |---------------|------|------------------------------------------------------------------------|</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">    | ts_event_ns   | int  | Time at which the represented fact occurred, as UTC epoch nanoseconds. |</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    | ts_created_ns | int  | Time at which the event object was created, as UTC epoch nanoseconds.  |</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="n">ts_event_ns</span><span class="p">:</span> <span class="nb">int</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="n">ts_created_ns</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">)</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">    | Field           | Type   | Semantics                                                              |</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    |-----------------|--------|------------------------------------------------------------------------|</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">    | `ts_event_ns`   | `int`  | Time at which the represented fact occurred, as UTC epoch nanoseconds. |</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    | `ts_created_ns` | `int`  | Time at which the event object was created, as UTC epoch nanoseconds.  |</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">    If not provided, `ts_created_ns` is assigned automatically at object creation.</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">ts_event_ns</span><span class="p">:</span> <span class="nb">int</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="n">ts_created_ns</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
               </details>
 

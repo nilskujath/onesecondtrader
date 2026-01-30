@@ -17,6 +17,18 @@
          <lastmod>2026-01-30</lastmod>
     </url>
     <url>
+         <loc>https://www.onesecondtrader.com/reference/events/requests/order_cancellation/</loc>
+         <lastmod>2026-01-30</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/events/requests/order_modification/</loc>
+         <lastmod>2026-01-30</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/events/requests/order_submission/</loc>
+         <lastmod>2026-01-30</lastmod>
+    </url>
+    <url>
          <loc>https://www.onesecondtrader.com/reference/models/bar_fields/</loc>
          <lastmod>2026-01-30</lastmod>
     </url>
