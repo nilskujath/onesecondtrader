@@ -1,3 +1,6 @@
+## v0.46.0
+- feat: added broker request events
+
 ## v0.45.0
 - feat: added events package with EventBase class
 
