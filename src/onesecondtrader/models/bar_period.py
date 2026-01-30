@@ -7,12 +7,12 @@ class BarPeriod(enum.Enum):
     """
     Enumeration of bar aggregation periods.
 
-    | Value  | Semantics            |
-    |--------|----------------------|
-    | SECOND | Duration of 1 second.|
-    | MINUTE | Duration of 1 minute.|
-    | HOUR   | Duration of 1 hour.  |
-    | DAY    | Duration of 1 day.   |
+    | Value    | Semantics            |
+    |----------|----------------------|
+    | `SECOND` | Duration of 1 second.|
+    | `MINUTE` | Duration of 1 minute.|
+    | `HOUR`   | Duration of 1 hour.  |
+    | `DAY`    | Duration of 1 day.   |
     """
 
     SECOND = enum.auto()

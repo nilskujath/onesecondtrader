@@ -10,10 +10,10 @@ class TradeSide(enum.Enum):
     `OrderSide` specifies the direction of change applied to the (net) signed position
     quantity from the perspective of the trading account.
 
-    | Value | Semantics                                      |
-    |-------|------------------------------------------------|
-    | BUY   | Increases the signed position quantity.        |
-    | SELL  | Decreases the signed position quantity.        |
+    | Value   | Semantics                                      |
+    |---------|------------------------------------------------|
+    | `BUY`   | Increases the signed position quantity.        |
+    | `SELL`  | Decreases the signed position quantity.        |
     """
 
     BUY = enum.auto()

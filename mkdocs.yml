@@ -22,6 +22,10 @@ nav:
   - Overview: reference/overview.md
   - Events:
     - Base: reference/events/base.md
+    - Requests:
+      - Order Cancellation: reference/events/requests/order_cancellation.md
+      - Order Modification: reference/events/requests/order_modification.md
+      - Order Submission: reference/events/requests/order_submission.md
   - Models:
     - Bar Fields: reference/models/bar_fields.md
     - Bar Period: reference/models/bar_period.md

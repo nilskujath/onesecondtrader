@@ -9,10 +9,12 @@ class EventBase:
     """
     Base class for immutable event message objects, using Unix epoch nanoseconds.
 
-    | Field         | Type | Semantics                                                              |
-    |---------------|------|------------------------------------------------------------------------|
-    | ts_event_ns   | int  | Time at which the represented fact occurred, as UTC epoch nanoseconds. |
-    | ts_created_ns | int  | Time at which the event object was created, as UTC epoch nanoseconds.  |
+    | Field           | Type   | Semantics                                                              |
+    |-----------------|--------|------------------------------------------------------------------------|
+    | `ts_event_ns`   | `int`  | Time at which the represented fact occurred, as UTC epoch nanoseconds. |
+    | `ts_created_ns` | `int`  | Time at which the event object was created, as UTC epoch nanoseconds.  |
+
+    If not provided, `ts_created_ns` is assigned automatically at object creation.
     """
 
     ts_event_ns: int
