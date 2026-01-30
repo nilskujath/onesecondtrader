@@ -93,7 +93,7 @@ graph TD
         B["<b>Code Quality Checks</b><br/>• Ruff Check & Format<br/>• MyPy Type Checking<br/>• Tests & Doctests"]
         C["<b>Security Checks</b><br/>• Gitleaks Secret Detection"]
         D["<b>File Validation</b><br/>• YAML/TOML/JSON Check<br/>• End-of-file Fixer<br/>• Large Files Check<br/>• Merge Conflict Check<br/>• Debug Statements Check"]
-        E["<b>Generate API Documentation</b> via <kbd>scripts/generate_api_docs.py</kbd><br/>• Auto-generate docs<br/>• Stage changes"]
+        E["<b>Generate Reference Documentation</b> via <kbd>scripts/generate_reference_docs.py</kbd><br/>• Auto-generate docs<br/>• Stage changes"]
     end
     B --> C --> D --> E
 

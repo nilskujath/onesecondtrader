@@ -71,8 +71,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
-      - name: Generate API documentation
-        run: poetry run python scripts/generate_api_docs.py
+      - name: Generate reference documentation
+        run: poetry run python scripts/generate_reference_docs.py
 
       - name: Install package for documentation
         run: poetry run pip install -e .

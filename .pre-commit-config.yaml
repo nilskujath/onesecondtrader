@@ -34,11 +34,11 @@ repos:
         language: system
         pass_filenames: false
 
-      - id: generate-api-docs
-        name: Generate and stage API documentation
+      - id: generate-reference-docs
+        name: Generate and stage reference documentation
         entry: >
-          bash -c "poetry run python scripts/generate_api_docs.py &&
-                   git add docs/api-reference/"
+          bash -c "poetry run python scripts/generate_reference_docs.py &&
+                   git add docs/reference/"
         language: system
         pass_filenames: false
 

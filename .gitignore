@@ -24,3 +24,5 @@ secmaster.db
 runs.db
 ./charts/
 charts/
+
+quarantine/

@@ -16,60 +16,15 @@ extra:
   generator: false
 nav:
 - Home: index.md
-- "\u2192 Quickstart": quickstart.md
-- Documentation:
-  - Overview: documentation/overview.md
-  - Package Structure:
-    - Overview: documentation/structure/overview.md
-    - Core: documentation/structure/core.md
-    - Securities Master: documentation/structure/secmaster.md
-    - Connectors: documentation/structure/connectors.md
-    - Dashboard: documentation/structure/dashboard.md
-- API Reference:
-  - Overview: api-reference/overview.md
-  - Connectors:
-    - Brokers:
-      - IB: api-reference/connectors/brokers/ib.md
-      - Simulated: api-reference/connectors/brokers/simulated.md
-    - Datafeeds:
-      - IB: api-reference/connectors/datafeeds/ib.md
-      - Simulated: api-reference/connectors/datafeeds/simulated.md
-    - Gateways:
-      - IB: api-reference/connectors/gateways/ib.md
-  - Core:
-    - Brokers:
-      - Base: api-reference/core/brokers/base.md
-    - Datafeeds:
-      - Base: api-reference/core/datafeeds/base.md
-    - Events:
-      - Bases: api-reference/core/events/bases.md
-      - Market: api-reference/core/events/market.md
-      - Requests: api-reference/core/events/requests.md
-      - Responses: api-reference/core/events/responses.md
-    - Indicators:
-      - Averages: api-reference/core/indicators/averages.md
-      - Bar: api-reference/core/indicators/bar.md
-      - Base: api-reference/core/indicators/base.md
-    - Messaging:
-      - Eventbus: api-reference/core/messaging/eventbus.md
-      - Subscriber: api-reference/core/messaging/subscriber.md
-    - Models:
-      - Data: api-reference/core/models/data.md
-      - Orders: api-reference/core/models/orders.md
-      - Params: api-reference/core/models/params.md
-      - Records: api-reference/core/models/records.md
-    - Strategies:
-      - Base: api-reference/core/strategies/base.md
-      - Examples: api-reference/core/strategies/examples.md
-  - Dashboard:
-    - App: api-reference/dashboard/app.md
-    - Registry: api-reference/dashboard/registry.md
-  - Orchestrator:
-    - Orchestrator: api-reference/orchestrator/orchestrator.md
-    - Recorder: api-reference/orchestrator/recorder.md
-  - Secmaster:
-    - Schema: api-reference/secmaster/schema.md
-    - Utils: api-reference/secmaster/utils.md
+- Explanation:
+  - Overview: explanation/overview.md
+- Reference:
+  - Overview: reference/overview.md
+  - Models:
+    - Bar Fields: reference/models/bar_fields.md
+    - Bar Period: reference/models/bar_period.md
+    - Order Types: reference/models/order_types.md
+    - Trade Sides: reference/models/trade_sides.md
 hooks:
 - docs/hooks.py
 theme:
