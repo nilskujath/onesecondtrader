@@ -20,6 +20,8 @@ nav:
   - Overview: explanation/overview.md
 - Reference:
   - Overview: reference/overview.md
+  - Events:
+    - Base: reference/events/base.md
   - Models:
     - Bar Fields: reference/models/bar_fields.md
     - Bar Period: reference/models/bar_period.md

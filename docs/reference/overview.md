@@ -9,12 +9,19 @@ hide:
 <div class="grid cards" markdown>
 
 
+-   __Events__&nbsp;&nbsp;
+
+    ---
+
+    Defines the event message objects propagated through the system.
+
+    [:material-link-variant: View `events` package API](events/base.md)
+
 -   __Models__&nbsp;&nbsp;
 
     ---
 
-    The `models` package defines the fundamental domain concepts used throughout the trading system.
-    It establishes a shared vocabulary for representing domain-specific structures.
+    Defines the fundamental domain concepts used throughout the trading system.
 
     [:material-link-variant: View `models` package API](models/bar_fields.md)
 
