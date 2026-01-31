@@ -39,6 +39,8 @@ nav:
       - Cancellations: reference/events/responses/cancellations.md
       - Modifications: reference/events/responses/modifications.md
       - Orders: reference/events/responses/orders.md
+  - Indicators:
+    - Base: reference/indicators/base.md
   - Models:
     - Bar Fields: reference/models/bar_fields.md
     - Bar Period: reference/models/bar_period.md

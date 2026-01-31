@@ -17,6 +17,14 @@ hide:
 
     [:material-link-variant: View `events` package API](events/base.md)
 
+-   __Indicators__&nbsp;&nbsp;
+
+    ---
+
+    Provides a library of common technical indicators and a base class for creating custom ones.
+
+    [:material-link-variant: View `indicators` package API](indicators/base.md)
+
 -   __Models__&nbsp;&nbsp;
 
     ---
