@@ -1,3 +1,6 @@
+## v0.51.0
+- feat: added broker base and simulated broker
+
 ## v0.50.0
 - feat: added messaging package
 
