@@ -26,3 +26,13 @@ Indicators are intended to be used in the context of (multi-symbol) strategies a
 Concrete indicators and their computation logic, as well as the base class for creating custom indicators, are documented in the API Reference.
 
 [:material-link-variant: View Indicators Package API Reference](../reference/overview.md).
+
+
+## Messaging Package
+
+The `messaging` package provides the infrastructure for event-based communication between system components.
+It provides an event dispatch mechanism for propagating event objects to subscribers and a base class for system components that subscribe to or publish events.
+
+The event bus and subscriber base class are documented in the API Reference.
+
+[:material-link-variant: View Messaging Package API Reference](../reference/overview.md).

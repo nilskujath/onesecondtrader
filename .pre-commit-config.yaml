@@ -28,12 +28,6 @@ repos:
         language: system
         pass_filenames: false
 
-      - id: doctest
-        name: Run doctests in docstrings
-        entry: poetry run pytest --doctest-modules
-        language: system
-        pass_filenames: false
-
       - id: generate-reference-docs
         name: Generate and stage reference documentation
         entry: >

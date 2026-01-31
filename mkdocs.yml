@@ -43,6 +43,9 @@ nav:
     - Base: reference/indicators/base.md
     - Market Fields: reference/indicators/market_fields.md
     - Moving Averages: reference/indicators/moving_averages.md
+  - Messaging:
+    - Eventbus: reference/messaging/eventbus.md
+    - Subscriber: reference/messaging/subscriber.md
   - Models:
     - Bar Fields: reference/models/bar_fields.md
     - Bar Period: reference/models/bar_period.md

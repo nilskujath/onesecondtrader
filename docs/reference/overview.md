@@ -25,6 +25,14 @@ hide:
 
     [:material-link-variant: View `indicators` package API](indicators/base.md)
 
+-   __Messaging__&nbsp;&nbsp;
+
+    ---
+
+    Provides the infrastructure for event-based communication between system components.
+
+    [:material-link-variant: View `messaging` package API](messaging/eventbus.md)
+
 -   __Models__&nbsp;&nbsp;
 
     ---
