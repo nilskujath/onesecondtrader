@@ -5,11 +5,11 @@ import time
 import numpy as np
 
 from onesecondtrader.events.market import BarReceived
-from onesecondtrader.indicators.base import Indicator
+from onesecondtrader.indicators.base import IndicatorBase
 from onesecondtrader.models import BarPeriod
 
 
-class CloseIndicator(Indicator):
+class CloseIndicator(IndicatorBase):
     @property
     def name(self) -> str:
         return "close"

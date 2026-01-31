@@ -41,6 +41,8 @@ nav:
       - Orders: reference/events/responses/orders.md
   - Indicators:
     - Base: reference/indicators/base.md
+    - Market Fields: reference/indicators/market_fields.md
+    - Moving Averages: reference/indicators/moving_averages.md
   - Models:
     - Bar Fields: reference/models/bar_fields.md
     - Bar Period: reference/models/bar_period.md

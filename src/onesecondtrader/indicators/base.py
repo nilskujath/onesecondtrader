@@ -9,7 +9,7 @@ import numpy as np
 from onesecondtrader import events
 
 
-class Indicator(abc.ABC):
+class IndicatorBase(abc.ABC):
     """
     Base class for scalar technical indicators with per-symbol history.
 
