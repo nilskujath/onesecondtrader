@@ -1,3 +1,6 @@
+## v0.50.0
+- feat: added messaging package
+
 ## v0.49.0
 - feat: added indicators
 
