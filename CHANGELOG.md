@@ -1,3 +1,6 @@
+## v0.47.0
+- feat: completed events package
+
 ## v0.46.0
 - feat: added broker request events
 
