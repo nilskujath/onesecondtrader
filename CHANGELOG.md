@@ -1,3 +1,6 @@
+## v0.48.0
+- feat: added indicator base class
+
 ## v0.47.0
 - feat: completed events package
 
