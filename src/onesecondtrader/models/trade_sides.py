@@ -7,7 +7,7 @@ class TradeSide(enum.Enum):
     """
     Enumeration of trade direction.
 
-    `OrderSide` specifies the direction of change applied to the (net) signed position
+    `TradeSide` specifies the direction of change applied to the (net) signed position
     quantity from the perspective of the trading account.
 
     | Value   | Semantics                                      |

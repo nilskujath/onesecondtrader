@@ -3,19 +3,22 @@ from __future__ import annotations
 import dataclasses
 import uuid
 
-from onesecondtrader import events, models
+from onesecondtrader import models
+from onesecondtrader.events.requests.base import RequestBase
 
 
 @dataclasses.dataclass(kw_only=True, frozen=True, slots=True)
-class OrderSubmissionRequest(events.EventBase):
+class OrderSubmissionRequest(RequestBase):
     """
     Event representing a request to submit a new order to a broker.
+
+    The `system_order_id` is a unique identifier assigned by the system to the order submission request by default at object creation.
 
     | Field             | Type                     | Semantics                                                                  |
     |-------------------|--------------------------|----------------------------------------------------------------------------|
     | `ts_event_ns`     | `int`                    | Time at which the submission request was issued, as UTC epoch nanoseconds. |
     | `ts_created_ns`   | `int`                    | Time at which the event object was created, as UTC epoch nanoseconds.      |
-    | `system_order_id` | `uuid.UUID`            | System-assigned unique identifier for the order submission.                  |
+    | `system_order_id` | `uuid.UUID`              | System-assigned unique identifier for the order submission.                |
     | `symbol`          | `str`                    | Identifier of the traded instrument.                                       |
     | `order_type`      | `models.OrderType`       | Execution constraint of the order.                                         |
     | `side`            | `models.TradeSide`       | Direction of the trade.                                                    |
@@ -25,7 +28,6 @@ class OrderSubmissionRequest(events.EventBase):
     """
 
     system_order_id: uuid.UUID = dataclasses.field(default_factory=uuid.uuid4)
-    symbol: str
     order_type: models.OrderType
     side: models.TradeSide
     quantity: float

@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import dataclasses
-import uuid
 
-from onesecondtrader import events
+from onesecondtrader.events.requests.base import RequestBase
 
 
 @dataclasses.dataclass(kw_only=True, frozen=True, slots=True)
-class OrderModificationRequest(events.EventBase):
+class OrderModificationRequest(RequestBase):
     """
     Event representing a request to modify an existing order.
 
@@ -22,8 +21,6 @@ class OrderModificationRequest(events.EventBase):
     | `stop_price`      | `float` or `None` | Updated stop price, if modified.                                             |
     """
 
-    system_order_id: uuid.UUID
-    symbol: str
     quantity: float | None = None
     limit_price: float | None = None
     stop_price: float | None = None

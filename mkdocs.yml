@@ -22,14 +22,28 @@ nav:
   - Overview: reference/overview.md
   - Events:
     - Base: reference/events/base.md
+    - Market:
+      - Bar Processed: reference/events/market/bar_processed.md
+      - Bar Received: reference/events/market/bar_received.md
+    - Orders:
+      - Base: reference/events/orders/base.md
+      - Expirations: reference/events/orders/expirations.md
+      - Fills: reference/events/orders/fills.md
     - Requests:
+      - Base: reference/events/requests/base.md
       - Order Cancellation: reference/events/requests/order_cancellation.md
       - Order Modification: reference/events/requests/order_modification.md
       - Order Submission: reference/events/requests/order_submission.md
+    - Responses:
+      - Base: reference/events/responses/base.md
+      - Cancellations: reference/events/responses/cancellations.md
+      - Modifications: reference/events/responses/modifications.md
+      - Orders: reference/events/responses/orders.md
   - Models:
     - Bar Fields: reference/models/bar_fields.md
     - Bar Period: reference/models/bar_period.md
     - Order Types: reference/models/order_types.md
+    - Rejection Reasons: reference/models/rejection_reasons.md
     - Trade Sides: reference/models/trade_sides.md
 hooks:
 - docs/hooks.py
