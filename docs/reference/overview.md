@@ -9,6 +9,14 @@ hide:
 <div class="grid cards" markdown>
 
 
+-   __Brokers__&nbsp;&nbsp;
+
+    ---
+
+    Provides interfaces for order execution via a simulated broker and adapters to real venues.
+
+    [:material-link-variant: View `brokers` package API](brokers/base.md)
+
 -   __Events__&nbsp;&nbsp;
 
     ---

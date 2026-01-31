@@ -20,6 +20,9 @@ nav:
   - Overview: explanation/overview.md
 - Reference:
   - Overview: reference/overview.md
+  - Brokers:
+    - Base: reference/brokers/base.md
+    - Simulated: reference/brokers/simulated.md
   - Events:
     - Base: reference/events/base.md
     - Market:

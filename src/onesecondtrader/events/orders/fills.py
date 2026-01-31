@@ -19,7 +19,7 @@ class FillEvent(OrderBase):
     |-----------------------|---------------------|---------------------------------------------------------------------------------|
     | `ts_event_ns`         | `int`               | Time at which the fill was observed by the system, as UTC epoch nanoseconds.    |
     | `ts_created_ns`       | `int`               | Time at which the event object was created, as UTC epoch nanoseconds.           |
-    | `ts_broker_ns`        | `int`               | Time reported by the broker for the fill, as UTC epoch nanoseconds.             |
+    | `ts_broker_ns`        | `int`               | Time reported by the brokers for the fill, as UTC epoch nanoseconds.             |
     | `associated_order_id` | `uuid.UUID`         | Identifier of the order associated with the fill.                               |
     | `broker_order_id`     | `str` or `None`     | Broker-assigned identifier of the order associated with the fill, if available. |
     | `symbol`              | `str`               | Identifier of the traded instrument.                                            |

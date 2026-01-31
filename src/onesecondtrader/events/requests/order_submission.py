@@ -10,7 +10,7 @@ from onesecondtrader.events.requests.base import RequestBase
 @dataclasses.dataclass(kw_only=True, frozen=True, slots=True)
 class OrderSubmissionRequest(RequestBase):
     """
-    Event representing a request to submit a new order to a broker.
+    Event representing a request to submit a new order to a brokers.
 
     The `system_order_id` is a unique identifier assigned by the system to the order submission request by default at object creation.
 

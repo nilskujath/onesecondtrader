@@ -11,7 +11,7 @@ class RequestBase(events.EventBase):
     """
     Base class for request events.
 
-    This class defines attributes common to all requests issued to a broker.
+    This class defines attributes common to all requests issued to a brokers.
 
     | Field             | Type        | Semantics                                                                  |
     |-------------------|-------------|----------------------------------------------------------------------------|

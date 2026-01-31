@@ -8,7 +8,7 @@ class OrderRejectionReason(enum.Enum):
     Enumeration of canonical order rejection reasons.
 
     This enumeration defines the system-level classification of order rejection causes.
-    It provides a stable, broker-agnostic taxonomy for programmatic handling of rejected orders.
+    It provides a stable, brokers-agnostic taxonomy for programmatic handling of rejected orders.
 
     | Value     | Semantics                                                                 |
     |-----------|---------------------------------------------------------------------------|
@@ -22,8 +22,8 @@ class ModificationRejectionReason(enum.Enum):
     """
     Enumeration of canonical order modification rejection reasons.
 
-    This enumeration defines the system-level classification of reasons for which an order modification request may be rejected by a broker.
-    It provides a stable, broker-agnostic taxonomy intended for programmatic handling and observability of modification rejections.
+    This enumeration defines the system-level classification of reasons for which an order modification request may be rejected by a brokers.
+    It provides a stable, brokers-agnostic taxonomy intended for programmatic handling and observability of modification rejections.
 
     | Value     | Semantics                                                                        |
     |-----------|----------------------------------------------------------------------------------|
@@ -37,8 +37,8 @@ class CancellationRejectionReason(enum.Enum):
     """
     Enumeration of canonical order cancellation rejection reasons.
 
-    This enumeration defines the system-level classification of reasons for which an order cancellation request may be rejected by a broker.
-    It provides a stable, broker-agnostic taxonomy intended for programmatic handling and observability of cancellation rejections.
+    This enumeration defines the system-level classification of reasons for which an order cancellation request may be rejected by a brokers.
+    It provides a stable, brokers-agnostic taxonomy intended for programmatic handling and observability of cancellation rejections.
 
     | Value     | Semantics                                                                        |
     |-----------|----------------------------------------------------------------------------------|
