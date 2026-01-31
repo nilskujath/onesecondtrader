@@ -1,3 +1,6 @@
+## v0.49.0
+- feat: added indicators
+
 ## v0.48.0
 - feat: added indicator base class
 
