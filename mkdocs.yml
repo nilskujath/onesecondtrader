@@ -55,6 +55,10 @@ nav:
     - Order Types: reference/models/order_types.md
     - Rejection Reasons: reference/models/rejection_reasons.md
     - Trade Sides: reference/models/trade_sides.md
+  - Secmaster:
+    - Schema Versions:
+      - Secmaster Schema V1: reference/secmaster/schema_versions/secmaster_schema_v1.md
+    - Utils: reference/secmaster/utils.md
 hooks:
 - docs/hooks.py
 theme:

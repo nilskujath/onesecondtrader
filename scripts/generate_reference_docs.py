@@ -7,7 +7,7 @@ from pathlib import Path
 import yaml
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "docs"))
-from hooks import parse_sql_schema, generate_markdown  # type: ignore[import-not-found]
+from hooks import parse_sql_schema, generate_markdown, format_title  # type: ignore[import-not-found]
 
 # SETUP LOGGER
 # --------------------------------------------------------------------------------------
@@ -226,15 +226,22 @@ def generate_reference_docs():
     # GENERATE SCHEMA DOCUMENTATION FROM SQL
     # ----------------------------------------------------------------------------------
 
-    sql_path = Path("src/onesecondtrader/secmaster/schema.sql")
-    if sql_path.exists():
-        schema_output_path = docs_path / "secmaster" / "schema.md"
-        schema_output_path.parent.mkdir(parents=True, exist_ok=True)
+    sql_files = {}
+    for sql_path in src_path.rglob("*.sql"):
+        relative = sql_path.relative_to(src_path)
+        output_path = docs_path / relative.with_suffix(".md")
+        title = format_title(sql_path.stem)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         sql_content = sql_path.read_text()
         parsed = parse_sql_schema(sql_content)
-        markdown = generate_markdown(parsed)
-        schema_output_path.write_text(markdown)
-        logger.info(f"Generated schema documentation: {schema_output_path}")
+        markdown = generate_markdown(parsed, title)
+        output_path.write_text(markdown)
+        logger.info(f"Generated schema documentation: {output_path}")
+        parent_module = relative.parts[0] if len(relative.parts) > 1 else None
+        if parent_module:
+            if parent_module not in sql_files:
+                sql_files[parent_module] = []
+            sql_files[parent_module].append(relative)
 
     # DISCOVER ALL PYTHON MODULES AND SUBMODULES IN src/onesecondtrader
     # ----------------------------------------------------------------------------------
@@ -469,12 +476,23 @@ hide:
                 structure = submodule_structure[module]
                 submodule_nav = []
 
-                if module == "secmaster":
-                    schema_path = docs_path / "secmaster" / "schema.md"
-                    if schema_path.exists():
-                        submodule_nav.append(
-                            {"Schema": "reference/secmaster/schema.md"}
-                        )
+                if module in sql_files:
+                    sql_nav_tree = {}
+                    for sql_relative in sorted(sql_files[module]):
+                        parts = sql_relative.parts[1:]
+                        sql_nav_path = f"reference/{sql_relative.with_suffix('.md')}"
+                        if len(parts) == 1:
+                            sql_title = format_module_title(sql_relative.stem)
+                            submodule_nav.append({sql_title: sql_nav_path})
+                        else:
+                            folder = parts[0]
+                            if folder not in sql_nav_tree:
+                                sql_nav_tree[folder] = []
+                            sql_title = format_module_title(sql_relative.stem)
+                            sql_nav_tree[folder].append({sql_title: sql_nav_path})
+                    for folder, items in sorted(sql_nav_tree.items()):
+                        folder_title = format_module_title(folder)
+                        submodule_nav.append({folder_title: items})
 
                 submodule_nav.extend(
                     build_nav_recursive(structure, f"reference/{module}")

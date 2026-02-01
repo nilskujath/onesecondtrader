@@ -49,4 +49,12 @@ hide:
 
     [:material-link-variant: View `models` package API](models/bar_fields.md)
 
+-   __Secmaster__&nbsp;&nbsp;
+
+    ---
+
+    Provides a schema for creating and utilities to populate the security master database.
+
+    [:material-link-variant: View `secmaster` package API](secmaster/utils.md)
+
 </div>

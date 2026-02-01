@@ -21,6 +21,7 @@ dependencies = [
 
 [tool.poetry]
 packages = [{include = "onesecondtrader", from = "src"}]
+include = ["src/onesecondtrader/**/*.sql"]
 
 
 [tool.poetry.group.dev.dependencies]

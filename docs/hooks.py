@@ -56,13 +56,20 @@ def parse_sql_schema(sql_content: str) -> dict:
     return {"module_docstring": "\n".join(module_docstring_lines), "blocks": blocks}
 
 
-ABBREVIATIONS = {"mbo", "bbo", "ohlcv", "mbp10"}
+ABBREVIATIONS = {"mbo", "bbo", "ohlcv", "mbp10", "ib", "mt5", "csv"}
 
 
 def format_heading(name: str) -> str:
     if name.lower() in ABBREVIATIONS:
         return name.upper()
     return name.capitalize()
+
+
+def format_title(name: str) -> str:
+    words = name.replace("_", " ").split()
+    return " ".join(
+        w.upper() if w.lower() in ABBREVIATIONS else w.capitalize() for w in words
+    )
 
 
 def extract_block_name(sql: str) -> str:
@@ -76,8 +83,8 @@ def extract_block_name(sql: str) -> str:
     return "Unknown"
 
 
-def generate_markdown(parsed: dict) -> str:
-    lines = ["# Schema\n"]
+def generate_markdown(parsed: dict, title: str = "Schema") -> str:
+    lines = [f"# {title}\n"]
 
     if parsed["module_docstring"]:
         lines.append(parsed["module_docstring"])
@@ -100,18 +107,20 @@ def generate_markdown(parsed: dict) -> str:
 
 
 def on_pre_build(config, **kwargs):
-    sql_path = Path("src/onesecondtrader/secmaster/schema.sql")
-    output_path = Path("docs/reference/secmaster/schema.md")
+    src_root = Path("src/onesecondtrader")
+    docs_root = Path("docs/reference")
 
-    if not sql_path.exists():
-        return
+    for sql_path in src_root.rglob("*.sql"):
+        relative = sql_path.relative_to(src_root)
+        output_path = docs_root / relative.with_suffix(".md")
+        title = format_title(sql_path.stem)
 
-    sql_content = sql_path.read_text()
-    parsed = parse_sql_schema(sql_content)
-    markdown = generate_markdown(parsed)
+        sql_content = sql_path.read_text()
+        parsed = parse_sql_schema(sql_content)
+        markdown = generate_markdown(parsed, title)
 
-    if output_path.exists() and output_path.read_text() == markdown:
-        return
+        if output_path.exists() and output_path.read_text() == markdown:
+            continue
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(markdown)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(markdown)
