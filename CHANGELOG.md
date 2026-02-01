@@ -1,3 +1,6 @@
+## v0.52.0
+- feat: added secmaster package
+
 ## v0.51.0
 - feat: added broker base and simulated broker
 
