@@ -105,6 +105,10 @@
          <lastmod>2026-02-03</lastmod>
     </url>
     <url>
+         <loc>https://www.onesecondtrader.com/reference/models/action_types/</loc>
+         <lastmod>2026-02-03</lastmod>
+    </url>
+    <url>
          <loc>https://www.onesecondtrader.com/reference/models/bar_fields/</loc>
          <lastmod>2026-02-03</lastmod>
     </url>
@@ -130,6 +134,14 @@
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/secmaster/schema_versions/secmaster_schema_v1/</loc>
+         <lastmod>2026-02-03</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/strategies/base/</loc>
+         <lastmod>2026-02-03</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/strategies/examples/</loc>
          <lastmod>2026-02-03</lastmod>
     </url>
 </urlset>
