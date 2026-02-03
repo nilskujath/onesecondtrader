@@ -1,3 +1,6 @@
+## v0.54.0
+- feat: added simulated datafeed
+
 ## v0.53.0
 - feat: completed secmaster package
 
