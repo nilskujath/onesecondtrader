@@ -2,6 +2,7 @@
 Defines the fundamental domain concepts used throughout the trading system.
 """
 
+from .action_types import ActionType
 from .bar_fields import BarField
 from .bar_period import BarPeriod
 from .order_types import OrderType
@@ -13,6 +14,7 @@ from .rejection_reasons import (
 from .trade_sides import TradeSide
 
 __all__ = [
+    "ActionType",
     "BarField",
     "BarPeriod",
     "OrderType",

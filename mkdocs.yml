@@ -53,6 +53,7 @@ nav:
     - Eventbus: reference/messaging/eventbus.md
     - Subscriber: reference/messaging/subscriber.md
   - Models:
+    - Action Types: reference/models/action_types.md
     - Bar Fields: reference/models/bar_fields.md
     - Bar Period: reference/models/bar_period.md
     - Order Types: reference/models/order_types.md
@@ -62,6 +63,9 @@ nav:
     - Schema Versions:
       - Secmaster Schema V1: reference/secmaster/schema_versions/secmaster_schema_v1.md
     - Utils: reference/secmaster/utils.md
+  - Strategies:
+    - Base: reference/strategies/base.md
+    - Examples: reference/strategies/examples.md
 hooks:
 - docs/hooks.py
 theme:

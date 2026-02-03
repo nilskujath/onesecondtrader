@@ -55,7 +55,7 @@ hide:
 
     Defines the fundamental domain concepts used throughout the trading system.
 
-    [:material-link-variant: View `models` package API](models/bar_fields.md)
+    [:material-link-variant: View `models` package API](models/action_types.md)
 
 -   __Secmaster__&nbsp;&nbsp;
 
@@ -64,5 +64,13 @@ hide:
     Provides a schema for creating and utilities to populate the security master database.
 
     [:material-link-variant: View `secmaster` package API](secmaster/utils.md)
+
+-   __Strategies__&nbsp;&nbsp;
+
+    ---
+
+    Provides a base class for creating custom trading strategies and provides example strategies.
+
+    [:material-link-variant: View `strategies` package API](strategies/base.md)
 
 </div>
