@@ -1862,6 +1862,10 @@
 <p>The schema is designed for Databento-native ingestion via DBN files, while remaining compatible with other sources.
 Instrument identity is modeled per publisher namespace and supports either numeric upstream identifiers or symbols.
 Contract specifications and other static reference metadata are intentionally out of scope for this schema and should be stored separately if ingested.</p>
+<p>The schema is explicitly ingestion-safe in the sense that:</p>
+<p>1) publishers are keyed by (vendor, dataset) rather than vendor alone, allowing multiple feeds per vendor;
+2) symbology admits multiple mappings sharing the same start date by including the resolved instrument identifier
+in the primary key, preventing accidental overwrites during bulk ingestion.</p>
 <table>
 <thead>
 <tr>
@@ -1872,11 +1876,11 @@ Contract specifications and other static reference metadata are intentionally ou
 <tbody>
 <tr>
 <td><code>publishers</code></td>
-<td>Registry of data sources and their identifier namespaces.</td>
+<td>Registry of vendor+dataset namespaces used for market data and instrument ingestion.</td>
 </tr>
 <tr>
 <td><code>instruments</code></td>
-<td>Registry of instruments observed from market data ingestion within a publisher namespace.</td>
+<td>Registry of instruments observed from ingestion within a publisher namespace.</td>
 </tr>
 <tr>
 <td><code>ohlcv</code></td>
@@ -1890,8 +1894,12 @@ Contract specifications and other static reference metadata are intentionally ou
 </table>
 <h2 id="publishers">Publishers</h2>
 <p>Registry of all data sources used for market data and instrument ingestion.</p>
-<p>Each row represents a distinct data source.
-A publisher establishes the provenance of instrument definitions and price data and provides the context in which raw symbols and native instrument identifiers are interpreted.</p>
+<p>Each row represents a distinct data product (feed) within a vendor namespace.
+A publisher record is uniquely identified by the pair (<code>name</code>, <code>dataset</code>), not by <code>name</code> alone.
+This allows a single vendor (e.g. Databento) to appear multiple times, once per concrete dataset/feed
+(e.g. <code>GLBX.MDP3</code>, <code>XNAS.ITCH</code>).</p>
+<p>A publisher establishes the provenance of instrument definitions and price data and provides the context
+in which raw symbols and native instrument identifiers are interpreted.</p>
 <table>
 <thead>
 <tr>
@@ -1906,13 +1914,13 @@ A publisher establishes the provenance of instrument definitions and price data 
 <td><code>publisher_id</code></td>
 <td><code>INTEGER</code></td>
 <td><code>PRIMARY KEY</code></td>
-<td>Internal surrogate key uniquely identifying a data source within the system.</td>
+<td>Internal surrogate key uniquely identifying a publisher record within the system.</td>
 </tr>
 <tr>
 <td><code>name</code></td>
 <td><code>TEXT</code></td>
-<td><code>NOT NULL</code>, <code>UNIQUE</code></td>
-<td>Human-readable identifier for the data source or vendor (e.g. <code>databento</code>, <code>yfinance</code>).</td>
+<td><code>NOT NULL</code></td>
+<td>Human-readable vendor identifier for the data source (e.g. <code>databento</code>, <code>yfinance</code>).</td>
 </tr>
 <tr>
 <td><code>dataset</code></td>
@@ -1928,12 +1936,22 @@ A publisher establishes the provenance of instrument definitions and price data 
 </tr>
 </tbody>
 </table>
+<p><strong>Table constraints</strong></p>
+<ul>
+<li><code>UNIQUE(name, dataset)</code> ensures that each vendor+feed combination is represented at most once.</li>
+</ul>
 <p><strong>Examples</strong></p>
 <p>Databento CME Globex feed:</p>
 <ul>
 <li><code>name</code>    = <code>'databento'</code></li>
 <li><code>dataset</code> = <code>'GLBX.MDP3'</code></li>
 <li><code>venue</code>   = <code>XCME</code></li>
+</ul>
+<p>Databento NASDAQ TotalView feed:</p>
+<ul>
+<li><code>name</code>    = <code>'databento'</code></li>
+<li><code>dataset</code> = <code>'XNAS.ITCH'</code></li>
+<li><code>venue</code>   = <code>XNAS</code></li>
 </ul>
 <p>Yahoo Finance equity data:</p>
 <ul>
@@ -1943,10 +1961,11 @@ A publisher establishes the provenance of instrument definitions and price data 
 </ul>
 <div class="language-sql highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">publishers</span><span class="w"> </span><span class="p">(</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="n">publisher_id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">UNIQUE</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="n">dataset</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="n">venue</span><span class="w"> </span><span class="nb">TEXT</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">);</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="n">venue</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">dataset</span><span class="p">)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">);</span>
 </span></code></pre></div>
 <h2 id="instruments">Instruments</h2>
 <p>Registry of instruments observed through market data ingestion.</p>
@@ -2012,9 +2031,10 @@ The table intentionally excludes contract specifications and other reference met
 </span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">        </span><span class="n">source_instrument_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
 </span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">        </span><span class="k">OR</span><span class="w"> </span><span class="n">symbol</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
 </span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="p">),</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">publisher_ref</span><span class="p">,</span><span class="w"> </span><span class="n">source_instrument_id</span><span class="p">),</span>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">publisher_ref</span><span class="p">,</span><span class="w"> </span><span class="n">symbol</span><span class="p">,</span><span class="w"> </span><span class="n">symbol_type</span><span class="p">)</span>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="p">);</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="n">symbol</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">symbol_type</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">),</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">publisher_ref</span><span class="p">,</span><span class="w"> </span><span class="n">source_instrument_id</span><span class="p">),</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">publisher_ref</span><span class="p">,</span><span class="w"> </span><span class="n">symbol</span><span class="p">,</span><span class="w"> </span><span class="n">symbol_type</span><span class="p">)</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="p">);</span>
 </span></code></pre></div>
 <h2 id="ohlcv">OHLCV</h2>
 <p>Stores aggregated OHLCV bars for instruments at multiple time resolutions.</p>
@@ -2099,7 +2119,11 @@ The table uses <code>WITHOUT ROWID</code> to store rows directly in the primary 
 </span></code></pre></div>
 <h2 id="symbology">Symbology</h2>
 <p>Stores time-bounded mappings from publisher-native symbols to publisher-native instrument identifiers.</p>
-<p>The table captures symbol resolution rules as provided by upstream data sources and must be interpreted within the namespace of a specific publisher.</p>
+<p>The table captures symbol resolution rules as provided by upstream data sources and must be interpreted within the
+namespace of a specific publisher.</p>
+<p>The schema permits multiple mappings to share the same <code>start_date</code> for a given (<code>publisher_ref</code>, <code>symbol</code>, <code>symbol_type</code>)
+by including <code>source_instrument_id</code> in the primary key. This prevents accidental overwrite when upstream symbology exports
+contain same-day corrections, backfills, or parallel resolution segments.</p>
 <table>
 <thead>
 <tr>
@@ -2148,7 +2172,7 @@ The table uses <code>WITHOUT ROWID</code> to store rows directly in the primary 
 </tr>
 </tbody>
 </table>
-<p>The primary key enforces uniqueness of symbol mappings per publisher, symbol type, and start date.
+<p>The primary key enforces uniqueness of mappings at the granularity of a resolved instrument.
 Date bounds are interpreted as closed intervals.</p>
 <div class="language-sql highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">symbology</span><span class="w"> </span><span class="p">(</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="n">publisher_ref</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
@@ -2158,10 +2182,11 @@ Date bounds are interpreted as closed intervals.</p>
 </span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="n">start_date</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
 </span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="n">end_date</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
 </span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">publisher_ref</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">publishers</span><span class="p">(</span><span class="n">publisher_id</span><span class="p">),</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">publisher_ref</span><span class="p">,</span><span class="w"> </span><span class="n">symbol</span><span class="p">,</span><span class="w"> </span><span class="n">symbol_type</span><span class="p">,</span><span class="w"> </span><span class="n">start_date</span><span class="p">),</span>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">publisher_ref</span><span class="p">,</span><span class="w"> </span><span class="n">symbol_type</span><span class="p">,</span><span class="w"> </span><span class="n">source_instrument_id</span><span class="p">,</span><span class="w"> </span><span class="n">start_date</span><span class="p">),</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="n">start_date</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">end_date</span><span class="p">)</span>
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="p">);</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">publisher_ref</span><span class="p">,</span><span class="w"> </span><span class="n">source_instrument_id</span><span class="p">)</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">        </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">instruments</span><span class="p">(</span><span class="n">publisher_ref</span><span class="p">,</span><span class="w"> </span><span class="n">source_instrument_id</span><span class="p">),</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">publisher_ref</span><span class="p">,</span><span class="w"> </span><span class="n">symbol</span><span class="p">,</span><span class="w"> </span><span class="n">symbol_type</span><span class="p">,</span><span class="w"> </span><span class="n">start_date</span><span class="p">,</span><span class="w"> </span><span class="n">source_instrument_id</span><span class="p">),</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="n">start_date</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">end_date</span><span class="p">)</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="p">);</span>
 </span></code></pre></div>
 
 
