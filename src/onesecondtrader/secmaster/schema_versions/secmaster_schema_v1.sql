@@ -4,10 +4,16 @@
 -- Instrument identity is modeled per publisher namespace and supports either numeric upstream identifiers or symbols.
 -- Contract specifications and other static reference metadata are intentionally out of scope for this schema and should be stored separately if ingested.
 --
+-- The schema is explicitly ingestion-safe in the sense that:
+--
+-- 1) publishers are keyed by (vendor, dataset) rather than vendor alone, allowing multiple feeds per vendor;
+-- 2) symbology admits multiple mappings sharing the same start date by including the resolved instrument identifier
+--    in the primary key, preventing accidental overwrites during bulk ingestion.
+--
 -- | Table         | Description |
 -- |---------------|-------------|
--- | `publishers`  | Registry of data sources and their identifier namespaces. |
--- | `instruments` | Registry of instruments observed from market data ingestion within a publisher namespace. |
+-- | `publishers`  | Registry of vendor+dataset namespaces used for market data and instrument ingestion. |
+-- | `instruments` | Registry of instruments observed from ingestion within a publisher namespace. |
 -- | `ohlcv`       | Aggregated OHLCV bar data keyed by instrument, bar duration (`rtype`), and event timestamp (`ts_event`). |
 -- | `symbology`   | Time-bounded mappings from publisher-native symbols to publisher-native instrument identifiers. |
 
@@ -15,15 +21,24 @@
 
 -- Registry of all data sources used for market data and instrument ingestion.
 --
--- Each row represents a distinct data source.
--- A publisher establishes the provenance of instrument definitions and price data and provides the context in which raw symbols and native instrument identifiers are interpreted.
+-- Each row represents a distinct data product (feed) within a vendor namespace.
+-- A publisher record is uniquely identified by the pair (`name`, `dataset`), not by `name` alone.
+-- This allows a single vendor (e.g. Databento) to appear multiple times, once per concrete dataset/feed
+-- (e.g. `GLBX.MDP3`, `XNAS.ITCH`).
 --
--- | Field           | Type      | Constraints          | Description                                                                                                                                                                     |
--- |-----------------|-----------|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
--- | `publisher_id`  | `INTEGER` | `PRIMARY KEY`        | Internal surrogate key uniquely identifying a data source within the system.                                                                                                    |
--- | `name`          | `TEXT`    | `NOT NULL`, `UNIQUE` | Human-readable identifier for the data source or vendor (e.g. `databento`, `yfinance`).                                                                                         |
--- | `dataset`       | `TEXT`    | `NOT NULL`           | Identifier of the concrete data product or feed through which data is sourced; uses Databento dataset names (e.g. `GLBX.MDP3`) for Databento ingestion and internal identifiers for other sources (e.g. `YFINANCE`). |
--- | `venue`         | `TEXT`    |                      | Optional ISO 10383 Market Identifier Code (MIC) describing the primary trading venue; may be NULL for aggregated or multi-venue sources.                                        |
+-- A publisher establishes the provenance of instrument definitions and price data and provides the context
+-- in which raw symbols and native instrument identifiers are interpreted.
+--
+-- | Field           | Type      | Constraints             | Description                                                                                                                                                                     |
+-- |-----------------|-----------|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+-- | `publisher_id`  | `INTEGER` | `PRIMARY KEY`           | Internal surrogate key uniquely identifying a publisher record within the system.                                                                                               |
+-- | `name`          | `TEXT`    | `NOT NULL`              | Human-readable vendor identifier for the data source (e.g. `databento`, `yfinance`).                                                                                            |
+-- | `dataset`       | `TEXT`    | `NOT NULL`              | Identifier of the concrete data product or feed through which data is sourced; uses Databento dataset names (e.g. `GLBX.MDP3`) for Databento ingestion and internal identifiers for other sources (e.g. `YFINANCE`). |
+-- | `venue`         | `TEXT`    |                         | Optional ISO 10383 Market Identifier Code (MIC) describing the primary trading venue; may be NULL for aggregated or multi-venue sources.                                        |
+--
+-- **Table constraints**
+--
+-- * `UNIQUE(name, dataset)` ensures that each vendor+feed combination is represented at most once.
 --
 -- **Examples**
 --
@@ -33,6 +48,12 @@
 -- *  `dataset` = `'GLBX.MDP3'`
 -- *  `venue`   = `XCME`
 --
+-- Databento NASDAQ TotalView feed:
+--
+-- *  `name`    = `'databento'`
+-- *  `dataset` = `'XNAS.ITCH'`
+-- *  `venue`   = `XNAS`
+--
 -- Yahoo Finance equity data:
 --
 -- *  `name`    = `'yfinance'`
@@ -41,10 +62,12 @@
 --
 CREATE TABLE publishers (
     publisher_id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL,
     dataset TEXT NOT NULL,
-    venue TEXT
+    venue TEXT,
+    UNIQUE (name, dataset)
 );
+
 
 
 
@@ -59,13 +82,13 @@ CREATE TABLE publishers (
 -- The table does not store contract specifications or other reference metadata.
 -- Such metadata must be stored separately when available.
 --
--- | Field                  | Type      | Constraints      | Description                                                                                                                                                 |
--- |------------------------|-----------|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
--- | `instrument_id`        | `INTEGER` | `PRIMARY KEY`    | Internal surrogate key identifying an instrument record within the system.                                                                                  |
--- | `publisher_ref`        | `INTEGER` | `NOT NULL`, `FK` | Foreign key reference to `publishers.publisher_id`, defining the publisher namespace in which this instrument identity is valid.                            |
+-- | Field                  | Type      | Constraints      | Description                                                                                                                                                  |
+-- |------------------------|-----------|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+-- | `instrument_id`        | `INTEGER` | `PRIMARY KEY`    | Internal surrogate key identifying an instrument record within the system.                                                                                   |
+-- | `publisher_ref`        | `INTEGER` | `NOT NULL`, `FK` | Foreign key reference to `publishers.publisher_id`, defining the publisher namespace in which this instrument identity is valid.                             |
 -- | `source_instrument_id` | `INTEGER` |                  | Publisher-native numeric instrument identifier as provided by the upstream data source (e.g. Databento instrument_id); may be `NULL` for symbol-only sources. |
--- | `symbol`               | `TEXT`    |                  | Publisher-native symbol string identifying the instrument (e.g. raw symbol, ticker); may be NULL when numeric identifiers are used.                         |
--- | `symbol_type`          | `TEXT`    |                  | Identifier describing the symbol scheme or resolution type used by the publisher (e.g. `raw_symbol`, `continuous`, `ticker`).                               |
+-- | `symbol`               | `TEXT`    |                  | Publisher-native symbol string identifying the instrument (e.g. raw symbol, ticker); may be NULL when numeric identifiers are used.                          |
+-- | `symbol_type`          | `TEXT`    |                  | Identifier describing the symbol scheme or resolution type used by the publisher (e.g. `raw_symbol`, `continuous`, `ticker`).                                |
 --
 -- Each instrument must be identifiable by at least one of `source_instrument_id` or `symbol`.
 -- Uniqueness constraints ensure that instrument identities do not collide within a publisher namespace.
@@ -78,7 +101,7 @@ CREATE TABLE instruments (
 
     source_instrument_id INTEGER,
     symbol TEXT,
-    symbol_type TEXT,
+	symbol_type TEXT,
 
     FOREIGN KEY (publisher_ref) REFERENCES publishers(publisher_id),
 
@@ -86,6 +109,8 @@ CREATE TABLE instruments (
         source_instrument_id IS NOT NULL
         OR symbol IS NOT NULL
     ),
+
+	CHECK (symbol IS NULL OR symbol_type IS NOT NULL),
 
     UNIQUE (publisher_ref, source_instrument_id),
     UNIQUE (publisher_ref, symbol, symbol_type)
@@ -98,16 +123,16 @@ CREATE TABLE instruments (
 
 -- Stores aggregated OHLCV bars for instruments at multiple time resolutions.
 --
--- | Field           | Type      | Constraints                                 | Description                                                                                                             |
--- |-----------------|-----------|---------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
--- | `instrument_id` | `INTEGER` | `NOT NULL`, `FK`                            | Foreign key reference to `instruments.instrument_id`, identifying the instrument to which this bar belongs.             |
+-- | Field           | Type      | Constraints                                 | Description                                                                                                              |
+-- |-----------------|-----------|---------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+-- | `instrument_id` | `INTEGER` | `NOT NULL`, `FK`                            | Foreign key reference to `instruments.instrument_id`, identifying the instrument to which this bar belongs.              |
 -- | `rtype`         | `INTEGER` | `NOT NULL`, `CHECK IN (32, 33, 34, 35, 36)` | Record type code encoding the bar duration using Databento OHLCV conventions (e.g. `32`=1s, `33`=1m, `34`=1h, `35`=1d). |
--- | `ts_event`      | `INTEGER` | `NOT NULL`                                  | Event timestamp of the bar as provided by the upstream source, stored as nanoseconds since the UTC Unix epoch.              |
--- | `open`          | `INTEGER` | `NOT NULL`                                  | Opening price of the bar interval, stored as a fixed-point integer using the upstream price scaling convention.         |
--- | `high`          | `INTEGER` | `NOT NULL`                                  | Highest traded price during the bar interval, stored as a fixed-point integer.                                          |
--- | `low`           | `INTEGER` | `NOT NULL`, `CHECK(low <= high)`            | Lowest traded price during the bar interval, stored as a fixed-point integer.                                           |
--- | `close`         | `INTEGER` | `NOT NULL`                                  | Closing price of the bar interval, stored as a fixed-point integer.                                                     |
--- | `volume`        | `INTEGER` | `NOT NULL`, `CHECK(volume >= 0)`            | Total traded volume during the bar interval.                                                                            |
+-- | `ts_event`      | `INTEGER` | `NOT NULL`                                  | Event timestamp of the bar as provided by the upstream source, stored as nanoseconds since the UTC Unix epoch.           |
+-- | `open`          | `INTEGER` | `NOT NULL`                                  | Opening price of the bar interval, stored as a fixed-point integer using the upstream price scaling convention.          |
+-- | `high`          | `INTEGER` | `NOT NULL`                                  | Highest traded price during the bar interval, stored as a fixed-point integer.                                           |
+-- | `low`           | `INTEGER` | `NOT NULL`, `CHECK(low <= high)`            | Lowest traded price during the bar interval, stored as a fixed-point integer.                                            |
+-- | `close`         | `INTEGER` | `NOT NULL`                                  | Closing price of the bar interval, stored as a fixed-point integer.                                                      |
+-- | `volume`        | `INTEGER` | `NOT NULL`, `CHECK(volume >= 0)`            | Total traded volume during the bar interval.                                                                             |
 --
 -- The composite primary key enforces uniqueness per instrument, bar duration, and event timestamp.
 -- Integrity constraints ensure basic OHLC consistency and prevent invalid price relationships from being stored.
@@ -135,7 +160,12 @@ CREATE TABLE ohlcv (
 
 -- Stores time-bounded mappings from publisher-native symbols to publisher-native instrument identifiers.
 --
--- The table captures symbol resolution rules as provided by upstream data sources and must be interpreted within the namespace of a specific publisher.
+-- The table captures symbol resolution rules as provided by upstream data sources and must be interpreted within the
+-- namespace of a specific publisher.
+--
+-- The schema permits multiple mappings to share the same `start_date` for a given (`publisher_ref`, `symbol`, `symbol_type`)
+-- by including `source_instrument_id` in the primary key. This prevents accidental overwrite when upstream symbology exports
+-- contain same-day corrections, backfills, or parallel resolution segments.
 --
 -- | Field                  | Type      | Constraints      | Description                                                                                                                |
 -- |------------------------|-----------|------------------|----------------------------------------------------------------------------------------------------------------------------|
@@ -146,7 +176,7 @@ CREATE TABLE ohlcv (
 -- | `start_date`           | `TEXT`    | `NOT NULL`       | First calendar date (inclusive) on which this symbol-to-instrument mapping is valid, stored in YYYY-MM-DD format.          |
 -- | `end_date`             | `TEXT`    | `NOT NULL`       | Last calendar date (inclusive) on which this symbol-to-instrument mapping is valid, stored in YYYY-MM-DD format.           |
 --
--- The primary key enforces uniqueness of symbol mappings per publisher, symbol type, and start date.
+-- The primary key enforces uniqueness of mappings at the granularity of a resolved instrument.
 -- Date bounds are interpreted as closed intervals.
 --
 CREATE TABLE symbology (
@@ -157,8 +187,9 @@ CREATE TABLE symbology (
     start_date TEXT NOT NULL,
     end_date TEXT NOT NULL,
     FOREIGN KEY (publisher_ref) REFERENCES publishers(publisher_id),
-    PRIMARY KEY (publisher_ref, symbol, symbol_type, start_date),
-    UNIQUE (publisher_ref, symbol_type, source_instrument_id, start_date),
+    FOREIGN KEY (publisher_ref, source_instrument_id)
+        REFERENCES instruments(publisher_ref, source_instrument_id),
+    PRIMARY KEY (publisher_ref, symbol, symbol_type, start_date, source_instrument_id),
     CHECK (start_date <= end_date)
 );
 

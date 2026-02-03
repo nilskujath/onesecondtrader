@@ -60,7 +60,7 @@ def discover_package_structure(package_dir: Path, module_prefix: str) -> dict:
     Returns:
         Dictionary with 'files' (list of .py file stems) and 'subpackages' (nested dict)
     """
-    structure = {"files": [], "subpackages": {}}
+    structure: dict = {"files": [], "subpackages": {}}
 
     for py_file in package_dir.glob("*.py"):
         if py_file.name != "__init__.py":
@@ -166,7 +166,7 @@ def build_nav_recursive(structure: dict, docs_prefix: str) -> list:
             subpackage_structure, subpackage_docs_prefix
         )
         if subpackage_nav:
-            nav_items.append({subpackage_title: subpackage_nav})
+            nav_items.append({subpackage_title: subpackage_nav})  # type: ignore[dict-item]
 
     return nav_items
 
