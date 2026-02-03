@@ -1,3 +1,6 @@
+## v0.53.0
+- feat: completed secmaster package
+
 ## v0.52.0
 - feat: added secmaster package
 
