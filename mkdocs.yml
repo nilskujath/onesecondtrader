@@ -23,6 +23,9 @@ nav:
   - Brokers:
     - Base: reference/brokers/base.md
     - Simulated: reference/brokers/simulated.md
+  - Datafeeds:
+    - Base: reference/datafeeds/base.md
+    - Simulated: reference/datafeeds/simulated.md
   - Events:
     - Base: reference/events/base.md
     - Market:

@@ -559,11 +559,44 @@ def _ingest_symbology(
             batch,
         )
 
+    _validate_no_overlapping_symbology(con, publisher_id, symbol_type)
+
     logger.info(
         "Completed symbology ingest from %s (%d mappings)", json_path.name, count
     )
 
     return count
+
+
+def _validate_no_overlapping_symbology(
+    con: sqlite3.Connection,
+    publisher_id: int,
+    symbol_type: str,
+) -> None:
+    query = """
+        WITH ordered AS (
+            SELECT
+                symbol,
+                start_date,
+                end_date,
+                LEAD(start_date) OVER (
+                    PARTITION BY symbol ORDER BY start_date
+                ) AS next_start
+            FROM symbology
+            WHERE publisher_ref = ? AND symbol_type = ?
+        )
+        SELECT symbol, start_date, end_date, next_start
+        FROM ordered
+        WHERE next_start IS NOT NULL AND end_date > next_start
+        LIMIT 1
+    """
+    row = con.execute(query, (publisher_id, symbol_type)).fetchone()
+    if row:
+        symbol, start, end, next_start = row
+        raise ValueError(
+            f"Overlapping symbology detected for symbol={symbol!r}: "
+            f"segment [{start}, {end}] overlaps with next segment starting {next_start}"
+        )
 
 
 def _enable_bulk_loading(con: sqlite3.Connection) -> None:

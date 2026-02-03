@@ -316,3 +316,225 @@ def test_ingest_databento_dbn_requires_dataset_metadata(tmp_path, monkeypatch):
         assert "missing dataset" in str(e)
     else:
         raise AssertionError("Expected ValueError")
+
+
+def test_create_secmaster_db_creates_tables(tmp_path):
+    db_path = _make_db(tmp_path)
+
+    con = sqlite3.connect(str(db_path))
+    tables = {
+        r[0]
+        for r in con.execute(
+            "SELECT name FROM sqlite_master WHERE type = 'table'"
+        ).fetchall()
+    }
+
+    assert "publishers" in tables
+    assert "instruments" in tables
+    assert "ohlcv" in tables
+    assert "symbology" in tables
+
+
+def test_create_secmaster_db_sets_user_version(tmp_path):
+    db_path = _make_db(tmp_path)
+
+    con = sqlite3.connect(str(db_path))
+    row = con.execute("PRAGMA user_version;").fetchone()
+    assert row[0] == 1
+
+
+def test_create_secmaster_db_raises_if_exists(tmp_path):
+    db_path = _make_db(tmp_path)
+
+    try:
+        create_secmaster_db(db_path)
+    except FileExistsError:
+        pass
+    else:
+        raise AssertionError("Expected FileExistsError")
+
+
+def test_create_secmaster_db_raises_for_invalid_schema_version(tmp_path):
+    db_path = tmp_path / "secmaster.db"
+
+    try:
+        create_secmaster_db(db_path, schema_version=999)
+    except FileNotFoundError as e:
+        assert "999" in str(e)
+    else:
+        raise AssertionError("Expected FileNotFoundError")
+
+
+def test_validate_no_overlapping_symbology_passes_for_contiguous(tmp_path):
+    from onesecondtrader.secmaster.utils import _validate_no_overlapping_symbology
+
+    db_path = _make_db(tmp_path)
+    con = sqlite3.connect(str(db_path))
+    con.execute("PRAGMA foreign_keys = ON;")
+    publisher_id = _make_publisher(con)
+
+    with con:
+        con.execute(
+            "INSERT INTO instruments (publisher_ref, source_instrument_id) VALUES (?, ?)",
+            (publisher_id, 100),
+        )
+        con.execute(
+            "INSERT INTO symbology "
+            "(publisher_ref, symbol, symbol_type, source_instrument_id, start_date, end_date) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (publisher_id, "AAPL", "raw_symbol", 100, "2020-01-01", "2020-06-30"),
+        )
+        con.execute(
+            "INSERT INTO symbology "
+            "(publisher_ref, symbol, symbol_type, source_instrument_id, start_date, end_date) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (publisher_id, "AAPL", "raw_symbol", 100, "2020-06-30", "2020-12-31"),
+        )
+
+    _validate_no_overlapping_symbology(con, publisher_id, "raw_symbol")
+
+
+def test_validate_no_overlapping_symbology_raises_for_overlap(tmp_path):
+    from onesecondtrader.secmaster.utils import _validate_no_overlapping_symbology
+
+    db_path = _make_db(tmp_path)
+    con = sqlite3.connect(str(db_path))
+    con.execute("PRAGMA foreign_keys = ON;")
+    publisher_id = _make_publisher(con)
+
+    with con:
+        con.execute(
+            "INSERT INTO instruments (publisher_ref, source_instrument_id) VALUES (?, ?)",
+            (publisher_id, 100),
+        )
+        con.execute(
+            "INSERT INTO symbology "
+            "(publisher_ref, symbol, symbol_type, source_instrument_id, start_date, end_date) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (publisher_id, "AAPL", "raw_symbol", 100, "2020-01-01", "2020-07-15"),
+        )
+        con.execute(
+            "INSERT INTO instruments (publisher_ref, source_instrument_id) VALUES (?, ?)",
+            (publisher_id, 101),
+        )
+        con.execute(
+            "INSERT INTO symbology "
+            "(publisher_ref, symbol, symbol_type, source_instrument_id, start_date, end_date) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (publisher_id, "AAPL", "raw_symbol", 101, "2020-06-30", "2020-12-31"),
+        )
+
+    try:
+        _validate_no_overlapping_symbology(con, publisher_id, "raw_symbol")
+    except ValueError as e:
+        assert "Overlapping symbology" in str(e)
+        assert "AAPL" in str(e)
+    else:
+        raise AssertionError("Expected ValueError")
+
+
+def test_validate_no_overlapping_symbology_scoped_by_publisher(tmp_path):
+    from onesecondtrader.secmaster.utils import _validate_no_overlapping_symbology
+
+    db_path = _make_db(tmp_path)
+    con = sqlite3.connect(str(db_path))
+    con.execute("PRAGMA foreign_keys = ON;")
+    publisher_id_1 = _make_publisher(con)
+
+    con.execute(
+        "INSERT INTO publishers (name, dataset, venue) VALUES (?, ?, ?)",
+        ("other", "Y.TEST", "Y"),
+    )
+    publisher_id_2 = con.execute("SELECT last_insert_rowid()").fetchone()[0]
+
+    with con:
+        con.execute(
+            "INSERT INTO instruments (publisher_ref, source_instrument_id) VALUES (?, ?)",
+            (publisher_id_1, 100),
+        )
+        con.execute(
+            "INSERT INTO symbology "
+            "(publisher_ref, symbol, symbol_type, source_instrument_id, start_date, end_date) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (publisher_id_1, "AAPL", "raw_symbol", 100, "2020-01-01", "2020-07-15"),
+        )
+        con.execute(
+            "INSERT INTO instruments (publisher_ref, source_instrument_id) VALUES (?, ?)",
+            (publisher_id_2, 200),
+        )
+        con.execute(
+            "INSERT INTO symbology "
+            "(publisher_ref, symbol, symbol_type, source_instrument_id, start_date, end_date) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (publisher_id_2, "AAPL", "raw_symbol", 200, "2020-06-30", "2020-12-31"),
+        )
+
+    _validate_no_overlapping_symbology(con, publisher_id_1, "raw_symbol")
+    _validate_no_overlapping_symbology(con, publisher_id_2, "raw_symbol")
+
+
+def test_validate_no_overlapping_symbology_scoped_by_symbol_type(tmp_path):
+    from onesecondtrader.secmaster.utils import _validate_no_overlapping_symbology
+
+    db_path = _make_db(tmp_path)
+    con = sqlite3.connect(str(db_path))
+    con.execute("PRAGMA foreign_keys = ON;")
+    publisher_id = _make_publisher(con)
+
+    with con:
+        con.execute(
+            "INSERT INTO instruments (publisher_ref, source_instrument_id) VALUES (?, ?)",
+            (publisher_id, 100),
+        )
+        con.execute(
+            "INSERT INTO symbology "
+            "(publisher_ref, symbol, symbol_type, source_instrument_id, start_date, end_date) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (publisher_id, "AAPL", "raw_symbol", 100, "2020-01-01", "2020-07-15"),
+        )
+        con.execute(
+            "INSERT INTO symbology "
+            "(publisher_ref, symbol, symbol_type, source_instrument_id, start_date, end_date) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (publisher_id, "AAPL", "ticker", 100, "2020-06-30", "2020-12-31"),
+        )
+
+    _validate_no_overlapping_symbology(con, publisher_id, "raw_symbol")
+    _validate_no_overlapping_symbology(con, publisher_id, "ticker")
+
+
+def test_assert_secmaster_db_rejects_wrong_version(tmp_path):
+    from onesecondtrader.secmaster.utils import _assert_secmaster_db
+
+    db_path = tmp_path / "empty.db"
+    con = sqlite3.connect(str(db_path))
+    con.execute("PRAGMA user_version = 99;")
+    con.execute("CREATE TABLE publishers (x INTEGER);")
+    con.execute("CREATE TABLE instruments (x INTEGER);")
+    con.execute("CREATE TABLE ohlcv (x INTEGER);")
+    con.execute("CREATE TABLE symbology (x INTEGER);")
+    con.commit()
+
+    try:
+        _assert_secmaster_db(con, expected_user_version=1)
+    except sqlite3.DatabaseError as e:
+        assert "user_version=99" in str(e)
+    else:
+        raise AssertionError("Expected DatabaseError")
+
+
+def test_assert_secmaster_db_rejects_missing_tables(tmp_path):
+    from onesecondtrader.secmaster.utils import _assert_secmaster_db
+
+    db_path = tmp_path / "empty.db"
+    con = sqlite3.connect(str(db_path))
+    con.execute("PRAGMA user_version = 1;")
+    con.execute("CREATE TABLE publishers (x INTEGER);")
+    con.commit()
+
+    try:
+        _assert_secmaster_db(con, expected_user_version=1)
+    except sqlite3.DatabaseError as e:
+        assert "missing required tables" in str(e)
+    else:
+        raise AssertionError("Expected DatabaseError")
