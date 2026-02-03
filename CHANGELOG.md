@@ -1,3 +1,6 @@
+## v0.56.0
+- feat: added orchestrator
+
 ## v0.55.0
 - feat: added strategies package
 
