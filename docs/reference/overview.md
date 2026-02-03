@@ -57,6 +57,14 @@ hide:
 
     [:material-link-variant: View `models` package API](models/action_types.md)
 
+-   __Orchestrator__&nbsp;&nbsp;
+
+    ---
+
+    Orchestrates the execution of a trading run and records all events to a SQLite database.
+
+    [:material-link-variant: View `orchestrator` package API](orchestrator/orchestrator.md)
+
 -   __Secmaster__&nbsp;&nbsp;
 
     ---

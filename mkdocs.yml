@@ -59,6 +59,10 @@ nav:
     - Order Types: reference/models/order_types.md
     - Rejection Reasons: reference/models/rejection_reasons.md
     - Trade Sides: reference/models/trade_sides.md
+  - Orchestrator:
+    - Runs Schema: reference/orchestrator/runs_schema.md
+    - Orchestrator: reference/orchestrator/orchestrator.md
+    - Run Recorder: reference/orchestrator/run_recorder.md
   - Secmaster:
     - Schema Versions:
       - Secmaster Schema V1: reference/secmaster/schema_versions/secmaster_schema_v1.md
