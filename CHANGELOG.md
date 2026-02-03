@@ -1,3 +1,6 @@
+## v0.55.0
+- feat: added strategies package
+
 ## v0.54.0
 - feat: added simulated datafeed
 
