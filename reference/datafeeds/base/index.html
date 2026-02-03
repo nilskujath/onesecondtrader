@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://www.onesecondtrader.com/reference/models/rejection_reasons/">
+        <link rel="canonical" href="https://www.onesecondtrader.com/reference/datafeeds/base/">
       
       
-        <link rel="prev" href="../order_types/">
+        <link rel="prev" href="../../brokers/simulated/">
       
       
-        <link rel="next" href="../trade_sides/">
+        <link rel="next" href="../simulated/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Rejection Reasons - OneSecondTrader</title>
+        <title>Base - OneSecondTrader</title>
       
     
     
@@ -87,7 +87,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#rejection-reasons" class="md-skip">
+        <a href="#base" class="md-skip">
           Skip to content
         </a>
       
@@ -121,7 +121,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Rejection Reasons
+              Base
             
           </span>
         </div>
@@ -603,6 +603,8 @@
                 
   
   
+    
+  
   
   
     
@@ -613,11 +615,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
@@ -633,7 +635,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_3">
             <span class="md-nav__icon md-icon"></span>
             Datafeeds
@@ -644,10 +646,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../datafeeds/base/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Base
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -658,6 +682,104 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase" class="md-nav__link">
+    <span class="md-ellipsis">
+      DatafeedBase
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DatafeedBase">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase._publish" class="md-nav__link">
+    <span class="md-ellipsis">
+      _publish
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase.connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      connect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase.disconnect" class="md-nav__link">
+    <span class="md-ellipsis">
+      disconnect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase.subscribe" class="md-nav__link">
+    <span class="md-ellipsis">
+      subscribe
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase.unsubscribe" class="md-nav__link">
+    <span class="md-ellipsis">
+      unsubscribe
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase.wait_until_complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      wait_until_complete
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -670,7 +792,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../datafeeds/simulated/" class="md-nav__link">
+      <a href="../simulated/" class="md-nav__link">
         
   
   
@@ -1478,8 +1600,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1490,11 +1610,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
         
           
           <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
@@ -1510,7 +1630,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7">
             <span class="md-nav__icon md-icon"></span>
             Models
@@ -1524,7 +1644,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../bar_fields/" class="md-nav__link">
+      <a href="../../models/bar_fields/" class="md-nav__link">
         
   
   
@@ -1547,7 +1667,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../bar_period/" class="md-nav__link">
+      <a href="../../models/bar_period/" class="md-nav__link">
         
   
   
@@ -1570,7 +1690,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../order_types/" class="md-nav__link">
+      <a href="../../models/order_types/" class="md-nav__link">
         
   
   
@@ -1590,32 +1710,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Rejection Reasons
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../models/rejection_reasons/" class="md-nav__link">
         
   
   
@@ -1626,53 +1724,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#onesecondtrader.models.rejection_reasons.OrderRejectionReason" class="md-nav__link">
-    <span class="md-ellipsis">
-      OrderRejectionReason
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#onesecondtrader.models.rejection_reasons.ModificationRejectionReason" class="md-nav__link">
-    <span class="md-ellipsis">
-      ModificationRejectionReason
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#onesecondtrader.models.rejection_reasons.CancellationRejectionReason" class="md-nav__link">
-    <span class="md-ellipsis">
-      CancellationRejectionReason
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1685,7 +1736,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../trade_sides/" class="md-nav__link">
+      <a href="../../models/trade_sides/" class="md-nav__link">
         
   
   
@@ -1887,29 +1938,80 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#onesecondtrader.models.rejection_reasons.OrderRejectionReason" class="md-nav__link">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase" class="md-nav__link">
     <span class="md-ellipsis">
-      OrderRejectionReason
+      DatafeedBase
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DatafeedBase">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#onesecondtrader.models.rejection_reasons.ModificationRejectionReason" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase._publish" class="md-nav__link">
     <span class="md-ellipsis">
-      ModificationRejectionReason
+      _publish
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#onesecondtrader.models.rejection_reasons.CancellationRejectionReason" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase.connect" class="md-nav__link">
     <span class="md-ellipsis">
-      CancellationRejectionReason
+      connect
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase.disconnect" class="md-nav__link">
+    <span class="md-ellipsis">
+      disconnect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase.subscribe" class="md-nav__link">
+    <span class="md-ellipsis">
+      subscribe
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase.unsubscribe" class="md-nav__link">
+    <span class="md-ellipsis">
+      unsubscribe
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onesecondtrader.datafeeds.base.DatafeedBase.wait_until_complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      wait_until_complete
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1932,7 +2034,7 @@
   
 
 
-<h1 id="rejection-reasons">Rejection Reasons</h1>
+<h1 id="base">Base</h1>
 
 
 <div class="doc doc-object doc-module">
@@ -1963,8 +2065,8 @@
 
 
 
-<h2 id="onesecondtrader.models.rejection_reasons.OrderRejectionReason" class="doc doc-heading">
-            <code>OrderRejectionReason</code>
+<h2 id="onesecondtrader.datafeeds.base.DatafeedBase" class="doc doc-heading">
+            <code>DatafeedBase</code>
 
 
 </h2>
@@ -1972,26 +2074,12 @@
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="enum.Enum">Enum</span></code></p>
+              Bases: <code><span title="abc.ABC">ABC</span></code></p>
 
 
-        <p>Enumeration of canonical order rejection reasons.</p>
-<p>This enumeration defines the system-level classification of order rejection causes.
-It provides a stable, brokers-agnostic taxonomy for programmatic handling of rejected orders.</p>
-<table>
-<thead>
-<tr>
-<th>Value</th>
-<th>Semantics</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>UNKNOWN</code></td>
-<td>The rejection reason could not be classified into a known category.</td>
-</tr>
-</tbody>
-</table>
+        <p>Abstract base class for market data feed implementations.</p>
+<p>A data feed is responsible for connecting to an external data source, managing symbol and bar-period subscriptions, and publishing market data events onto the system event bus.</p>
+<p>Concrete subclasses implement the mechanics of connectivity, subscription handling, and lifecycle management for a specific data source.</p>
 
 
 
@@ -1999,36 +2087,6 @@ It provides a stable, brokers-agnostic taxonomy for programmatic handling of rej
 
 
 
-
-                  <details class="quote">
-                <summary>Source code in <code>src/onesecondtrader/models/rejection_reasons.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-0-10">10</a></span>
-<span class="normal"><a href="#__codelineno-0-11">11</a></span>
-<span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span>
-<span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
-<span class="normal"><a href="#__codelineno-0-17">17</a></span>
-<span class="normal"><a href="#__codelineno-0-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="k">class</span><span class="w"> </span><span class="nc">OrderRejectionReason</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="sd">    Enumeration of canonical order rejection reasons.</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="sd">    This enumeration defines the system-level classification of order rejection causes.</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="sd">    It provides a stable, brokers-agnostic taxonomy for programmatic handling of rejected orders.</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    | Value     | Semantics                                                                 |</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">    |-----------|---------------------------------------------------------------------------|</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    | `UNKNOWN` | The rejection reason could not be classified into a known category.       |</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
-</span></code></pre></div></td></tr></table></div>
-              </details>
 
 
 
@@ -2043,191 +2101,470 @@ It provides a stable, brokers-agnostic taxonomy for programmatic handling of rej
 
 
 
+<div class="doc doc-object doc-function">
 
 
-  </div>
+<h3 id="onesecondtrader.datafeeds.base.DatafeedBase.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">event_bus</span><span class="p">)</span></code>
+
+</h3>
 
 
+    <div class="doc doc-contents ">
+
+        <p>Initialize the data feed with an event bus.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>event_bus</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="EventBus (onesecondtrader.messaging.EventBus)" href="../../messaging/eventbus/#onesecondtrader.messaging.eventbus.EventBus">EventBus</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Event bus used to publish market data events produced by this data feed.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/onesecondtrader/datafeeds/base.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-17">17</a></span>
+<span class="normal"><a href="#__codelineno-0-18">18</a></span>
+<span class="normal"><a href="#__codelineno-0-19">19</a></span>
+<span class="normal"><a href="#__codelineno-0-20">20</a></span>
+<span class="normal"><a href="#__codelineno-0-21">21</a></span>
+<span class="normal"><a href="#__codelineno-0-22">22</a></span>
+<span class="normal"><a href="#__codelineno-0-23">23</a></span>
+<span class="normal"><a href="#__codelineno-0-24">24</a></span>
+<span class="normal"><a href="#__codelineno-0-25">25</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_bus</span><span class="p">:</span> <span class="n">messaging</span><span class="o">.</span><span class="n">EventBus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    Initialize the data feed with an event bus.</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">    parameters:</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">        event_bus:</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">            Event bus used to publish market data events produced by this data feed.</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_event_bus</span> <span class="o">=</span> <span class="n">event_bus</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
     </div>
 
 </div>
 
-<div class="doc doc-object doc-class">
+<div class="doc doc-object doc-function">
 
 
+<h3 id="onesecondtrader.datafeeds.base.DatafeedBase._publish" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">_publish</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></code>
 
-<h2 id="onesecondtrader.models.rejection_reasons.ModificationRejectionReason" class="doc doc-heading">
-            <code>ModificationRejectionReason</code>
-
-
-</h2>
+</h3>
 
 
     <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+        <p>Publish a market data event to the event bus.</p>
+<p>This method is intended for use by subclasses to forward incoming data from the external source into the internal event-driven system.</p>
 
 
-        <p>Enumeration of canonical order modification rejection reasons.</p>
-<p>This enumeration defines the system-level classification of reasons for which an order modification request may be rejected by a brokers.
-It provides a stable, brokers-agnostic taxonomy intended for programmatic handling and observability of modification rejections.</p>
-<table>
-<thead>
-<tr>
-<th>Value</th>
-<th>Semantics</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>UNKNOWN</code></td>
-<td>The modification rejection reason could not be classified into a known category.</td>
-</tr>
-</tbody>
-</table>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>event</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="EventBase
 
 
+  
+      dataclass
+   (onesecondtrader.events.EventBase)" href="../../events/base/#onesecondtrader.events.base.EventBase">EventBase</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Event instance to be published.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-
-
-
-                  <details class="quote">
-                <summary>Source code in <code>src/onesecondtrader/models/rejection_reasons.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
+            <details class="quote">
+              <summary>Source code in <code>src/onesecondtrader/datafeeds/base.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-27">27</a></span>
 <span class="normal"><a href="#__codelineno-0-28">28</a></span>
 <span class="normal"><a href="#__codelineno-0-29">29</a></span>
 <span class="normal"><a href="#__codelineno-0-30">30</a></span>
 <span class="normal"><a href="#__codelineno-0-31">31</a></span>
 <span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="k">class</span><span class="w"> </span><span class="nc">ModificationRejectionReason</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">    Enumeration of canonical order modification rejection reasons.</span>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">    This enumeration defines the system-level classification of reasons for which an order modification request may be rejected by a brokers.</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    It provides a stable, brokers-agnostic taxonomy intended for programmatic handling and observability of modification rejections.</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">    | Value     | Semantics                                                                        |</span>
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">    |-----------|----------------------------------------------------------------------------------|</span>
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">    | `UNKNOWN` | The modification rejection reason could not be classified into a known category. |</span>
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    &quot;&quot;&quot;</span>
+<span class="normal"><a href="#__codelineno-0-33">33</a></span>
+<span class="normal"><a href="#__codelineno-0-34">34</a></span>
+<span class="normal"><a href="#__codelineno-0-35">35</a></span>
+<span class="normal"><a href="#__codelineno-0-36">36</a></span>
+<span class="normal"><a href="#__codelineno-0-37">37</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="k">def</span><span class="w"> </span><span class="nf">_publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">events</span><span class="o">.</span><span class="n">EventBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">    Publish a market data event to the event bus.</span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    This method is intended for use by subclasses to forward incoming data from the external source into the internal event-driven system.</span>
 </span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a>    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    parameters:</span>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">        event:</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">            Event instance to be published.</span>
+</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_event_bus</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
-              </details>
-
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-
+            </details>
     </div>
 
 </div>
 
-<div class="doc doc-object doc-class">
+<div class="doc doc-object doc-function">
 
 
+<h3 id="onesecondtrader.datafeeds.base.DatafeedBase.connect" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">connect</span><span class="p">()</span></code>
 
-<h2 id="onesecondtrader.models.rejection_reasons.CancellationRejectionReason" class="doc doc-heading">
-            <code>CancellationRejectionReason</code>
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
 
-
-</h2>
+</h3>
 
 
     <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+        <p>Establish a connection to the underlying data source.</p>
+<p>Implementations should perform any required setup, authentication, or resource allocation needed before subscriptions can be registered.</p>
 
 
-        <p>Enumeration of canonical order cancellation rejection reasons.</p>
-<p>This enumeration defines the system-level classification of reasons for which an order cancellation request may be rejected by a brokers.
-It provides a stable, brokers-agnostic taxonomy intended for programmatic handling and observability of cancellation rejections.</p>
-<table>
-<thead>
-<tr>
-<th>Value</th>
-<th>Semantics</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>UNKNOWN</code></td>
-<td>The cancellation rejection reason could not be classified into a known category.</td>
-</tr>
-</tbody>
-</table>
-
-
-
-
-
-
-
-
-                  <details class="quote">
-                <summary>Source code in <code>src/onesecondtrader/models/rejection_reasons.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
+            <details class="quote">
+              <summary>Source code in <code>src/onesecondtrader/datafeeds/base.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-39">39</a></span>
 <span class="normal"><a href="#__codelineno-0-40">40</a></span>
 <span class="normal"><a href="#__codelineno-0-41">41</a></span>
 <span class="normal"><a href="#__codelineno-0-42">42</a></span>
 <span class="normal"><a href="#__codelineno-0-43">43</a></span>
 <span class="normal"><a href="#__codelineno-0-44">44</a></span>
 <span class="normal"><a href="#__codelineno-0-45">45</a></span>
-<span class="normal"><a href="#__codelineno-0-46">46</a></span>
-<span class="normal"><a href="#__codelineno-0-47">47</a></span>
-<span class="normal"><a href="#__codelineno-0-48">48</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="k">class</span><span class="w"> </span><span class="nc">CancellationRejectionReason</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">    Enumeration of canonical order cancellation rejection reasons.</span>
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a>
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">    This enumeration defines the system-level classification of reasons for which an order cancellation request may be rejected by a brokers.</span>
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">    It provides a stable, brokers-agnostic taxonomy intended for programmatic handling and observability of cancellation rejections.</span>
-</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a>
-</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="sd">    | Value     | Semantics                                                                        |</span>
-</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">    |-----------|----------------------------------------------------------------------------------|</span>
-</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="sd">    | `UNKNOWN` | The cancellation rejection reason could not be classified into a known category. |</span>
-</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a>
-</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a>    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+<span class="normal"><a href="#__codelineno-0-46">46</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">    Establish a connection to the underlying data source.</span>
+</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a>
+</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">    Implementations should perform any required setup, authentication, or resource allocation needed before subscriptions can be registered.</span>
+</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a>    <span class="k">pass</span>
 </span></code></pre></div></td></tr></table></div>
-              </details>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
 
 
+<h3 id="onesecondtrader.datafeeds.base.DatafeedBase.disconnect" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">disconnect</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+</h3>
 
 
-  <div class="doc doc-children">
+    <div class="doc doc-contents ">
+
+        <p>Terminate the connection to the underlying data source.</p>
+<p>Implementations should release resources and ensure that no further events are published after disconnection.</p>
 
 
+            <details class="quote">
+              <summary>Source code in <code>src/onesecondtrader/datafeeds/base.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-48">48</a></span>
+<span class="normal"><a href="#__codelineno-0-49">49</a></span>
+<span class="normal"><a href="#__codelineno-0-50">50</a></span>
+<span class="normal"><a href="#__codelineno-0-51">51</a></span>
+<span class="normal"><a href="#__codelineno-0-52">52</a></span>
+<span class="normal"><a href="#__codelineno-0-53">53</a></span>
+<span class="normal"><a href="#__codelineno-0-54">54</a></span>
+<span class="normal"><a href="#__codelineno-0-55">55</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="k">def</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="sd">    Terminate the connection to the underlying data source.</span>
+</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a>
+</span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">    Implementations should release resources and ensure that no further events are published after disconnection.</span>
+</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a>    <span class="k">pass</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
 
 
+<h3 id="onesecondtrader.datafeeds.base.DatafeedBase.subscribe" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">subscribe</span><span class="p">(</span><span class="n">symbols</span><span class="p">,</span> <span class="n">bar_period</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+</h3>
 
 
+    <div class="doc doc-contents ">
+
+        <p>Subscribe to market data for one or more symbols at a given bar period.</p>
 
 
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>symbols</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Instrument symbols to subscribe to, interpreted according to the conventions of the underlying data source.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bar_period</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="BarPeriod (onesecondtrader.models.BarPeriod)" href="../../models/bar_period/#onesecondtrader.models.bar_period.BarPeriod">BarPeriod</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Bar aggregation period specifying the granularity of market data.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/onesecondtrader/datafeeds/base.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-57">57</a></span>
+<span class="normal"><a href="#__codelineno-0-58">58</a></span>
+<span class="normal"><a href="#__codelineno-0-59">59</a></span>
+<span class="normal"><a href="#__codelineno-0-60">60</a></span>
+<span class="normal"><a href="#__codelineno-0-61">61</a></span>
+<span class="normal"><a href="#__codelineno-0-62">62</a></span>
+<span class="normal"><a href="#__codelineno-0-63">63</a></span>
+<span class="normal"><a href="#__codelineno-0-64">64</a></span>
+<span class="normal"><a href="#__codelineno-0-65">65</a></span>
+<span class="normal"><a href="#__codelineno-0-66">66</a></span>
+<span class="normal"><a href="#__codelineno-0-67">67</a></span>
+<span class="normal"><a href="#__codelineno-0-68">68</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="k">def</span><span class="w"> </span><span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">bar_period</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">BarPeriod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a><span class="sd">    Subscribe to market data for one or more symbols at a given bar period.</span>
+</span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a>
+</span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a><span class="sd">    parameters:</span>
+</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="sd">        symbols:</span>
+</span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a><span class="sd">            Instrument symbols to subscribe to, interpreted according to the conventions of the underlying data source.</span>
+</span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65"></a><span class="sd">        bar_period:</span>
+</span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66"></a><span class="sd">            Bar aggregation period specifying the granularity of market data.</span>
+</span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68"></a>    <span class="k">pass</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="onesecondtrader.datafeeds.base.DatafeedBase.unsubscribe" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">unsubscribe</span><span class="p">(</span><span class="n">symbols</span><span class="p">,</span> <span class="n">bar_period</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Cancel existing subscriptions for one or more symbols at a given bar period.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>symbols</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Instrument symbols for which subscriptions should be removed.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bar_period</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="BarPeriod (onesecondtrader.models.BarPeriod)" href="../../models/bar_period/#onesecondtrader.models.bar_period.BarPeriod">BarPeriod</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Bar aggregation period associated with the subscriptions.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/onesecondtrader/datafeeds/base.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-70">70</a></span>
+<span class="normal"><a href="#__codelineno-0-71">71</a></span>
+<span class="normal"><a href="#__codelineno-0-72">72</a></span>
+<span class="normal"><a href="#__codelineno-0-73">73</a></span>
+<span class="normal"><a href="#__codelineno-0-74">74</a></span>
+<span class="normal"><a href="#__codelineno-0-75">75</a></span>
+<span class="normal"><a href="#__codelineno-0-76">76</a></span>
+<span class="normal"><a href="#__codelineno-0-77">77</a></span>
+<span class="normal"><a href="#__codelineno-0-78">78</a></span>
+<span class="normal"><a href="#__codelineno-0-79">79</a></span>
+<span class="normal"><a href="#__codelineno-0-80">80</a></span>
+<span class="normal"><a href="#__codelineno-0-81">81</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+</span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a><span class="k">def</span><span class="w"> </span><span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">bar_period</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">BarPeriod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="sd">    Cancel existing subscriptions for one or more symbols at a given bar period.</span>
+</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a>
+</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="sd">    parameters:</span>
+</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">        symbols:</span>
+</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a><span class="sd">            Instrument symbols for which subscriptions should be removed.</span>
+</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">        bar_period:</span>
+</span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="sd">            Bar aggregation period associated with the subscriptions.</span>
+</span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-81"><a id="__codelineno-0-81" name="__codelineno-0-81"></a>    <span class="k">pass</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="onesecondtrader.datafeeds.base.DatafeedBase.wait_until_complete" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">wait_until_complete</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Block until the data feed has completed all pending work.</p>
+<p>This method may be overridden by subclasses that perform asynchronous ingestion or background processing.
+The default implementation does nothing.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/onesecondtrader/datafeeds/base.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-83">83</a></span>
+<span class="normal"><a href="#__codelineno-0-84">84</a></span>
+<span class="normal"><a href="#__codelineno-0-85">85</a></span>
+<span class="normal"><a href="#__codelineno-0-86">86</a></span>
+<span class="normal"><a href="#__codelineno-0-87">87</a></span>
+<span class="normal"><a href="#__codelineno-0-88">88</a></span>
+<span class="normal"><a href="#__codelineno-0-89">89</a></span>
+<span class="normal"><a href="#__codelineno-0-90">90</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-83"><a id="__codelineno-0-83" name="__codelineno-0-83"></a><span class="k">def</span><span class="w"> </span><span class="nf">wait_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-84"><a id="__codelineno-0-84" name="__codelineno-0-84"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-85"><a id="__codelineno-0-85" name="__codelineno-0-85"></a><span class="sd">    Block until the data feed has completed all pending work.</span>
+</span><span id="__span-0-86"><a id="__codelineno-0-86" name="__codelineno-0-86"></a>
+</span><span id="__span-0-87"><a id="__codelineno-0-87" name="__codelineno-0-87"></a><span class="sd">    This method may be overridden by subclasses that perform asynchronous ingestion or background processing.</span>
+</span><span id="__span-0-88"><a id="__codelineno-0-88" name="__codelineno-0-88"></a><span class="sd">    The default implementation does nothing.</span>
+</span><span id="__span-0-89"><a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-90"><a id="__codelineno-0-90" name="__codelineno-0-90"></a>    <span class="k">pass</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 
 
