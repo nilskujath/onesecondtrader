@@ -1,3 +1,6 @@
+## v0.57.0
+- feat: added dashboard package
+
 ## v0.56.0
 - feat: added orchestrator
 
