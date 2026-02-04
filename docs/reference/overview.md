@@ -17,6 +17,14 @@ hide:
 
     [:material-link-variant: View `brokers` package API](brokers/base.md)
 
+-   __Dashboard__&nbsp;&nbsp;
+
+    ---
+
+    Provides a web dashboard for running backtests and viewing run history.
+
+    [:material-link-variant: View `dashboard` package API](dashboard/app.md)
+
 -   __Datafeeds__&nbsp;&nbsp;
 
     ---

@@ -22,6 +22,8 @@ class Orchestrator:
 
     db_path: str = "runs.db"
     mode: str = "backtest"
+    start_date: str | None = None
+    end_date: str | None = None
 
     def __init__(
         self,
@@ -123,6 +125,8 @@ class Orchestrator:
             "mode": self.mode,
             "symbols": self._collect_symbols(),
             "strategies": [s.name for s in self._strategy_classes],
+            "start_date": self.start_date,
+            "end_date": self.end_date,
         }
         return RunRecorder(
             event_bus=self._event_bus,

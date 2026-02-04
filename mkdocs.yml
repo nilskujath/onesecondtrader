@@ -1,6 +1,5 @@
 site_name: OneSecondTrader
 site_url: https://www.onesecondtrader.com
-site_lang: en
 copyright: "Copyright \xA9 2024-2025 Nils Kujath.<br><br>\n<div style='text-align:\
   \ justify; font-size: 0.8em;'>THE INFORMATION PROVIDED IS FOR EDUCATIONAL AND INFORMATIONAL\
   \ PURPOSES ONLY. IT DOES NOT CONSTITUTE FINANCIAL, INVESTMENT, OR TRADING ADVICE.\
@@ -23,6 +22,13 @@ nav:
   - Brokers:
     - Base: reference/brokers/base.md
     - Simulated: reference/brokers/simulated.md
+  - Dashboard:
+    - App: reference/dashboard/app.md
+    - Cli: reference/dashboard/cli.md
+    - Layout: reference/dashboard/layout.md
+    - Pages: reference/dashboard/pages.md
+    - Registry: reference/dashboard/registry.md
+    - Styles: reference/dashboard/styles.md
   - Datafeeds:
     - Base: reference/datafeeds/base.md
     - Simulated: reference/datafeeds/simulated.md

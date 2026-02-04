@@ -19,6 +19,9 @@ dependencies = [
     "uvicorn (>=0.40.0,<0.41.0)",
 ]
 
+[project.scripts]
+onesecondtrader = "onesecondtrader.dashboard.cli:main"
+
 [tool.poetry]
 packages = [{include = "onesecondtrader", from = "src"}]
 include = ["src/onesecondtrader/**/*.sql"]

@@ -131,7 +131,7 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
     symbols: list[str] = []
     parameters: dict[str, ParamSpec] = {}
 
-    def __init__(self, event_bus: messaging.EventBus, **overrides) -> None:
+    def __init__(self, event_bus: messaging.EventBus, **overrides: object) -> None:
         """
         Initialize the strategy and start event processing.
 

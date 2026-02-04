@@ -193,5 +193,18 @@ CREATE TABLE symbology (
     CHECK (start_date <= end_date)
 );
 
+CREATE INDEX idx_symbology_symbol ON symbology(symbol);
+
+
+CREATE TABLE symbol_coverage (
+    publisher_id INTEGER NOT NULL,
+    symbol TEXT NOT NULL,
+    rtype INTEGER NOT NULL,
+    min_ts INTEGER NOT NULL,
+    max_ts INTEGER NOT NULL,
+    FOREIGN KEY (publisher_id) REFERENCES publishers(publisher_id),
+    PRIMARY KEY (publisher_id, symbol, rtype)
+);
+
 
 PRAGMA user_version = 1;

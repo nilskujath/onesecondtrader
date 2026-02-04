@@ -79,6 +79,98 @@ def create_secmaster_db(db_path: pathlib.Path, schema_version: int = 1) -> pathl
     return db_path
 
 
+def rebuild_symbol_coverage(db_path: pathlib.Path) -> int:
+    """
+    Rebuild the symbol_coverage table from actual OHLCV data.
+
+    For each symbology mapping, finds OHLCV data within the valid date range,
+    then aggregates per publisher, symbol and rtype to get overall coverage. This ensures
+    coverage reflects only data accessible via each symbol during its valid period.
+
+    The algorithm:
+    1. Create temp table with OHLCV coverage per (instrument_id, rtype)
+    2. Create temp table joining instruments with symbology (with ts conversion)
+    3. Join and compute intersection, aggregate per (publisher_id, symbol, rtype)
+
+    Parameters:
+        db_path:
+            Path to the security master SQLite database.
+
+    Returns:
+        The number of (publisher_id, symbol, rtype) combinations with coverage data.
+    """
+    logger.info("Rebuilding symbol_coverage table from OHLCV data")
+
+    con = sqlite3.connect(str(db_path))
+    try:
+        con.execute("PRAGMA foreign_keys = ON;")
+        _assert_secmaster_db(con)
+
+        logger.info("Step 1: Aggregating OHLCV coverage per instrument and rtype")
+        con.execute("DROP TABLE IF EXISTS _tmp_instrument_coverage")
+        con.execute(
+            """
+            CREATE TEMP TABLE _tmp_instrument_coverage AS
+            SELECT instrument_id, rtype, MIN(ts_event) AS min_ts, MAX(ts_event) AS max_ts
+            FROM ohlcv
+            GROUP BY instrument_id, rtype
+        """
+        )
+        con.execute(
+            "CREATE INDEX _tmp_ic_idx ON _tmp_instrument_coverage(instrument_id)"
+        )
+
+        logger.info("Step 2: Building symbol-to-instrument mapping with timestamps")
+        con.execute("DROP TABLE IF EXISTS _tmp_symbol_instrument")
+        con.execute(
+            """
+            CREATE TEMP TABLE _tmp_symbol_instrument AS
+            SELECT
+                s.publisher_ref AS publisher_id,
+                s.symbol,
+                i.instrument_id,
+                CAST(strftime('%s', s.start_date) AS INTEGER) * 1000000000 AS start_ts,
+                (CAST(strftime('%s', s.end_date) AS INTEGER) + 86400) * 1000000000 AS end_ts
+            FROM symbology s
+            JOIN instruments i
+                ON s.publisher_ref = i.publisher_ref
+                AND s.source_instrument_id = i.source_instrument_id
+        """
+        )
+        con.execute("CREATE INDEX _tmp_si_idx ON _tmp_symbol_instrument(instrument_id)")
+
+        logger.info("Step 3: Computing symbol coverage with date intersection")
+        con.execute("DELETE FROM symbol_coverage")
+        con.execute(
+            """
+            INSERT INTO symbol_coverage (publisher_id, symbol, rtype, min_ts, max_ts)
+            SELECT
+                si.publisher_id,
+                si.symbol,
+                ic.rtype,
+                MIN(MAX(ic.min_ts, si.start_ts)),
+                MAX(MIN(ic.max_ts, si.end_ts))
+            FROM _tmp_symbol_instrument si
+            JOIN _tmp_instrument_coverage ic ON si.instrument_id = ic.instrument_id
+            WHERE ic.min_ts < si.end_ts AND ic.max_ts >= si.start_ts
+            GROUP BY si.publisher_id, si.symbol, ic.rtype
+        """
+        )
+
+        con.execute("DROP TABLE IF EXISTS _tmp_instrument_coverage")
+        con.execute("DROP TABLE IF EXISTS _tmp_symbol_instrument")
+        con.commit()
+
+        count = con.execute("SELECT COUNT(*) FROM symbol_coverage").fetchone()[0]
+    finally:
+        con.close()
+
+    logger.info(
+        "Rebuilt symbol_coverage: %d publisher/symbol/rtype combinations", count
+    )
+    return count
+
+
 def ingest_databento_zip(
     zip_path: pathlib.Path,
     db_path: pathlib.Path,
@@ -203,6 +295,8 @@ def ingest_databento_zip(
         symbology_count,
     )
 
+    rebuild_symbol_coverage(db_path)
+
     return ohlcv_count, symbology_count
 
 
@@ -266,6 +360,8 @@ def ingest_databento_dbn(
             con.close()
 
     logger.info("Finished DBN ingestion: %s (%d OHLCV records)", dbn_path.name, count)
+
+    rebuild_symbol_coverage(db_path)
 
     return count
 
