@@ -2,158 +2,182 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://www.onesecondtrader.com/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/explanation/overview/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/overview/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/brokers/base/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/brokers/simulated/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/dashboard/app/</loc>
+         <lastmod>2026-02-04</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/dashboard/cli/</loc>
+         <lastmod>2026-02-04</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/dashboard/layout/</loc>
+         <lastmod>2026-02-04</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/dashboard/pages/</loc>
+         <lastmod>2026-02-04</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/dashboard/registry/</loc>
+         <lastmod>2026-02-04</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/dashboard/styles/</loc>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/datafeeds/base/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/datafeeds/simulated/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/events/base/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/events/market/bar_processed/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/events/market/bar_received/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/events/orders/base/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/events/orders/expirations/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/events/orders/fills/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/events/requests/base/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/events/requests/order_cancellation/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/events/requests/order_modification/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/events/requests/order_submission/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/events/responses/base/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/events/responses/cancellations/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/events/responses/modifications/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/events/responses/orders/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/indicators/base/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/indicators/market_fields/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/indicators/moving_averages/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/messaging/eventbus/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/messaging/subscriber/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/models/action_types/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/models/bar_fields/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/models/bar_period/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/models/order_types/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/models/rejection_reasons/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/models/trade_sides/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/orchestrator/orchestrator/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/orchestrator/run_recorder/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/orchestrator/runs_schema/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/secmaster/utils/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/secmaster/schema_versions/secmaster_schema_v1/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/strategies/base/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/strategies/examples/</loc>
-         <lastmod>2026-02-03</lastmod>
+         <lastmod>2026-02-04</lastmod>
     </url>
 </urlset>
