@@ -3,6 +3,8 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, RedirectResponse
 
+from onesecondtrader.strategies.base import discover_strategies
+
 from .pages import backtest_page, performance_page
 from .routers import (
     runs_router,
@@ -11,6 +13,8 @@ from .routers import (
     presets_router,
     backtest_router,
 )
+
+discover_strategies()
 
 app = FastAPI(title="OneSecondTrader Dashboard")
 

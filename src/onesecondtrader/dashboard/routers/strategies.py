@@ -16,8 +16,6 @@ router = APIRouter(prefix="/api", tags=["strategies"])
 @router.get("/strategies")
 async def api_strategies() -> dict:
     """Return list of available strategy classes."""
-    from onesecondtrader.strategies import examples  # noqa: F401
-
     strategies = registry.get_strategies()
     return {
         "strategies": [
@@ -29,8 +27,6 @@ async def api_strategies() -> dict:
 @router.get("/strategies/{name}")
 async def api_strategy_schema(name: str) -> dict:
     """Return parameter schema for a specific strategy."""
-    from onesecondtrader.strategies import examples  # noqa: F401
-
     schema = registry.get_strategy_schema(name)
     if schema is None:
         return {"error": "Strategy not found"}

@@ -9,31 +9,11 @@ from __future__ import annotations
 
 import enum
 
-from onesecondtrader.strategies.base import StrategyBase, ParamSpec
-
-
-def _get_subclasses(base: type) -> dict[str, type]:
-    """
-    Recursively collect all non-private subclasses of a base class.
-
-    Excludes classes with names starting with underscore or "Configured" (dynamically
-    created strategy configurations).
-
-    Parameters:
-        base:
-            Base class to find subclasses of.
-
-    Returns:
-        Dictionary mapping class names to class objects.
-    """
-    result = {}
-    for cls in base.__subclasses__():
-        if not cls.__name__.startswith("_") and not cls.__name__.startswith(
-            "Configured"
-        ):
-            result[cls.__name__] = cls
-        result.update(_get_subclasses(cls))
-    return result
+from onesecondtrader.strategies.base import (
+    ParamSpec,
+    StrategyBase,
+    get_registered_strategies,
+)
 
 
 def get_strategies() -> dict[str, type[StrategyBase]]:
@@ -43,7 +23,7 @@ def get_strategies() -> dict[str, type[StrategyBase]]:
     Returns:
         Dictionary mapping strategy class names to their class objects.
     """
-    return _get_subclasses(StrategyBase)
+    return get_registered_strategies()
 
 
 def get_param_schema(params: dict[str, ParamSpec]) -> list[dict]:

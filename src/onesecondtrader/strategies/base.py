@@ -3,12 +3,66 @@ from __future__ import annotations
 import abc
 import dataclasses
 import enum
+import importlib.util
 import uuid
+from pathlib import Path
 from types import SimpleNamespace
 
 import pandas as pd
 
 from onesecondtrader import events, indicators, messaging, models
+
+
+_strategy_registry: dict[str, type[StrategyBase]] = {}
+
+
+def get_registered_strategies() -> dict[str, type[StrategyBase]]:
+    """
+    Return all registered strategy classes.
+
+    Returns:
+        Dictionary mapping strategy class names to their class objects.
+    """
+    return dict(_strategy_registry)
+
+
+def discover_strategies(directory: str | Path = "strategies") -> list[str]:
+    """
+    Import all Python files from a directory to register strategies.
+
+    Any class inheriting from StrategyBase in the imported files will be
+    automatically registered via __init_subclass__.
+
+    Parameters:
+        directory:
+            Path to the directory containing strategy files.
+            Defaults to "strategies" relative to the current working directory.
+
+    Returns:
+        List of successfully imported module names.
+    """
+    path = Path(directory)
+    if not path.is_dir():
+        return []
+
+    imported = []
+    for file in path.glob("*.py"):
+        if file.name.startswith("_"):
+            continue
+
+        module_name = f"user_strategies.{file.stem}"
+        spec = importlib.util.spec_from_file_location(module_name, file)
+        if spec is None or spec.loader is None:
+            continue
+
+        module = importlib.util.module_from_spec(spec)
+        try:
+            spec.loader.exec_module(module)
+            imported.append(file.stem)
+        except Exception:
+            pass
+
+    return imported
 
 
 @dataclasses.dataclass
@@ -118,6 +172,8 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
     and submits orders through the event bus. Subclasses implement `on_bar` to define
     trading logic and optionally override `setup` to register indicators.
 
+    Subclasses are automatically registered for dashboard discovery when defined.
+
     Class Attributes:
         name:
             Human-readable name of the strategy.
@@ -130,6 +186,11 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
     name: str = ""
     symbols: list[str] = []
     parameters: dict[str, ParamSpec] = {}
+
+    def __init_subclass__(cls, **kwargs: object) -> None:
+        super().__init_subclass__(**kwargs)
+        if not cls.__name__.startswith("_"):
+            _strategy_registry[cls.__name__] = cls
 
     def __init__(self, event_bus: messaging.EventBus, **overrides: object) -> None:
         """

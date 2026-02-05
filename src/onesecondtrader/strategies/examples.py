@@ -1,5 +1,5 @@
 from onesecondtrader import events, indicators, models
-from .base import StrategyBase, ParamSpec
+from .base import ParamSpec, StrategyBase
 
 
 class SMACrossover(StrategyBase):
