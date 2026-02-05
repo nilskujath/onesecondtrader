@@ -17,7 +17,6 @@ nav:
 - Home: index.md
 - Tutorials:
   - Getting Started: tutorials/getting_started.md
-  - Local Installation: tutorials/local.md
 - Explanation:
   - Overview: explanation/overview.md
 - Reference:

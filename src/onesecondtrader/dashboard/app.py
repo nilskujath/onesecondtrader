@@ -15,8 +15,8 @@ from .routers import (
     backtest_router,
 )
 
-discover_strategies()
 discover_indicators()
+discover_strategies()
 
 app = FastAPI(title="OneSecondTrader Dashboard")
 

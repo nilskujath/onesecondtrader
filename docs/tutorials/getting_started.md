@@ -50,18 +50,23 @@ This guide will teach you how to develop indicators, design strategies, and run 
 
     Add `package-mode = false` to your `pyproject.toml` file. It should look similar to this:
  
-    ``` toml linenums="1" hl_lines="8"
+    ``` toml linenums="1" hl_lines="9 10"
     [project]
     name = "stratdev"
     version = "0.1.0"
     description = ""
     authors = [
-        {name = "...",email = "..."}
+        {name = "Nils P. Kujath",email = "63961429+NilsKujath@users.noreply.github.com"}
     ]
+
+    [tool.poetry]
     package-mode = false
+
 
     [tool.poetry.dependencies]
     python = ">=3.11,<4.0"
+    onesecondtrader = "^0.61.0"
+
 
     [build-system]
     requires = ["poetry-core>=2.0.0,<3.0.0"]

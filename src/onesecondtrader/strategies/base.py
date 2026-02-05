@@ -41,26 +41,33 @@ def discover_strategies(directory: str | Path = "strategies") -> list[str]:
     Returns:
         List of successfully imported module names.
     """
+    import sys
+    import types
+
     path = Path(directory)
     if not path.is_dir():
         return []
+
+    if "strategies" not in sys.modules:
+        sys.modules["strategies"] = types.ModuleType("strategies")
 
     imported = []
     for file in path.glob("*.py"):
         if file.name.startswith("_"):
             continue
 
-        module_name = f"user_strategies.{file.stem}"
+        module_name = f"strategies.{file.stem}"
         spec = importlib.util.spec_from_file_location(module_name, file)
         if spec is None or spec.loader is None:
             continue
 
         module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
         try:
             spec.loader.exec_module(module)
             imported.append(file.stem)
         except Exception:
-            pass
+            del sys.modules[module_name]
 
     return imported
 
