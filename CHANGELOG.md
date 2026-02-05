@@ -1,3 +1,7 @@
+## v0.60.0
+- feat: made strategies definable package externally
+- docs: added tutorial for running dashboard locally
+
 ## v0.59.0
 - feat: minimal version of dashboard completed
 
