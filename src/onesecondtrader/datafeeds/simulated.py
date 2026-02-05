@@ -174,7 +174,7 @@ class SimulatedDatafeed(DatafeedBase):
               ON s.publisher_ref = i.publisher_ref
              AND s.source_instrument_id = i.source_instrument_id
              AND date(o.ts_event / 1000000000, 'unixepoch') >= s.start_date
-             AND date(o.ts_event / 1000000000, 'unixepoch') <= s.end_date
+             AND date(o.ts_event / 1000000000, 'unixepoch') < s.end_date
             WHERE i.publisher_ref = ?
               AND s.symbol_type = ?
               AND s.symbol IN ({",".join("?" * len(symbols))})

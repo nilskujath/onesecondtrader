@@ -130,7 +130,7 @@ def rebuild_symbol_coverage(db_path: pathlib.Path) -> int:
                 s.symbol,
                 i.instrument_id,
                 CAST(strftime('%s', s.start_date) AS INTEGER) * 1000000000 AS start_ts,
-                (CAST(strftime('%s', s.end_date) AS INTEGER) + 86400) * 1000000000 AS end_ts
+                CAST(strftime('%s', s.end_date) AS INTEGER) * 1000000000 AS end_ts
             FROM symbology s
             JOIN instruments i
                 ON s.publisher_ref = i.publisher_ref
@@ -691,7 +691,7 @@ def _validate_no_overlapping_symbology(
         symbol, start, end, next_start = row
         raise ValueError(
             f"Overlapping symbology detected for symbol={symbol!r}: "
-            f"segment [{start}, {end}] overlaps with next segment starting {next_start}"
+            f"segment [{start}, {end}) overlaps with next segment starting {next_start}"
         )
 
 

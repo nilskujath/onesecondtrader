@@ -6,7 +6,7 @@ wrapped in the standard layout by `render_page`.
 """
 
 from .layout import render_page
-from .styles import BACKTEST_CSS, BACKTEST_JS
+from .styles import BACKTEST_CSS, BACKTEST_JS, PERFORMANCE_CSS, PERFORMANCE_JS
 
 
 def backtest_page() -> str:
@@ -95,3 +95,36 @@ def backtest_page() -> str:
     <script>{BACKTEST_JS}</script>
     """
     return render_page("Backtest", content, "backtest")
+
+
+def performance_page() -> str:
+    """
+    Generate the performance analysis page.
+
+    Returns:
+        HTML string for the performance page content.
+    """
+    content = f"""
+    <style>{PERFORMANCE_CSS}</style>
+    <div class="performance-layout">
+        <div class="performance-left">
+            <div class="card">
+                <h2>Runs</h2>
+                <div id="runs-list" class="runs-list"></div>
+            </div>
+        </div>
+        <div class="performance-right">
+            <div class="card">
+                <h2>Round-Trip Trades</h2>
+                <div class="search-bar">
+                    <input type="text" id="symbol-filter" placeholder="Filter by symbol(s)..." oninput="filterRoundtrips()">
+                </div>
+                <div id="performance-content">
+                    <div class="empty-content"><p>Select a run to view performance</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>{PERFORMANCE_JS}</script>
+    """
+    return render_page("Performance", content, "performance")

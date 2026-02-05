@@ -24,11 +24,21 @@ nav:
     - Simulated: reference/brokers/simulated.md
   - Dashboard:
     - App: reference/dashboard/app.md
+    - Backtest: reference/dashboard/backtest.md
+    - Charting: reference/dashboard/charting.md
     - Cli: reference/dashboard/cli.md
+    - Db: reference/dashboard/db.md
     - Layout: reference/dashboard/layout.md
     - Pages: reference/dashboard/pages.md
     - Registry: reference/dashboard/registry.md
+    - Roundtrips: reference/dashboard/roundtrips.md
     - Styles: reference/dashboard/styles.md
+    - Routers:
+      - Backtest: reference/dashboard/routers/backtest.md
+      - Presets: reference/dashboard/routers/presets.md
+      - Runs: reference/dashboard/routers/runs.md
+      - Secmaster: reference/dashboard/routers/secmaster.md
+      - Strategies: reference/dashboard/routers/strategies.md
   - Datafeeds:
     - Base: reference/datafeeds/base.md
     - Simulated: reference/datafeeds/simulated.md

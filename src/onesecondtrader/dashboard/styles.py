@@ -163,6 +163,8 @@ BACKTEST_CSS = """
 .run-item.selected { border-color: #58a6ff; }
 .run-checkbox { flex-shrink: 0; margin-top: 2px; width: 16px; height: 16px; accent-color: #58a6ff; cursor: pointer; }
 .run-content { flex: 1; min-width: 0; }
+.run-content.clickable { cursor: pointer; }
+.run-content.clickable:hover { opacity: 0.8; }
 .run-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .run-name { font-family: monospace; font-size: 13px; color: #e6edf3; }
 .run-id { color: #8b949e; font-size: 11px; margin-left: 6px; }
@@ -667,9 +669,11 @@ function renderRuns() {
         const timePart = r.run_id.slice(11, 19).replace(/-/g, ':');
         const isSelected = selectedRunIds.has(r.run_id);
         const statusClass = r.status;
+        const clickable = r.status === 'completed' ? `onclick="goToPerformance('${r.run_id}')"` : '';
+        const clickableClass = r.status === 'completed' ? 'clickable' : '';
         html += `<div class="run-item ${isSelected ? 'selected' : ''}">
             <input type="checkbox" class="run-checkbox" ${isSelected ? 'checked' : ''} onchange="toggleRunSelection('${r.run_id}')">
-            <div class="run-content">
+            <div class="run-content ${clickableClass}" ${clickable}>
                 <div class="run-header">
                     <span class="run-name">${strategies} <span class="run-id">${timePart}</span></span>
                     <span class="run-status ${statusClass}">${r.status}</span>
@@ -761,9 +765,277 @@ async function runBacktest() {
     }
 }
 
+function goToPerformance(runId) {
+    window.location.href = `/performance?run_id=${runId}`;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     loadStrategies();
     loadCoverage();
     loadDbRuns();
+});
+"""
+
+PERFORMANCE_CSS = """
+.container { max-width: none; height: 100vh; padding: 24px; display: flex; flex-direction: column; box-sizing: border-box; }
+.performance-layout { display: flex; gap: 24px; flex: 1; min-height: 0; }
+.performance-left { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.performance-right { flex: 3; min-width: 0; display: flex; flex-direction: column; overflow-y: auto; }
+.performance-left .card { flex: 1; display: flex; flex-direction: column; margin-bottom: 0; min-height: 0; }
+.performance-right .card { display: flex; flex-direction: column; margin-bottom: 0; }
+.performance-left .runs-list { flex: 1; overflow-y: auto; }
+.runs-list { display: flex; flex-direction: column; gap: 8px; }
+.run-item { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 12px; cursor: pointer; }
+.run-item:hover { border-color: #58a6ff; }
+.run-item.selected { border-color: #58a6ff; background: #161b22; }
+.run-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.run-name { font-family: monospace; font-size: 13px; color: #e6edf3; }
+.run-id { color: #8b949e; font-size: 11px; margin-left: 6px; }
+.run-status { font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 10px; }
+.run-status.completed { background: #238636; color: #fff; }
+.run-status.failed { background: #da3633; color: #fff; }
+.run-status.error { background: #da3633; color: #fff; }
+.run-meta { font-size: 12px; color: #8b949e; }
+.empty-runs { text-align: center; padding: 48px 24px; color: #8b949e; }
+.empty-runs p { font-size: 14px; }
+.empty-content { text-align: center; padding: 48px 24px; color: #8b949e; }
+.empty-content p { font-size: 14px; }
+.search-bar { margin-bottom: 16px; }
+.search-bar input { width: 100%; padding: 8px 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #e6edf3; font-size: 14px; }
+.search-bar input:focus { outline: none; border-color: #58a6ff; }
+.search-bar input::placeholder { color: #8b949e; }
+.roundtrips-table-container { }
+.roundtrips-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.roundtrips-table th { position: sticky; top: 0; background: #161b22; padding: 10px 12px; text-align: left; color: #8b949e; font-weight: 500; border-bottom: 1px solid #30363d; cursor: pointer; user-select: none; white-space: nowrap; }
+.roundtrips-table th:hover { color: #e6edf3; }
+.roundtrips-table th .sort-icon { margin-left: 4px; opacity: 0.5; }
+.roundtrips-table th.sorted .sort-icon { opacity: 1; }
+.roundtrips-table td { padding: 10px 12px; border-bottom: 1px solid #21262d; color: #e6edf3; white-space: nowrap; }
+.roundtrips-table tr:hover td { background: #21262d; }
+.roundtrips-table .symbol { font-family: monospace; }
+.roundtrips-table .direction { font-weight: 500; }
+.roundtrips-table .direction.long { color: #3fb950; }
+.roundtrips-table .direction.short { color: #f85149; }
+.roundtrips-table .pnl { font-weight: 500; font-family: monospace; }
+.roundtrips-table .pnl.positive { color: #3fb950; }
+.roundtrips-table .pnl.negative { color: #f85149; }
+.roundtrips-table .number { font-family: monospace; text-align: right; }
+.empty-table { text-align: center; padding: 48px 24px; color: #8b949e; }
+.roundtrips-table tr.data-row { cursor: pointer; }
+.roundtrips-table tr.chart-row { display: none; }
+.roundtrips-table tr.chart-row.expanded { display: table-row; }
+.roundtrips-table tr.chart-row td { padding: 16px; background: #0d1117; }
+.chart-container { position: relative; text-align: center; }
+.chart-container img { max-width: 100%; height: auto; border-radius: 4px; }
+.chart-loading { color: #8b949e; padding: 48px; }
+"""
+
+PERFORMANCE_JS = """
+let runs = [];
+let selectedRunId = null;
+let roundtrips = [];
+let filteredRoundtrips = [];
+let sortColumn = 'symbol';
+let sortAsc = true;
+
+function getUrlRunId() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('run_id');
+}
+
+async function loadRuns() {
+    const res = await fetch('/api/runs');
+    const data = await res.json();
+    runs = (data.runs || []).filter(r => r.status === 'completed');
+    renderRuns();
+    const urlRunId = getUrlRunId();
+    if (urlRunId && runs.some(r => r.run_id === urlRunId)) {
+        selectRun(urlRunId);
+    }
+}
+
+function selectRun(runId) {
+    selectedRunId = runId;
+    const url = new URL(window.location);
+    url.searchParams.set('run_id', runId);
+    window.history.replaceState({}, '', url);
+    renderRuns();
+    loadPerformance(runId);
+}
+
+function renderRuns() {
+    const container = document.getElementById('runs-list');
+    if (runs.length === 0) {
+        container.innerHTML = '<div class="empty-runs"><p>No completed runs</p></div>';
+        return;
+    }
+    container.innerHTML = runs.map(r => {
+        const config = r.config || {};
+        const strategies = config.strategies ? config.strategies.join(', ') : r.name;
+        const symbols = config.symbols || [];
+        const symbolCount = symbols.length;
+        const startDate = config.start_date || '-';
+        const endDate = config.end_date || '-';
+        const timePart = r.run_id.slice(11, 19).replace(/-/g, ':');
+        const isSelected = r.run_id === selectedRunId;
+        return `<div class="run-item ${isSelected ? 'selected' : ''}" onclick="selectRun('${r.run_id}')">
+            <div class="run-header">
+                <span class="run-name">${strategies} <span class="run-id">${timePart}</span></span>
+                <span class="run-status ${r.status}">${r.status}</span>
+            </div>
+            <div class="run-meta">${symbolCount} symbol${symbolCount !== 1 ? 's' : ''} · ${startDate} to ${endDate}</div>
+        </div>`;
+    }).join('');
+}
+
+async function loadPerformance(runId) {
+    const container = document.getElementById('performance-content');
+    container.innerHTML = '<div class="empty-content"><p>Loading...</p></div>';
+    const res = await fetch(`/api/runs/${runId}/roundtrips`);
+    const data = await res.json();
+    roundtrips = data.roundtrips || [];
+    filteredRoundtrips = [...roundtrips];
+    sortColumn = 'symbol';
+    sortAsc = true;
+    document.getElementById('symbol-filter').value = '';
+    sortAndRender();
+}
+
+function filterRoundtrips() {
+    const query = document.getElementById('symbol-filter').value.toLowerCase().trim();
+    if (!query) {
+        filteredRoundtrips = [...roundtrips];
+    } else {
+        const terms = query.split(/[,\\s]+/).filter(t => t.length > 0);
+        filteredRoundtrips = roundtrips.filter(rt =>
+            terms.some(term => rt.symbol.toLowerCase().includes(term))
+        );
+    }
+    sortAndRender();
+}
+
+function sortBy(column) {
+    if (sortColumn === column) {
+        sortAsc = !sortAsc;
+    } else {
+        sortColumn = column;
+        sortAsc = true;
+    }
+    sortAndRender();
+}
+
+function sortAndRender() {
+    filteredRoundtrips.sort((a, b) => {
+        let valA = a[sortColumn];
+        let valB = b[sortColumn];
+        if (typeof valA === 'string') {
+            valA = valA.toLowerCase();
+            valB = valB.toLowerCase();
+        }
+        if (valA < valB) return sortAsc ? -1 : 1;
+        if (valA > valB) return sortAsc ? 1 : -1;
+        return 0;
+    });
+    renderTable();
+}
+
+function formatDuration(seconds) {
+    if (seconds < 60) return seconds.toFixed(1) + 's';
+    if (seconds < 3600) return (seconds / 60).toFixed(1) + 'm';
+    if (seconds < 86400) return (seconds / 3600).toFixed(1) + 'h';
+    return (seconds / 86400).toFixed(1) + 'd';
+}
+
+function renderTable() {
+    const container = document.getElementById('performance-content');
+    if (roundtrips.length === 0) {
+        container.innerHTML = '<div class="empty-table"><p>No round-trip trades found</p></div>';
+        return;
+    }
+    const columns = [
+        {key: 'symbol', label: 'Symbol'},
+        {key: 'direction', label: 'Direction'},
+        {key: 'duration_seconds', label: 'Duration'},
+        {key: 'max_position', label: 'Max Position'},
+        {key: 'max_drawdown', label: 'Max Drawdown'},
+        {key: 'high_watermark', label: 'High Watermark'},
+        {key: 'pnl_before_commission', label: 'PnL (Gross)'},
+        {key: 'pnl_after_commission', label: 'PnL (Net)'},
+    ];
+    const headerHtml = columns.map(c => {
+        const isSorted = sortColumn === c.key;
+        const arrow = isSorted ? (sortAsc ? '▲' : '▼') : '▲';
+        return `<th class="${isSorted ? 'sorted' : ''}" onclick="sortBy('${c.key}')">${c.label}<span class="sort-icon">${arrow}</span></th>`;
+    }).join('');
+    const rowsHtml = filteredRoundtrips.map((rt, idx) => {
+        const dirClass = rt.direction.toLowerCase();
+        const pnlGrossClass = rt.pnl_before_commission >= 0 ? 'positive' : 'negative';
+        const pnlNetClass = rt.pnl_after_commission >= 0 ? 'positive' : 'negative';
+        const pnlGrossSign = rt.pnl_before_commission >= 0 ? '+' : '';
+        const pnlNetSign = rt.pnl_after_commission >= 0 ? '+' : '';
+        const hwmClass = rt.high_watermark >= 0 ? 'positive' : 'negative';
+        const hwmSign = rt.high_watermark >= 0 ? '+' : '';
+        const mddClass = rt.max_drawdown > 0 ? 'negative' : '';
+        return `<tr class="data-row" onclick="toggleChart(${idx})">
+            <td class="symbol">${rt.symbol}</td>
+            <td class="direction ${dirClass}">${rt.direction}</td>
+            <td class="number">${formatDuration(rt.duration_seconds)}</td>
+            <td class="number">${rt.max_position}</td>
+            <td class="pnl ${mddClass}">${rt.max_drawdown > 0 ? '-' : ''}${rt.max_drawdown.toFixed(2)}</td>
+            <td class="pnl ${hwmClass}">${hwmSign}${rt.high_watermark.toFixed(2)}</td>
+            <td class="pnl ${pnlGrossClass}">${pnlGrossSign}${rt.pnl_before_commission.toFixed(2)}</td>
+            <td class="pnl ${pnlNetClass}">${pnlNetSign}${rt.pnl_after_commission.toFixed(2)}</td>
+        </tr>
+        <tr class="chart-row" id="chart-row-${idx}">
+            <td colspan="8">
+                <div class="chart-container" id="chart-container-${idx}">
+                    <div class="chart-loading">Loading chart...</div>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+    container.innerHTML = `
+        <div class="roundtrips-table-container">
+            <table class="roundtrips-table">
+                <thead><tr>${headerHtml}</tr></thead>
+                <tbody>${rowsHtml}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+const chartCache = {};
+
+function toggleChart(idx) {
+    const chartRow = document.getElementById(`chart-row-${idx}`);
+    if (chartRow.classList.contains('expanded')) {
+        chartRow.classList.remove('expanded');
+        return;
+    }
+    chartRow.classList.add('expanded');
+    const rt = filteredRoundtrips[idx];
+    const container = document.getElementById(`chart-container-${idx}`);
+    const cacheKey = `${selectedRunId}_${rt.symbol}_${rt.entry_ts}_${rt.exit_ts}`;
+    if (chartCache[cacheKey]) {
+        container.innerHTML = `<img src="${chartCache[cacheKey]}" alt="Chart">`;
+        return;
+    }
+    container.innerHTML = '<div class="chart-loading">Loading chart...</div>';
+    const url = `/api/runs/${selectedRunId}/chart.png?symbol=${encodeURIComponent(rt.symbol)}&start_ns=${rt.entry_ts}&end_ns=${rt.exit_ts}&direction=${rt.direction}&pnl=${rt.pnl_after_commission}`;
+    const img = new Image();
+    img.onload = () => {
+        chartCache[cacheKey] = url;
+        container.innerHTML = '';
+        container.appendChild(img);
+    };
+    img.onerror = () => {
+        container.innerHTML = '<div class="chart-loading">Failed to load chart</div>';
+    };
+    img.src = url;
+    img.alt = 'Chart';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadRuns();
 });
 """

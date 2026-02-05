@@ -176,10 +176,10 @@ contain same-day corrections, backfills, or parallel resolution segments.
 | `symbol_type`          | `TEXT`    | `NOT NULL`       | Identifier describing the symbol scheme or resolution type used by the publisher (e.g. `raw_symbol`, `continuous`).        |
 | `source_instrument_id` | `INTEGER` | `NOT NULL`       | Publisher-native numeric instrument identifier corresponding to the resolved symbol.                                       |
 | `start_date`           | `TEXT`    | `NOT NULL`       | First calendar date (inclusive) on which this symbol-to-instrument mapping is valid, stored in YYYY-MM-DD format.          |
-| `end_date`             | `TEXT`    | `NOT NULL`       | Last calendar date (inclusive) on which this symbol-to-instrument mapping is valid, stored in YYYY-MM-DD format.           |
+| `end_date`             | `TEXT`    | `NOT NULL`       | First calendar date (exclusive) after which this symbol-to-instrument mapping is no longer valid, stored in YYYY-MM-DD format. |
 
 The primary key enforces uniqueness of mappings at the granularity of a resolved instrument.
-Date bounds are interpreted as closed intervals.
+Date bounds are interpreted as half-open intervals [start_date, end_date).
 
 
 
