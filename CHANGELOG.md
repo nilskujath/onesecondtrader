@@ -1,3 +1,6 @@
+## v0.63.0
+- feat: added bollinger package, closes #16
+
 ## v0.62.0
 - feat: fixed external strategy discovery
 
