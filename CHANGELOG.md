@@ -1,3 +1,6 @@
+## v0.62.0
+- feat: fixed external strategy discovery
+
 ## v0.61.0
 - feat: made indicators defineable externally
 
