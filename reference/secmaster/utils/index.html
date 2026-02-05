@@ -670,12 +670,81 @@
   
   
     <li class="md-nav__item">
+      <a href="../../dashboard/backtest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Backtest
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dashboard/charting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Charting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../dashboard/cli/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     Cli
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dashboard/db/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Db
     
   </span>
   
@@ -762,6 +831,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../dashboard/roundtrips/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Roundtrips
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../dashboard/styles/" class="md-nav__link">
         
   
@@ -773,6 +865,170 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3_11" id="__nav_3_3_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Routers
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            Routers
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dashboard/routers/backtest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Backtest
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dashboard/routers/presets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Presets
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dashboard/routers/runs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Runs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dashboard/routers/secmaster/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Secmaster
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dashboard/routers/strategies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -3229,7 +3485,7 @@ coverage reflects only data accessible via each symbol during its valid period.<
 </span><span id="__span-0-130"><a id="__codelineno-0-130" name="__codelineno-0-130"></a><span class="sd">                s.symbol,</span>
 </span><span id="__span-0-131"><a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="sd">                i.instrument_id,</span>
 </span><span id="__span-0-132"><a id="__codelineno-0-132" name="__codelineno-0-132"></a><span class="sd">                CAST(strftime(&#39;%s&#39;, s.start_date) AS INTEGER) * 1000000000 AS start_ts,</span>
-</span><span id="__span-0-133"><a id="__codelineno-0-133" name="__codelineno-0-133"></a><span class="sd">                (CAST(strftime(&#39;%s&#39;, s.end_date) AS INTEGER) + 86400) * 1000000000 AS end_ts</span>
+</span><span id="__span-0-133"><a id="__codelineno-0-133" name="__codelineno-0-133"></a><span class="sd">                CAST(strftime(&#39;%s&#39;, s.end_date) AS INTEGER) * 1000000000 AS end_ts</span>
 </span><span id="__span-0-134"><a id="__codelineno-0-134" name="__codelineno-0-134"></a><span class="sd">            FROM symbology s</span>
 </span><span id="__span-0-135"><a id="__codelineno-0-135" name="__codelineno-0-135"></a><span class="sd">            JOIN instruments i</span>
 </span><span id="__span-0-136"><a id="__codelineno-0-136" name="__codelineno-0-136"></a><span class="sd">                ON s.publisher_ref = i.publisher_ref</span>
@@ -4699,7 +4955,7 @@ where <code>dataset</code> is read from DBN metadata.</p>
 </span><span id="__span-0-691"><a id="__codelineno-0-691" name="__codelineno-0-691"></a>        <span class="n">symbol</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">next_start</span> <span class="o">=</span> <span class="n">row</span>
 </span><span id="__span-0-692"><a id="__codelineno-0-692" name="__codelineno-0-692"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
 </span><span id="__span-0-693"><a id="__codelineno-0-693" name="__codelineno-0-693"></a>            <span class="sa">f</span><span class="s2">&quot;Overlapping symbology detected for symbol=</span><span class="si">{</span><span class="n">symbol</span><span class="si">!r}</span><span class="s2">: &quot;</span>
-</span><span id="__span-0-694"><a id="__codelineno-0-694" name="__codelineno-0-694"></a>            <span class="sa">f</span><span class="s2">&quot;segment [</span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s2">] overlaps with next segment starting </span><span class="si">{</span><span class="n">next_start</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-0-694"><a id="__codelineno-0-694" name="__codelineno-0-694"></a>            <span class="sa">f</span><span class="s2">&quot;segment [</span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s2">) overlaps with next segment starting </span><span class="si">{</span><span class="n">next_start</span><span class="si">}</span><span class="s2">&quot;</span>
 </span><span id="__span-0-695"><a id="__codelineno-0-695" name="__codelineno-0-695"></a>        <span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
