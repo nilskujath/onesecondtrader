@@ -1,3 +1,6 @@
+## v0.61.0
+- feat: made indicators defineable externally
+
 ## v0.60.0
 - feat: made strategies definable package externally
 - docs: added tutorial for running dashboard locally
