@@ -1,3 +1,6 @@
+## v0.58.0
+- feat: added performance tab to dashboard
+
 ## v0.57.0
 - feat: added dashboard package
 
