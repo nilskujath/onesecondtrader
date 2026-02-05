@@ -1,3 +1,6 @@
+## v0.59.0
+- feat: minimal version of dashboard completed
+
 ## v0.58.0
 - feat: added performance tab to dashboard
 
