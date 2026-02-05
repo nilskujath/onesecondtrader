@@ -513,6 +513,24 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#developing-indicators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Developing Indicators
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developing-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Developing Strategies
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2727,6 +2745,24 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#developing-indicators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Developing Indicators
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developing-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Developing Strategies
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2835,6 +2871,25 @@ You should receive a .zip file that contains a <code>.dbn</code> file(s) and som
 <div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">secmaster</span><span class="o">.</span><span class="n">ingest_databento_zip</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;path/to/your/download.zip&quot;</span><span class="p">),</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./secmaster.db&quot;</span><span class="p">))</span>
 </span></code></pre></div>
 <p>This may take a while. After it's done, you can exit the interactive Python session (<code>exit()</code>).</p>
+<p><strong>Step 3</strong></p>
+<p>Set the <code>SECMASTER_DB_PATH</code> environment variable to the path of the database you just created.
+You can do this by running the following command (this is not necessary if you are running the dashboard from the same directory as the database):</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="macos--linux" name="__tabbed_3" type="radio" /><input id="windows-powershell" name="__tabbed_3" type="radio" /><input id="windows-cmd" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="macos--linux">macOS / Linux</label><label for="windows-powershell">Windows (PowerShell)</label><label for="windows-cmd">Windows (CMD)</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">SECMASTER_DB_PATH</span><span class="o">=</span>/path/to/your/secmaster.db
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nv">$env:SECMASTER_DB_PATH</span> <span class="p">=</span> <span class="s2">&quot;C:\path\to\your\secmaster.db&quot;</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>set SECMASTER_DB_PATH=C:\path\to\your\secmaster.db
+</span></code></pre></div>
+</div>
+</div>
+</div>
 </div>
 <div class="tabbed-block">
 <div class="admonition warning">
@@ -2849,6 +2904,168 @@ You should receive a .zip file that contains a <code>.dbn</code> file(s) and som
 It will allow you to run backtests and analyze performance metrics.
 The OneSecondTrader package provides a simple SMA crossover strategy that you will backtest to acquaint yourself with the dashboard.
 Afterward, you will learn how to create your own indicators and strategies and backtest them via the dashboard.</p>
+<p><strong>Step 0</strong></p>
+<p>Start the dashboard server:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="pip_1" name="__tabbed_4" type="radio" /><input id="poetry_1" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="pip_1">Pip</label><label for="poetry_1">Poetry</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>onesecondtrader
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>poetry<span class="w"> </span>run<span class="w"> </span>onesecondtrader
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<p>Open your browser and navigate to <a href="http://127.0.0.1:8001">http://127.0.0.1:8001</a>.</p>
+<p><strong>Step 1</strong></p>
+<p>Once the dashboard is up and running, you should see the following page:</p>
+<p><a class="glightbox" href="../../images/dashboard_v0_60/dashboard_1.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="Backtest Page 1" src="../../images/dashboard_v0_60/dashboard_1.png" /></a></p>
+<p>Now select the strategy (recommended: <code>SMA Crossover</code> for demonstration purposes) and optionally tweak the parameters.
+Then select the bar period (the shown options depend on the data you have ingested) and the publisher and dataset (again, you will only see what you have ingested).</p>
+<p>Then select a symbol (or symbols) and set the date range.</p>
+<p><a class="glightbox" href="../../images/dashboard_v0_60/dashboard_2.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="Backtest Page 2" src="../../images/dashboard_v0_60/dashboard_2.png" /></a></p>
+<p><strong>Step 2</strong></p>
+<p>Click <code>Run Backtest</code> and wait for it to finish.</p>
+<p><a class="glightbox" href="../../images/dashboard_v0_60/dashboard_3.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="Backtest Page 3" src="../../images/dashboard_v0_60/dashboard_3.png" /></a></p>
+<p>You can then click on the run once it is completed to view the performance metrics and charts.
+This will guide you to the performance page.
+You can also access the performance page by clicking on the <code>Performance</code> link in the sidebar.
+Once a run is selected, you will be shown the performance metrics for that run.
+If you click on a specific trade in the table, you will be shown a chart of that trade.
+To view per-trade performance metrics, you will need to select the symbol first via the search bar above the table.</p>
+<p><a class="glightbox" href="../../images/dashboard_v0_60/dashboard_4.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="Backtest Page 4" src="../../images/dashboard_v0_60/dashboard_4.png" /></a></p>
+<h2 id="developing-indicators">Developing Indicators</h2>
+<p>Now it is time to develop your first indicator.</p>
+<p><strong>Step 0</strong></p>
+<p>It is advisable to familiarize yourself with how OneSecondTrader works under the hood.
+I recommend that you take a look at (at least) the following packages and their source code:</p>
+<ul>
+<li><a href="../../reference/overview/"><code>onesecondtrader.models</code></a></li>
+<li><a href="../../reference/overview/"><code>onesecondtrader.events</code></a></li>
+<li><a href="../../reference/overview/"><code>onesecondtrader.messaging</code></a></li>
+<li><a href="../../reference/overview/"><code>onesecondtrader.indicators</code></a></li>
+<li><a href="../../reference/overview/"><code>onesecondtrader.strategies</code></a></li>
+</ul>
+<p><strong>Step 1</strong></p>
+<p>Create an <code>indicators/</code> folder in the same directory as your <code>secmaster.db</code> file, then create a new file called <code>my_indicators.py</code> inside it.</p>
+<p><strong>Step 2</strong></p>
+<p>Implement your indicator by subclassing <code>onesecondtrader.indicators.IndicatorBase</code> and implementing the <code>name</code> property and the <code>_compute_indicator</code> method.
+Let us implement one of the simplest of indicators, the close price indicator.</p>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">indicators/my_indicators.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-13-1">1</a></span>
+<span class="normal"><a href="#__codelineno-13-2">2</a></span>
+<span class="normal"><a href="#__codelineno-13-3">3</a></span>
+<span class="normal"><a href="#__codelineno-13-4">4</a></span>
+<span class="normal"><a href="#__codelineno-13-5">5</a></span>
+<span class="normal"><a href="#__codelineno-13-6">6</a></span>
+<span class="normal"><a href="#__codelineno-13-7">7</a></span>
+<span class="normal"><a href="#__codelineno-13-8">8</a></span>
+<span class="normal"><a href="#__codelineno-13-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">onesecondtrader</span><span class="w"> </span><span class="kn">import</span> <span class="n">events</span><span class="p">,</span> <span class="n">indicators</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">ClosePriceIndicator</span><span class="p">(</span><span class="n">indicators</span><span class="o">.</span><span class="n">IndicatorBase</span><span class="p">):</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4"></a>    <span class="nd">@property</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6"></a>        <span class="k">return</span> <span class="s2">&quot;CLOSE&quot;</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7"></a>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_indicator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">incoming_bar</span><span class="p">:</span> <span class="n">events</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">BarReceived</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9"></a>        <span class="k">return</span> <span class="n">incoming_bar</span><span class="o">.</span><span class="n">close</span>
+</span></code></pre></div></td></tr></table></div>
+<p>Any indicator files placed in the <code>indicators/</code> folder will be automatically discovered when the dashboard starts.</p>
+<h2 id="developing-strategies">Developing Strategies</h2>
+<p><strong>Step 0</strong></p>
+<p>If you have not already done so already in the previous step, familiarize yourself with how OneSecondTrader works under the hood.
+I recommend that you take a look at (at least) the following packages and their source code:</p>
+<ul>
+<li><a href="../../reference/overview/"><code>onesecondtrader.models</code></a></li>
+<li><a href="../../reference/overview/"><code>onesecondtrader.events</code></a></li>
+<li><a href="../../reference/overview/"><code>onesecondtrader.messaging</code></a></li>
+<li><a href="../../reference/overview/"><code>onesecondtrader.indicators</code></a></li>
+<li><a href="../../reference/overview/"><code>onesecondtrader.strategies</code></a></li>
+</ul>
+<p><strong>Step 1</strong></p>
+<p>Create a <code>strategies/</code> folder in the same directory as your <code>secmaster.db</code> file, then create a new file called <code>my_strategies.py</code> inside it.</p>
+<p><strong>Step 2</strong></p>
+<p>Implement your strategy by subclassing <code>onesecondtrader.strategies.StrategyBase</code>. Note that you can access the indicator you implemented in the previous step by importing it.</p>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">strategies/my_strategies.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-14-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-14-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-14-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-14-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-14-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-14-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-14-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-14-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-14-10">10</a></span>
+<span class="normal"><a href="#__codelineno-14-11">11</a></span>
+<span class="normal"><a href="#__codelineno-14-12">12</a></span>
+<span class="normal"><a href="#__codelineno-14-13">13</a></span>
+<span class="normal"><a href="#__codelineno-14-14">14</a></span>
+<span class="normal"><a href="#__codelineno-14-15">15</a></span>
+<span class="normal"><a href="#__codelineno-14-16">16</a></span>
+<span class="normal"><a href="#__codelineno-14-17">17</a></span>
+<span class="normal"><a href="#__codelineno-14-18">18</a></span>
+<span class="normal"><a href="#__codelineno-14-19">19</a></span>
+<span class="normal"><a href="#__codelineno-14-20">20</a></span>
+<span class="normal"><a href="#__codelineno-14-21">21</a></span>
+<span class="normal"><a href="#__codelineno-14-22">22</a></span>
+<span class="normal"><a href="#__codelineno-14-23">23</a></span>
+<span class="normal"><a href="#__codelineno-14-24">24</a></span>
+<span class="normal"><a href="#__codelineno-14-25">25</a></span>
+<span class="normal"><a href="#__codelineno-14-26">26</a></span>
+<span class="normal"><a href="#__codelineno-14-27">27</a></span>
+<span class="normal"><a href="#__codelineno-14-28">28</a></span>
+<span class="normal"><a href="#__codelineno-14-29">29</a></span>
+<span class="normal"><a href="#__codelineno-14-30">30</a></span>
+<span class="normal"><a href="#__codelineno-14-31">31</a></span>
+<span class="normal"><a href="#__codelineno-14-32">32</a></span>
+<span class="normal"><a href="#__codelineno-14-33">33</a></span>
+<span class="normal"><a href="#__codelineno-14-34">34</a></span>
+<span class="normal"><a href="#__codelineno-14-35">35</a></span>
+<span class="normal"><a href="#__codelineno-14-36">36</a></span>
+<span class="normal"><a href="#__codelineno-14-37">37</a></span>
+<span class="normal"><a href="#__codelineno-14-38">38</a></span>
+<span class="normal"><a href="#__codelineno-14-39">39</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">onesecondtrader</span><span class="w"> </span><span class="kn">import</span> <span class="n">events</span><span class="p">,</span> <span class="n">models</span><span class="p">,</span> <span class="n">strategies</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2"></a><span class="hll"><span class="kn">from</span><span class="w"> </span><span class="nn">indicators.my_indicators</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClosePriceIndicator</span>
+</span></span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3"></a>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4"></a>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">MySimpleStrategy</span><span class="p">(</span><span class="n">strategies</span><span class="o">.</span><span class="n">StrategyBase</span><span class="p">):</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6"></a>    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;My Simple Strategy&quot;</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7"></a>    <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8"></a>        <span class="s2">&quot;bar_period&quot;</span><span class="p">:</span> <span class="n">strategies</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">ParamSpec</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">BarPeriod</span><span class="o">.</span><span class="n">SECOND</span><span class="p">),</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9"></a>        <span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="n">strategies</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">ParamSpec</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10"></a>    <span class="p">}</span>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11"></a>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">close_price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span>
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14"></a>            <span class="n">ClosePriceIndicator</span><span class="p">(</span><span class="n">plot_at</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">plot_as</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PlotStyle</span><span class="o">.</span><span class="n">LINE</span><span class="p">)</span>
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15"></a>        <span class="p">)</span>
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16"></a>
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">on_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">events</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">BarReceived</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18"></a>        <span class="n">sym</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">symbol</span>
+</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19"></a>
+</span><span id="__span-14-20"><a id="__codelineno-14-20" name="__codelineno-14-20"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">close_price</span><span class="p">[</span><span class="n">sym</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">close_price</span><span class="p">[</span><span class="n">sym</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
+</span><span id="__span-14-21"><a id="__codelineno-14-21" name="__codelineno-14-21"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">submit_order</span><span class="p">(</span>
+</span><span id="__span-14-22"><a id="__codelineno-14-22" name="__codelineno-14-22"></a>                <span class="n">models</span><span class="o">.</span><span class="n">OrderType</span><span class="o">.</span><span class="n">MARKET</span><span class="p">,</span>
+</span><span id="__span-14-23"><a id="__codelineno-14-23" name="__codelineno-14-23"></a>                <span class="n">models</span><span class="o">.</span><span class="n">TradeSide</span><span class="o">.</span><span class="n">BUY</span><span class="p">,</span>
+</span><span id="__span-14-24"><a id="__codelineno-14-24" name="__codelineno-14-24"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">quantity</span><span class="p">,</span>
+</span><span id="__span-14-25"><a id="__codelineno-14-25" name="__codelineno-14-25"></a>                <span class="n">action</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">ActionType</span><span class="o">.</span><span class="n">ENTRY</span><span class="p">,</span>
+</span><span id="__span-14-26"><a id="__codelineno-14-26" name="__codelineno-14-26"></a>                <span class="n">signal</span><span class="o">=</span><span class="s2">&quot;price_up&quot;</span><span class="p">,</span>
+</span><span id="__span-14-27"><a id="__codelineno-14-27" name="__codelineno-14-27"></a>            <span class="p">)</span>
+</span><span id="__span-14-28"><a id="__codelineno-14-28" name="__codelineno-14-28"></a>
+</span><span id="__span-14-29"><a id="__codelineno-14-29" name="__codelineno-14-29"></a>        <span class="k">if</span> <span class="p">(</span>
+</span><span id="__span-14-30"><a id="__codelineno-14-30" name="__codelineno-14-30"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span>
+</span><span id="__span-14-31"><a id="__codelineno-14-31" name="__codelineno-14-31"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">close_price</span><span class="p">[</span><span class="n">sym</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">close_price</span><span class="p">[</span><span class="n">sym</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+</span><span id="__span-14-32"><a id="__codelineno-14-32" name="__codelineno-14-32"></a>        <span class="p">):</span>
+</span><span id="__span-14-33"><a id="__codelineno-14-33" name="__codelineno-14-33"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">submit_order</span><span class="p">(</span>
+</span><span id="__span-14-34"><a id="__codelineno-14-34" name="__codelineno-14-34"></a>                <span class="n">models</span><span class="o">.</span><span class="n">OrderType</span><span class="o">.</span><span class="n">MARKET</span><span class="p">,</span>
+</span><span id="__span-14-35"><a id="__codelineno-14-35" name="__codelineno-14-35"></a>                <span class="n">models</span><span class="o">.</span><span class="n">TradeSide</span><span class="o">.</span><span class="n">SELL</span><span class="p">,</span>
+</span><span id="__span-14-36"><a id="__codelineno-14-36" name="__codelineno-14-36"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">quantity</span><span class="p">,</span>
+</span><span id="__span-14-37"><a id="__codelineno-14-37" name="__codelineno-14-37"></a>                <span class="n">action</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">ActionType</span><span class="o">.</span><span class="n">EXIT</span><span class="p">,</span>
+</span><span id="__span-14-38"><a id="__codelineno-14-38" name="__codelineno-14-38"></a>                <span class="n">signal</span><span class="o">=</span><span class="s2">&quot;price_down&quot;</span><span class="p">,</span>
+</span><span id="__span-14-39"><a id="__codelineno-14-39" name="__codelineno-14-39"></a>            <span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+<p>Any strategy files placed in the <code>strategies/</code> folder will be automatically discovered when the dashboard starts and will appear in the strategy dropdown.</p>
 
 
 
