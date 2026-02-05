@@ -23,6 +23,7 @@ class SimpleMovingAverage(indicators.IndicatorBase):
         max_history: int = 100,
         bar_field: models.BarField = models.BarField.CLOSE,
         plot_at: int = 0,
+        plot_as: models.PlotStyle = models.PlotStyle.LINE,
     ) -> None:
         """
         Parameters:
@@ -34,8 +35,10 @@ class SimpleMovingAverage(indicators.IndicatorBase):
                 Bar field used as the input series.
             plot_at:
                 Opaque plotting identifier forwarded to the charting backend.
+            plot_as:
+                Visual style used to render the indicator.
         """
-        super().__init__(max_history=max_history, plot_at=plot_at)
+        super().__init__(max_history=max_history, plot_at=plot_at, plot_as=plot_as)
 
         self.period: int = max(1, int(period))
         self.bar_field: models.BarField = bar_field

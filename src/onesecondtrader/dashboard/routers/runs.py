@@ -15,7 +15,11 @@ from pydantic import BaseModel
 
 from ..db import get_runs_db_path, get_runs, CHILD_TABLES
 from ..roundtrips import get_roundtrips
-from ..charting import generate_chart_image
+from ..charting import (
+    generate_chart_image,
+    generate_trade_journey_chart,
+    generate_pnl_summary_chart,
+)
 
 router = APIRouter(prefix="/api", tags=["runs"])
 
@@ -76,4 +80,24 @@ async def api_run_chart_image(
 ) -> Response:
     """Return a PNG chart image for a round-trip trade."""
     image_bytes = generate_chart_image(run_id, symbol, start_ns, end_ns, direction, pnl)
+    return Response(content=image_bytes, media_type="image/png")
+
+
+@router.get("/runs/{run_id}/trade-journey.png")
+async def api_trade_journey_chart(run_id: str, symbol: str | None = None) -> Response:
+    """Return a Trade Journey chart image for round-trip trades in a run, optionally filtered by symbol."""
+    roundtrips = get_roundtrips(run_id)
+    if symbol:
+        roundtrips = [rt for rt in roundtrips if rt["symbol"] == symbol]
+    image_bytes = generate_trade_journey_chart(run_id, roundtrips)
+    return Response(content=image_bytes, media_type="image/png")
+
+
+@router.get("/runs/{run_id}/pnl-summary.png")
+async def api_pnl_summary_chart(run_id: str, symbol: str | None = None) -> Response:
+    """Return a PnL Summary chart image for round-trip trades in a run, optionally filtered by symbol."""
+    roundtrips = get_roundtrips(run_id)
+    if symbol:
+        roundtrips = [rt for rt in roundtrips if rt["symbol"] == symbol]
+    image_bytes = generate_pnl_summary_chart(roundtrips)
     return Response(content=image_bytes, media_type="image/png")

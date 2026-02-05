@@ -400,11 +400,18 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
 
     def _emit_processed_bar(self, event: events.market.BarReceived) -> None:
         ohlcv_names = {"OPEN", "HIGH", "LOW", "CLOSE", "VOLUME"}
+        style_codes = {
+            models.PlotStyle.LINE: "L",
+            models.PlotStyle.HISTOGRAM: "H",
+            models.PlotStyle.DOTS: "D",
+        }
 
         indicator_values = {
-            f"{ind.plot_at:02d}_{ind.name}": ind.latest(event.symbol)
+            f"{ind.plot_at:02d}{style_codes[ind.plot_as]}_{ind.name}": ind.latest(
+                event.symbol
+            )
             for ind in self._indicators
-            if ind.name not in ohlcv_names
+            if ind.name not in ohlcv_names or ind.plot_at != 99
         }
 
         processed_bar = events.market.BarProcessed(

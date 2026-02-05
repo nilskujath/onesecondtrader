@@ -828,6 +828,13 @@ PERFORMANCE_CSS = """
 .chart-container { position: relative; text-align: center; }
 .chart-container img { max-width: 100%; height: auto; border-radius: 4px; }
 .chart-loading { color: #8b949e; padding: 48px; }
+.pnl-summary-container { margin-bottom: 16px; text-align: center; }
+.pnl-summary-container img { max-width: 100%; height: auto; border-radius: 4px; background: #fff; }
+.pnl-summary-loading { color: #8b949e; padding: 24px; }
+.trade-journey-container { margin-bottom: 16px; text-align: center; }
+.trade-journey-container img { max-width: 100%; height: auto; border-radius: 4px; background: #fff; }
+.trade-journey-loading { color: #8b949e; padding: 24px; }
+.trade-journey-message { color: #8b949e; padding: 24px; font-style: italic; }
 """
 
 PERFORMANCE_JS = """
@@ -894,11 +901,61 @@ async function loadPerformance(runId) {
     const res = await fetch(`/api/runs/${runId}/roundtrips`);
     const data = await res.json();
     roundtrips = data.roundtrips || [];
+    const tradeNums = {};
+    roundtrips.forEach(rt => {
+        tradeNums[rt.symbol] = (tradeNums[rt.symbol] || 0) + 1;
+        rt.trade_num = tradeNums[rt.symbol];
+    });
     filteredRoundtrips = [...roundtrips];
     sortColumn = 'symbol';
     sortAsc = true;
     document.getElementById('symbol-filter').value = '';
+    updatePerformanceCharts();
     sortAndRender();
+}
+
+function updatePerformanceCharts() {
+    const pnlContainer = document.getElementById('pnl-summary-container');
+    const journeyContainer = document.getElementById('trade-journey-container');
+    if (!selectedRunId) {
+        pnlContainer.innerHTML = '';
+        journeyContainer.innerHTML = '';
+        return;
+    }
+    const allSymbols = [...new Set(roundtrips.map(rt => rt.symbol))];
+    const symbols = [...new Set(filteredRoundtrips.map(rt => rt.symbol))];
+    if (symbols.length !== 1 && allSymbols.length !== 1) {
+        pnlContainer.innerHTML = '';
+        journeyContainer.innerHTML = '<div class="trade-journey-message">Filter by symbol to see per-symbol Performance Statistics</div>';
+        return;
+    }
+    const symbol = symbols.length === 1 ? symbols[0] : allSymbols[0];
+
+    pnlContainer.innerHTML = '<div class="pnl-summary-loading">Loading PnL Summary chart...</div>';
+    const pnlUrl = `/api/runs/${selectedRunId}/pnl-summary.png?symbol=${encodeURIComponent(symbol)}`;
+    const pnlImg = new Image();
+    pnlImg.onload = () => {
+        pnlContainer.innerHTML = '';
+        pnlContainer.appendChild(pnlImg);
+    };
+    pnlImg.onerror = () => {
+        pnlContainer.innerHTML = '<div class="pnl-summary-loading">Failed to load PnL Summary chart</div>';
+    };
+    pnlImg.src = pnlUrl;
+    pnlImg.alt = 'PnL Summary Chart';
+
+    journeyContainer.innerHTML = '<div class="trade-journey-loading">Loading Trade Journey chart...</div>';
+    const journeyUrl = `/api/runs/${selectedRunId}/trade-journey.png?symbol=${encodeURIComponent(symbol)}`;
+    const journeyImg = new Image();
+    journeyImg.onload = () => {
+        journeyContainer.innerHTML = '';
+        journeyContainer.appendChild(journeyImg);
+    };
+    journeyImg.onerror = () => {
+        journeyContainer.innerHTML = '<div class="trade-journey-loading">Failed to load Trade Journey chart</div>';
+    };
+    journeyImg.src = journeyUrl;
+    journeyImg.alt = 'Trade Journey Chart';
 }
 
 function filterRoundtrips() {
@@ -911,6 +968,7 @@ function filterRoundtrips() {
             terms.some(term => rt.symbol.toLowerCase().includes(term))
         );
     }
+    updatePerformanceCharts();
     sortAndRender();
 }
 
@@ -939,13 +997,6 @@ function sortAndRender() {
     renderTable();
 }
 
-function formatDuration(seconds) {
-    if (seconds < 60) return seconds.toFixed(1) + 's';
-    if (seconds < 3600) return (seconds / 60).toFixed(1) + 'm';
-    if (seconds < 86400) return (seconds / 3600).toFixed(1) + 'h';
-    return (seconds / 86400).toFixed(1) + 'd';
-}
-
 function renderTable() {
     const container = document.getElementById('performance-content');
     if (roundtrips.length === 0) {
@@ -954,11 +1005,13 @@ function renderTable() {
     }
     const columns = [
         {key: 'symbol', label: 'Symbol'},
+        {key: 'trade_num', label: '#'},
         {key: 'direction', label: 'Direction'},
-        {key: 'duration_seconds', label: 'Duration'},
+        {key: 'duration_bars', label: 'Bars'},
         {key: 'max_position', label: 'Max Position'},
-        {key: 'max_drawdown', label: 'Max Drawdown'},
         {key: 'high_watermark', label: 'High Watermark'},
+        {key: 'low_watermark', label: 'Low Watermark'},
+        {key: 'max_drawdown', label: 'Max Drawdown'},
         {key: 'pnl_before_commission', label: 'PnL (Gross)'},
         {key: 'pnl_after_commission', label: 'PnL (Net)'},
     ];
@@ -975,19 +1028,23 @@ function renderTable() {
         const pnlNetSign = rt.pnl_after_commission >= 0 ? '+' : '';
         const hwmClass = rt.high_watermark >= 0 ? 'positive' : 'negative';
         const hwmSign = rt.high_watermark >= 0 ? '+' : '';
+        const lwmClass = rt.low_watermark >= 0 ? 'positive' : 'negative';
+        const lwmSign = rt.low_watermark >= 0 ? '+' : '';
         const mddClass = rt.max_drawdown > 0 ? 'negative' : '';
         return `<tr class="data-row" onclick="toggleChart(${idx})">
             <td class="symbol">${rt.symbol}</td>
+            <td>${rt.trade_num}</td>
             <td class="direction ${dirClass}">${rt.direction}</td>
-            <td class="number">${formatDuration(rt.duration_seconds)}</td>
-            <td class="number">${rt.max_position}</td>
-            <td class="pnl ${mddClass}">${rt.max_drawdown > 0 ? '-' : ''}${rt.max_drawdown.toFixed(2)}</td>
+            <td>${rt.duration_bars}</td>
+            <td>${rt.max_position}</td>
             <td class="pnl ${hwmClass}">${hwmSign}${rt.high_watermark.toFixed(2)}</td>
+            <td class="pnl ${lwmClass}">${lwmSign}${rt.low_watermark.toFixed(2)}</td>
+            <td class="pnl ${mddClass}">${rt.max_drawdown > 0 ? '-' : ''}${rt.max_drawdown.toFixed(2)}</td>
             <td class="pnl ${pnlGrossClass}">${pnlGrossSign}${rt.pnl_before_commission.toFixed(2)}</td>
             <td class="pnl ${pnlNetClass}">${pnlNetSign}${rt.pnl_after_commission.toFixed(2)}</td>
         </tr>
         <tr class="chart-row" id="chart-row-${idx}">
-            <td colspan="8">
+            <td colspan="10">
                 <div class="chart-container" id="chart-container-${idx}">
                     <div class="chart-loading">Loading chart...</div>
                 </div>

@@ -6,7 +6,7 @@ import threading
 
 import numpy as np
 
-from onesecondtrader import events
+from onesecondtrader import events, models
 
 
 class IndicatorBase(abc.ABC):
@@ -27,9 +27,15 @@ class IndicatorBase(abc.ABC):
     Missing data and out-of-bounds access yield `numpy.nan`.
 
     The `plot_at` attribute is an opaque identifier forwarded to the charting backend and has no intrinsic meaning within the indicator subsystem.
+    The `plot_as` attribute specifies the visual style used to render the indicator.
     """
 
-    def __init__(self, max_history: int = 100, plot_at: int = 99) -> None:
+    def __init__(
+        self,
+        max_history: int = 100,
+        plot_at: int = 99,
+        plot_as: models.PlotStyle = models.PlotStyle.LINE,
+    ) -> None:
         """
         Parameters:
             max_history:
@@ -37,11 +43,14 @@ class IndicatorBase(abc.ABC):
                 Cannot be less than 1.
             plot_at:
                 Opaque plotting identifier forwarded to the charting backend.
+            plot_as:
+                Visual style used to render the indicator.
         """
         self._lock = threading.Lock()
         self._max_history = max(1, int(max_history))
         self._history_data: dict[str, collections.deque[float]] = {}
         self._plot_at = plot_at
+        self._plot_as = plot_as
 
     @property
     @abc.abstractmethod
@@ -140,3 +149,13 @@ class IndicatorBase(abc.ABC):
             Opaque identifier consumed by the charting backend.
         """
         return self._plot_at
+
+    @property
+    def plot_as(self) -> models.PlotStyle:
+        """
+        Plotting style.
+
+        Returns:
+            Visual style used to render the indicator.
+        """
+        return self._plot_as

@@ -13,7 +13,7 @@ import sqlite3
 from .db import get_runs_db_path
 
 
-def compute_hwm_and_drawdown(
+def compute_watermarks_and_drawdown(
     conn: sqlite3.Connection,
     run_id: str,
     symbol: str,
@@ -22,12 +22,18 @@ def compute_hwm_and_drawdown(
     quantity: float,
     entry_ts: int,
     exit_ts: int,
-) -> tuple[float, float]:
+) -> tuple[float, float, float, int]:
     """
-    Compute high watermark and maximum drawdown for a round-trip trade.
+    Compute high watermark, low watermark, maximum drawdown, and bar count for a round-trip trade.
 
-    Iterates through bars during the trade period to track the best unrealized
-    P&L (high watermark) and the largest decline from that peak (max drawdown).
+    Iterates through bars during the trade period to track:
+    - High watermark: the best unrealized P&L reached
+    - Low watermark: the worst unrealized P&L reached
+    - Max drawdown: the largest decline from any peak to any subsequent trough
+    - Duration bars: number of bars from entry to exit (inclusive)
+
+    Note: Within each bar, we assume the high occurred before the low (worst-case
+    assumption for drawdown calculation), since intra-bar sequence is unknown.
 
     Parameters:
         conn:
@@ -48,7 +54,7 @@ def compute_hwm_and_drawdown(
             Exit timestamp in nanoseconds.
 
     Returns:
-        Tuple of (high_watermark, max_drawdown) in currency units.
+        Tuple of (high_watermark, low_watermark, max_drawdown, duration_bars) in currency units.
     """
     cursor = conn.cursor()
     cursor.execute(
@@ -62,10 +68,13 @@ def compute_hwm_and_drawdown(
     bars = cursor.fetchall()
 
     if not bars:
-        return 0.0, 0.0
+        return 0.0, 0.0, 0.0, 0
 
     high_watermark = 0.0
+    low_watermark = 0.0
     max_drawdown = 0.0
+    running_peak = 0.0
+    duration_bars = len(bars)
 
     for bar_high, bar_low in bars:
         if direction == "LONG":
@@ -78,11 +87,17 @@ def compute_hwm_and_drawdown(
         if best_pnl > high_watermark:
             high_watermark = best_pnl
 
-        drawdown = high_watermark - worst_pnl
+        if worst_pnl < low_watermark:
+            low_watermark = worst_pnl
+
+        if best_pnl > running_peak:
+            running_peak = best_pnl
+
+        drawdown = running_peak - worst_pnl
         if drawdown > max_drawdown:
             max_drawdown = drawdown
 
-    return high_watermark, max_drawdown
+    return high_watermark, low_watermark, max_drawdown, duration_bars
 
 
 def get_roundtrips(run_id: str) -> list[dict]:
@@ -180,10 +195,7 @@ def get_roundtrips(run_id: str) -> list[dict]:
 
                     pnl_after_commission = pnl_before_commission - total_commission
 
-                    duration_ns = fill["ts_ns"] - start_ts
-                    duration_seconds = duration_ns / 1_000_000_000
-
-                    hwm, mdd = compute_hwm_and_drawdown(
+                    hwm, lwm, mdd, duration_bars = compute_watermarks_and_drawdown(
                         conn,
                         run_id,
                         symbol,
@@ -198,9 +210,10 @@ def get_roundtrips(run_id: str) -> list[dict]:
                         {
                             "symbol": symbol,
                             "direction": direction,
-                            "duration_seconds": round(duration_seconds, 2),
+                            "duration_bars": duration_bars,
                             "max_position": round(max_pos, 4),
                             "high_watermark": round(hwm, 2),
+                            "low_watermark": round(lwm, 2),
                             "max_drawdown": round(mdd, 2),
                             "pnl_before_commission": round(pnl_before_commission, 2),
                             "pnl_after_commission": round(pnl_after_commission, 2),

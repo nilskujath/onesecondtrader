@@ -73,6 +73,7 @@ nav:
     - Bar Fields: reference/models/bar_fields.md
     - Bar Period: reference/models/bar_period.md
     - Order Types: reference/models/order_types.md
+    - Plot Style: reference/models/plot_style.md
     - Rejection Reasons: reference/models/rejection_reasons.md
     - Trade Sides: reference/models/trade_sides.md
   - Orchestrator:

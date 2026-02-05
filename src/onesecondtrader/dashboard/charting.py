@@ -134,6 +134,7 @@ def generate_chart_image(
 
     indicator_series: dict[str, list[float]] = {}
     indicator_tags: dict[str, int] = {}
+    indicator_styles: dict[str, str] = {}
     for idx in range(len(data)):
         row = data.iloc[idx]
         indicators = json.loads(row["indicators"]) if row["indicators"] else {}
@@ -142,6 +143,8 @@ def generate_chart_image(
                 indicator_series[name] = [math.nan] * len(data)
                 tag = int(name[:2]) if name[:2].isdigit() else 99
                 indicator_tags[name] = tag
+                style = name[2] if len(name) > 2 and name[2] in "LHD" else "L"
+                indicator_styles[name] = style
             indicator_series[name][idx] = value if value == value else math.nan
 
     overlay_indicators = {
@@ -192,7 +195,7 @@ def generate_chart_image(
         axes = [axes[0], axes[1]]
     ax_pnl = axes[0]
     ax_main = axes[1]
-    ax_indicators = axes[2:] if len(axes) > 2 else []
+    ax_indicators = list(axes[2:]) if len(axes) > 2 else []
 
     entry_price = fills[0]["price"] if fills else 0
     fill_direction = fills[0]["side"] if fills else "BUY"
@@ -268,26 +271,29 @@ def generate_chart_image(
 
     colors = ["orange", "purple", "cyan", "magenta", "brown", "pink", "olive", "teal"]
     for idx, (name, values) in enumerate(overlay_indicators.items()):
-        display_name = name[3:] if len(name) > 3 else name
+        display_name = name[4:] if len(name) > 4 else name
         color = colors[idx % len(colors)]
-        ax_main.plot(
-            range(len(values)),
-            values,
-            label=display_name,
-            linewidth=1.2,
-            alpha=0.8,
-            color=color,
-        )
-    if overlay_indicators:
-        ax_main.legend(loc="upper left", fontsize=8)
-
-    for ax_idx, tag in enumerate(subplot_tags):
-        ax = ax_indicators[ax_idx]
-        tag_indicators = subplot_indicators[tag]
-        for idx, (name, values) in enumerate(tag_indicators.items()):
-            display_name = name[3:] if len(name) > 3 else name
-            color = colors[idx % len(colors)]
-            ax.plot(
+        style = indicator_styles.get(name, "L")
+        if style == "H":
+            ax_main.bar(
+                range(len(values)),
+                values,
+                label=display_name,
+                alpha=0.6,
+                color=color,
+                width=0.8,
+            )
+        elif style == "D":
+            ax_main.scatter(
+                range(len(values)),
+                values,
+                label=display_name,
+                alpha=0.8,
+                color=color,
+                s=10,
+            )
+        else:
+            ax_main.plot(
                 range(len(values)),
                 values,
                 label=display_name,
@@ -295,6 +301,43 @@ def generate_chart_image(
                 alpha=0.8,
                 color=color,
             )
+    if overlay_indicators:
+        ax_main.legend(loc="upper left", fontsize=8)
+
+    for ax_idx, tag in enumerate(subplot_tags):
+        ax = ax_indicators[ax_idx]
+        tag_indicators = subplot_indicators[tag]
+        for idx, (name, values) in enumerate(tag_indicators.items()):
+            display_name = name[4:] if len(name) > 4 else name
+            color = colors[idx % len(colors)]
+            style = indicator_styles.get(name, "L")
+            if style == "H":
+                ax.bar(
+                    range(len(values)),
+                    values,
+                    label=display_name,
+                    alpha=0.6,
+                    color=color,
+                    width=0.8,
+                )
+            elif style == "D":
+                ax.scatter(
+                    range(len(values)),
+                    values,
+                    label=display_name,
+                    alpha=0.8,
+                    color=color,
+                    s=10,
+                )
+            else:
+                ax.plot(
+                    range(len(values)),
+                    values,
+                    label=display_name,
+                    linewidth=1.2,
+                    alpha=0.8,
+                    color=color,
+                )
         ax.set_ylabel(f"Tag {tag}", fontsize=10)
         ax.grid(True, alpha=0.3)
         ax.legend(loc="upper left", fontsize=8)
@@ -372,6 +415,479 @@ def generate_chart_image(
         ax.set_xticklabels(tick_labels)
 
     plt.xticks(rotation=45, fontsize=9)
+    plt.tight_layout()
+
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", dpi=500, bbox_inches="tight")
+    plt.close(fig)
+    buf.seek(0)
+
+    return buf.read()
+
+
+def _compute_trade_journey_data(
+    run_id: str,
+    roundtrips: list[dict],
+) -> list[dict]:
+    """
+    Compute max positive/negative price movements for each round-trip trade.
+
+    Parameters:
+        run_id:
+            Unique identifier of the backtest run.
+        roundtrips:
+            List of round-trip trade dictionaries.
+
+    Returns:
+        List of dictionaries with max_positive_pts, max_negative_pts, exit_pts, is_winner, and duration_bars.
+    """
+    db_path = get_runs_db_path()
+    if not os.path.exists(db_path):
+        return []
+
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    journey_data = []
+    for rt in roundtrips:
+        symbol = rt["symbol"]
+        direction = rt["direction"]
+        entry_ts = rt["entry_ts"]
+        exit_ts = rt["exit_ts"]
+
+        cursor.execute(
+            """
+            SELECT fill_price FROM fills
+            WHERE run_id = ? AND symbol = ? AND ts_broker_ns = ?
+            LIMIT 1
+            """,
+            (run_id, symbol, entry_ts),
+        )
+        entry_row = cursor.fetchone()
+        if not entry_row:
+            cursor.execute(
+                """
+                SELECT fill_price FROM fills
+                WHERE run_id = ? AND symbol = ? AND ts_broker_ns >= ?
+                ORDER BY ts_broker_ns LIMIT 1
+                """,
+                (run_id, symbol, entry_ts),
+            )
+            entry_row = cursor.fetchone()
+
+        cursor.execute(
+            """
+            SELECT fill_price FROM fills
+            WHERE run_id = ? AND symbol = ? AND ts_broker_ns = ?
+            LIMIT 1
+            """,
+            (run_id, symbol, exit_ts),
+        )
+        exit_row = cursor.fetchone()
+        if not exit_row:
+            cursor.execute(
+                """
+                SELECT fill_price FROM fills
+                WHERE run_id = ? AND symbol = ? AND ts_broker_ns <= ?
+                ORDER BY ts_broker_ns DESC LIMIT 1
+                """,
+                (run_id, symbol, exit_ts),
+            )
+            exit_row = cursor.fetchone()
+
+        if not entry_row or not exit_row:
+            journey_data.append(
+                {
+                    "max_positive_pts": 0.0,
+                    "max_negative_pts": 0.0,
+                    "exit_pts": 0.0,
+                    "is_winner": rt["pnl_after_commission"] > 0,
+                    "duration_bars": rt.get("duration_bars", 1),
+                }
+            )
+            continue
+
+        entry_price = entry_row[0]
+        exit_price = exit_row[0]
+
+        cursor.execute(
+            """
+            SELECT high, low FROM bars
+            WHERE run_id = ? AND symbol = ? AND ts_event_ns >= ? AND ts_event_ns <= ?
+            ORDER BY ts_event_ns
+            """,
+            (run_id, symbol, entry_ts, exit_ts),
+        )
+        bars = cursor.fetchall()
+
+        max_positive_pts = 0.0
+        max_negative_pts = 0.0
+
+        for bar_high, bar_low in bars:
+            if direction == "LONG":
+                positive_move = bar_high - entry_price
+                negative_move = bar_low - entry_price
+            else:
+                positive_move = entry_price - bar_low
+                negative_move = entry_price - bar_high
+
+            max_positive_pts = max(max_positive_pts, positive_move)
+            max_negative_pts = min(max_negative_pts, negative_move)
+
+        if direction == "LONG":
+            exit_pts = exit_price - entry_price
+        else:
+            exit_pts = entry_price - exit_price
+
+        journey_data.append(
+            {
+                "max_positive_pts": max_positive_pts,
+                "max_negative_pts": max_negative_pts,
+                "exit_pts": exit_pts,
+                "is_winner": rt["pnl_after_commission"] > 0,
+                "duration_bars": rt.get("duration_bars", 1),
+            }
+        )
+
+    conn.close()
+    return journey_data
+
+
+def generate_trade_journey_chart(run_id: str, roundtrips: list[dict]) -> bytes:
+    """
+    Generate a Trade Journey chart showing max price movements and exit points.
+
+    Renders a bar chart where each trade shows:
+    - Vertical bar from 0 to max positive movement (green for wins, red for losses)
+    - Vertical bar from 0 to max negative movement (same color)
+    - Circle marker at exit point (dark green for wins, dark red for losses)
+    - Horizontal lines for average winning and losing exit points
+
+    Parameters:
+        run_id:
+            Unique identifier of the backtest run.
+        roundtrips:
+            List of round-trip trade dictionaries.
+
+    Returns:
+        PNG image bytes, or empty bytes if no data is available.
+    """
+    if not roundtrips:
+        return b""
+
+    journey_data = _compute_trade_journey_data(run_id, roundtrips)
+    if not journey_data:
+        return b""
+
+    fig, ax = plt.subplots(figsize=(14, 7))
+
+    win_color = "#3fb950"
+    loss_color = "#f85149"
+    win_exit_color = "#1a7f37"
+    loss_exit_color = "#a40e26"
+
+    winning_exits = []
+    losing_exits = []
+    winning_bars = []
+    losing_bars = []
+
+    all_durations = [d["duration_bars"] for d in journey_data]
+    max_duration = max(all_durations) if all_durations else 1
+    min_width = 0.2
+    max_width = 0.9
+
+    for i, data in enumerate(journey_data):
+        trade_num = i + 1
+        max_pos = data["max_positive_pts"]
+        max_neg = data["max_negative_pts"]
+        exit_pt = data["exit_pts"]
+        is_winner = data["is_winner"]
+        duration = data["duration_bars"]
+
+        if max_duration > 1:
+            bar_width = min_width + (duration / max_duration) * (max_width - min_width)
+        else:
+            bar_width = max_width
+
+        bar_color = win_color if is_winner else loss_color
+
+        if max_pos > 0:
+            ax.bar(
+                trade_num,
+                max_pos,
+                bottom=0,
+                color=bar_color,
+                width=bar_width,
+                alpha=0.7,
+            )
+        if max_neg < 0:
+            ax.bar(
+                trade_num,
+                abs(max_neg),
+                bottom=max_neg,
+                color=bar_color,
+                width=bar_width,
+                alpha=0.7,
+            )
+
+        half_width = bar_width / 2
+        ax.hlines(
+            exit_pt,
+            trade_num - half_width,
+            trade_num + half_width,
+            colors="black",
+            linewidth=1.5,
+            zorder=5,
+        )
+
+        if is_winner:
+            winning_exits.append(exit_pt)
+            winning_bars.append(duration)
+        else:
+            losing_exits.append(exit_pt)
+            losing_bars.append(duration)
+
+    ax.axhline(y=0, color="black", linestyle="-", linewidth=0.8, alpha=0.5)
+
+    if winning_exits:
+        avg_win = sum(winning_exits) / len(winning_exits)
+        ax.axhline(
+            y=avg_win,
+            color=win_exit_color,
+            linestyle="--",
+            linewidth=1.5,
+            alpha=0.8,
+            label=f"Avg Win Exit: {avg_win:.1f} pts",
+        )
+
+    if losing_exits:
+        avg_loss = sum(losing_exits) / len(losing_exits)
+        ax.axhline(
+            y=avg_loss,
+            color=loss_exit_color,
+            linestyle="--",
+            linewidth=1.5,
+            alpha=0.8,
+            label=f"Avg Loss Exit: {avg_loss:.1f} pts",
+        )
+
+    total_trades = len(journey_data)
+    max_pos_values = [d["max_positive_pts"] for d in journey_data]
+    max_neg_values = [d["max_negative_pts"] for d in journey_data]
+    exit_values = [d["exit_pts"] for d in journey_data]
+
+    avg_max_pos = sum(max_pos_values) / total_trades if total_trades > 0 else 0
+    highest_pos = max(max_pos_values) if max_pos_values else 0
+    avg_max_neg = abs(sum(max_neg_values) / total_trades) if total_trades > 0 else 0
+    worst_neg = abs(min(max_neg_values)) if max_neg_values else 0
+    avg_exit = sum(exit_values) / total_trades if total_trades > 0 else 0
+    best_exit = max(exit_values) if exit_values else 0
+    worst_exit = min(exit_values) if exit_values else 0
+
+    max_win_bars = max(winning_bars) if winning_bars else 0
+    avg_win_bars = sum(winning_bars) / len(winning_bars) if winning_bars else 0
+    max_loss_bars = max(losing_bars) if losing_bars else 0
+    avg_loss_bars = sum(losing_bars) / len(losing_bars) if losing_bars else 0
+
+    summary_text = (
+        f"Trade Journey Summary\n"
+        f"Total Trades: {total_trades}\n\n"
+        f"Max Positive Movement:\n"
+        f"  Average: {avg_max_pos:.1f} pts\n"
+        f"  Highest: {highest_pos:.1f} pts\n\n"
+        f"Max Negative Movement:\n"
+        f"  Average: {avg_max_neg:.1f} pts\n"
+        f"  Worst: {worst_neg:.1f} pts\n\n"
+        f"Exit Points:\n"
+        f"  Average: {avg_exit:.1f} pts\n"
+        f"  Best: {best_exit:.1f} pts\n"
+        f"  Worst: {worst_exit:.1f} pts\n\n"
+        f"Trade Duration (Bars):\n"
+        f"  Wins:   Max {max_win_bars}, Avg {avg_win_bars:.1f}\n"
+        f"  Losses: Max {max_loss_bars}, Avg {avg_loss_bars:.1f}"
+    )
+
+    props = dict(
+        boxstyle="round,pad=0.5", facecolor="#add8e6", edgecolor="#4682b4", alpha=0.9
+    )
+    ax.text(
+        0.02,
+        0.98,
+        summary_text,
+        transform=ax.transAxes,
+        fontsize=9,
+        verticalalignment="top",
+        fontfamily="monospace",
+        bbox=props,
+    )
+
+    from matplotlib.lines import Line2D
+
+    legend_elements = [
+        Line2D(
+            [0], [0], color=win_color, linewidth=8, alpha=0.7, label="Winning Trades"
+        ),
+        Line2D(
+            [0], [0], color=loss_color, linewidth=8, alpha=0.7, label="Losing Trades"
+        ),
+        Line2D([0], [0], color="black", linewidth=2, label="Exit Point"),
+    ]
+    ax.legend(handles=legend_elements, loc="upper right", fontsize=9)
+
+    ax.set_title(
+        "Trade Journey Analysis - Maximum Price Movements & Exit Points", fontsize=14
+    )
+    ax.set_xlabel("Trade Number", fontsize=11)
+    ax.set_ylabel("Points from Entry Price", fontsize=11)
+    ax.grid(True, alpha=0.3, axis="y")
+
+    num_trades = len(journey_data)
+    if num_trades > 20:
+        tick_interval = max(1, num_trades // 15)
+        tick_positions = list(range(1, num_trades + 1, tick_interval))
+        ax.set_xticks(tick_positions)
+
+    plt.tight_layout()
+
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", dpi=500, bbox_inches="tight")
+    plt.close(fig)
+    buf.seek(0)
+
+    return buf.read()
+
+
+def generate_pnl_summary_chart(roundtrips: list[dict]) -> bytes:
+    """
+    Generate a PnL Summary chart showing cumulative PnL and trade metrics.
+
+    Renders a two-panel chart:
+    - Top panel: Cumulative PnL (gross and net) with max drawdown bars
+    - Bottom panel: Max position size per trade (positive for longs, negative for shorts)
+
+    Parameters:
+        roundtrips:
+            List of round-trip trade dictionaries.
+
+    Returns:
+        PNG image bytes, or empty bytes if no data is available.
+    """
+    if not roundtrips:
+        return b""
+
+    fig, (ax_pnl, ax_pos) = plt.subplots(
+        2, 1, figsize=(14, 9), height_ratios=[2, 1], sharex=True
+    )
+
+    trade_nums = list(range(1, len(roundtrips) + 1))
+    cumulative_pnl_gross = []
+    cumulative_pnl_net = []
+    max_drawdowns = []
+    signed_positions = []
+
+    running_gross = 0.0
+    running_net = 0.0
+    for rt in roundtrips:
+        running_gross += rt["pnl_before_commission"]
+        running_net += rt["pnl_after_commission"]
+        cumulative_pnl_gross.append(running_gross)
+        cumulative_pnl_net.append(running_net)
+        max_drawdowns.append(rt["max_drawdown"])
+        sign = 1 if rt["direction"] == "LONG" else -1
+        signed_positions.append(sign * rt["max_position"])
+
+    ax_pnl.plot(
+        trade_nums,
+        cumulative_pnl_gross,
+        color="#3fb950",
+        linewidth=2,
+        label="Cumulative PnL (Gross)",
+        marker="o",
+        markersize=4,
+    )
+    ax_pnl.plot(
+        trade_nums,
+        cumulative_pnl_net,
+        color="#1f6feb",
+        linewidth=2,
+        label="Cumulative PnL (Net)",
+        marker="o",
+        markersize=4,
+    )
+    ax_pnl.bar(
+        trade_nums,
+        [-d for d in max_drawdowns],
+        color="#f85149",
+        alpha=0.5,
+        width=0.4,
+        label="Max Drawdown",
+    )
+
+    total_trades = len(roundtrips)
+    total_pnl_gross = cumulative_pnl_gross[-1] if cumulative_pnl_gross else 0
+    total_pnl_net = cumulative_pnl_net[-1] if cumulative_pnl_net else 0
+
+    winning_trades = [rt for rt in roundtrips if rt["pnl_after_commission"] > 0]
+    losing_trades = [rt for rt in roundtrips if rt["pnl_after_commission"] <= 0]
+    num_winners = len(winning_trades)
+    num_losers = len(losing_trades)
+
+    avg_winner = (
+        sum(rt["pnl_after_commission"] for rt in winning_trades) / num_winners
+        if num_winners > 0
+        else 0
+    )
+    avg_loser = (
+        sum(rt["pnl_after_commission"] for rt in losing_trades) / num_losers
+        if num_losers > 0
+        else 0
+    )
+
+    summary_text = (
+        f"PnL Summary\n"
+        f"Total Trades: {total_trades}\n\n"
+        f"Overall PnL (Gross): {total_pnl_gross:+.2f}\n"
+        f"Overall PnL (Net): {total_pnl_net:+.2f}\n\n"
+        f"Winning Trades: {num_winners}\n"
+        f"Losing Trades: {num_losers}\n\n"
+        f"Avg Winning Trade: {avg_winner:+.2f}\n"
+        f"Avg Losing Trade: {avg_loser:+.2f}"
+    )
+
+    props = dict(
+        boxstyle="round,pad=0.5", facecolor="#add8e6", edgecolor="#4682b4", alpha=0.9
+    )
+    ax_pnl.text(
+        0.02,
+        0.98,
+        summary_text,
+        transform=ax_pnl.transAxes,
+        fontsize=9,
+        verticalalignment="top",
+        fontfamily="monospace",
+        bbox=props,
+    )
+
+    ax_pnl.legend(loc="upper right", fontsize=9)
+    ax_pnl.axhline(y=0, color="black", linestyle="-", alpha=0.5, linewidth=0.8)
+    ax_pnl.set_title(
+        "PnL Summary - Cumulative Performance & Trade Metrics", fontsize=14
+    )
+    ax_pnl.set_ylabel("PnL", fontsize=11)
+    ax_pnl.grid(True, alpha=0.3, axis="y")
+
+    colors = ["#3fb950" if p >= 0 else "#f85149" for p in signed_positions]
+    ax_pos.bar(trade_nums, signed_positions, color=colors, alpha=0.7, width=0.6)
+    ax_pos.axhline(y=0, color="black", linestyle="-", alpha=0.5, linewidth=0.8)
+    ax_pos.set_ylabel("Max Position", fontsize=11)
+    ax_pos.set_xlabel("Trade Number", fontsize=11)
+    ax_pos.grid(True, alpha=0.3, axis="y")
+
+    if total_trades > 20:
+        tick_interval = max(1, total_trades // 15)
+        tick_positions = list(range(1, total_trades + 1, tick_interval))
+        ax_pos.set_xticks(tick_positions)
+
     plt.tight_layout()
 
     buf = io.BytesIO()

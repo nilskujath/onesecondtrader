@@ -119,6 +119,8 @@ def performance_page() -> str:
                 <div class="search-bar">
                     <input type="text" id="symbol-filter" placeholder="Filter by symbol(s)..." oninput="filterRoundtrips()">
                 </div>
+                <div id="pnl-summary-container" class="pnl-summary-container"></div>
+                <div id="trade-journey-container" class="trade-journey-container"></div>
                 <div id="performance-content">
                     <div class="empty-content"><p>Select a run to view performance</p></div>
                 </div>
