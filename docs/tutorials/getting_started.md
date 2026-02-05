@@ -209,6 +209,11 @@ To view per-trade performance metrics, you will need to select the symbol first 
 
 ![Backtest Page 4](../images/dashboard_v0_60/dashboard_4.png)
 
+**Step 3**
+
+Kill the dashboard server by pressing `Ctrl+C` in the terminal where you started it.
+
+
 
 ## Developing Indicators
 
@@ -318,3 +323,7 @@ class MySimpleStrategy(strategies.StrategyBase):
 ```
 
 Any strategy files placed in the `strategies/` folder will be automatically discovered when the dashboard starts and will appear in the strategy dropdown.
+
+**Step 3**
+
+Start the dashboard server and run a backtest with your new strategy.

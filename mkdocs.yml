@@ -67,6 +67,10 @@ nav:
     - Base: reference/indicators/base.md
     - Market Fields: reference/indicators/market_fields.md
     - Moving Averages: reference/indicators/moving_averages.md
+    - Bollinger:
+      - Bollinger Bandwidth: reference/indicators/bollinger/bollinger_bandwidth.md
+      - Bollinger Lower: reference/indicators/bollinger/bollinger_lower.md
+      - Bollinger Upper: reference/indicators/bollinger/bollinger_upper.md
   - Messaging:
     - Eventbus: reference/messaging/eventbus.md
     - Subscriber: reference/messaging/subscriber.md
