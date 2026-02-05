@@ -2119,6 +2119,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../models/plot_style/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plot Style
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../models/rejection_reasons/" class="md-nav__link">
         
   
@@ -2919,7 +2942,9 @@ wrapped in the standard layout by <code>render_page</code>.</p>
 <span class="normal"><a href="#__codelineno-0-127">127</a></span>
 <span class="normal"><a href="#__codelineno-0-128">128</a></span>
 <span class="normal"><a href="#__codelineno-0-129">129</a></span>
-<span class="normal"><a href="#__codelineno-0-130">130</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-100"><a id="__codelineno-0-100" name="__codelineno-0-100"></a><span class="k">def</span><span class="w"> </span><span class="nf">performance_page</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal"><a href="#__codelineno-0-130">130</a></span>
+<span class="normal"><a href="#__codelineno-0-131">131</a></span>
+<span class="normal"><a href="#__codelineno-0-132">132</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-100"><a id="__codelineno-0-100" name="__codelineno-0-100"></a><span class="k">def</span><span class="w"> </span><span class="nf">performance_page</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="__span-0-101"><a id="__codelineno-0-101" name="__codelineno-0-101"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="__span-0-102"><a id="__codelineno-0-102" name="__codelineno-0-102"></a><span class="sd">    Generate the performance analysis page.</span>
 </span><span id="__span-0-103"><a id="__codelineno-0-103" name="__codelineno-0-103"></a>
@@ -2941,15 +2966,17 @@ wrapped in the standard layout by <code>render_page</code>.</p>
 </span><span id="__span-0-119"><a id="__codelineno-0-119" name="__codelineno-0-119"></a><span class="s2">                &lt;div class=&quot;search-bar&quot;&gt;</span>
 </span><span id="__span-0-120"><a id="__codelineno-0-120" name="__codelineno-0-120"></a><span class="s2">                    &lt;input type=&quot;text&quot; id=&quot;symbol-filter&quot; placeholder=&quot;Filter by symbol(s)...&quot; oninput=&quot;filterRoundtrips()&quot;&gt;</span>
 </span><span id="__span-0-121"><a id="__codelineno-0-121" name="__codelineno-0-121"></a><span class="s2">                &lt;/div&gt;</span>
-</span><span id="__span-0-122"><a id="__codelineno-0-122" name="__codelineno-0-122"></a><span class="s2">                &lt;div id=&quot;performance-content&quot;&gt;</span>
-</span><span id="__span-0-123"><a id="__codelineno-0-123" name="__codelineno-0-123"></a><span class="s2">                    &lt;div class=&quot;empty-content&quot;&gt;&lt;p&gt;Select a run to view performance&lt;/p&gt;&lt;/div&gt;</span>
-</span><span id="__span-0-124"><a id="__codelineno-0-124" name="__codelineno-0-124"></a><span class="s2">                &lt;/div&gt;</span>
-</span><span id="__span-0-125"><a id="__codelineno-0-125" name="__codelineno-0-125"></a><span class="s2">            &lt;/div&gt;</span>
-</span><span id="__span-0-126"><a id="__codelineno-0-126" name="__codelineno-0-126"></a><span class="s2">        &lt;/div&gt;</span>
-</span><span id="__span-0-127"><a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="s2">    &lt;/div&gt;</span>
-</span><span id="__span-0-128"><a id="__codelineno-0-128" name="__codelineno-0-128"></a><span class="s2">    &lt;script&gt;</span><span class="si">{</span><span class="n">PERFORMANCE_JS</span><span class="si">}</span><span class="s2">&lt;/script&gt;</span>
-</span><span id="__span-0-129"><a id="__codelineno-0-129" name="__codelineno-0-129"></a><span class="s2">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-130"><a id="__codelineno-0-130" name="__codelineno-0-130"></a>    <span class="k">return</span> <span class="n">render_page</span><span class="p">(</span><span class="s2">&quot;Performance&quot;</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">&quot;performance&quot;</span><span class="p">)</span>
+</span><span id="__span-0-122"><a id="__codelineno-0-122" name="__codelineno-0-122"></a><span class="s2">                &lt;div id=&quot;pnl-summary-container&quot; class=&quot;pnl-summary-container&quot;&gt;&lt;/div&gt;</span>
+</span><span id="__span-0-123"><a id="__codelineno-0-123" name="__codelineno-0-123"></a><span class="s2">                &lt;div id=&quot;trade-journey-container&quot; class=&quot;trade-journey-container&quot;&gt;&lt;/div&gt;</span>
+</span><span id="__span-0-124"><a id="__codelineno-0-124" name="__codelineno-0-124"></a><span class="s2">                &lt;div id=&quot;performance-content&quot;&gt;</span>
+</span><span id="__span-0-125"><a id="__codelineno-0-125" name="__codelineno-0-125"></a><span class="s2">                    &lt;div class=&quot;empty-content&quot;&gt;&lt;p&gt;Select a run to view performance&lt;/p&gt;&lt;/div&gt;</span>
+</span><span id="__span-0-126"><a id="__codelineno-0-126" name="__codelineno-0-126"></a><span class="s2">                &lt;/div&gt;</span>
+</span><span id="__span-0-127"><a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="s2">            &lt;/div&gt;</span>
+</span><span id="__span-0-128"><a id="__codelineno-0-128" name="__codelineno-0-128"></a><span class="s2">        &lt;/div&gt;</span>
+</span><span id="__span-0-129"><a id="__codelineno-0-129" name="__codelineno-0-129"></a><span class="s2">    &lt;/div&gt;</span>
+</span><span id="__span-0-130"><a id="__codelineno-0-130" name="__codelineno-0-130"></a><span class="s2">    &lt;script&gt;</span><span class="si">{</span><span class="n">PERFORMANCE_JS</span><span class="si">}</span><span class="s2">&lt;/script&gt;</span>
+</span><span id="__span-0-131"><a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="s2">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-132"><a id="__codelineno-0-132" name="__codelineno-0-132"></a>    <span class="k">return</span> <span class="n">render_page</span><span class="p">(</span><span class="s2">&quot;Performance&quot;</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">&quot;performance&quot;</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
