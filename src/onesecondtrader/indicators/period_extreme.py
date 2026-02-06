@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 
 from onesecondtrader import events, indicators, models
@@ -24,7 +26,7 @@ class PeriodExtreme(indicators.IndicatorBase):
         plot_at: int = 0,
         plot_as: models.PlotStyle = models.PlotStyle.LINE,
         plot_color: models.PlotColor = models.PlotColor.BLACK,
-        **source_kwargs,
+        **source_kwargs: Any,
     ) -> None:
         """
         Parameters:

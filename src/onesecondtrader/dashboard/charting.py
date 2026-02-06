@@ -12,6 +12,7 @@ import json
 import math
 import os
 import sqlite3
+from typing import Any
 
 import matplotlib
 
@@ -22,8 +23,20 @@ import pandas as pd
 
 from .db import get_runs_db_path
 
+_dash_patterns = {
+    "1": (2, 2),  # short/dense dashes
+    "2": (6, 4),  # medium dashes
+    "3": (10, 6),  # long/sparse dashes
+}
 
-def _draw_ohlc_bars(ax, data, x_values, chart_type: str, bar_width) -> None:
+
+def _draw_ohlc_bars(
+    ax: plt.Axes,
+    data: pd.DataFrame,
+    x_values: Any,
+    chart_type: str,
+    bar_width: Any,
+) -> None:
     """
     Draw OHLC bars on the given axis based on chart type.
 
@@ -217,7 +230,7 @@ def generate_chart_image(
                 indicator_series[name] = [math.nan] * len(data)
                 tag = int(name[:2]) if name[:2].isdigit() else 99
                 indicator_tags[name] = tag
-                style = name[2] if len(name) > 2 and name[2] in "LHD" else "L"
+                style = name[2] if len(name) > 2 and name[2] in "LHD123" else "L"
                 indicator_styles[name] = style
                 color_code = (
                     name[3]
@@ -377,6 +390,17 @@ def generate_chart_image(
                 color=color,
                 s=10,
             )
+        elif style in _dash_patterns:
+            ax_main.plot(
+                x_values,
+                values,
+                label=display_name,
+                linewidth=1.2,
+                alpha=0.8,
+                color=color,
+                linestyle="--",
+                dashes=_dash_patterns[style],
+            )
         else:
             ax_main.plot(
                 x_values,
@@ -413,6 +437,17 @@ def generate_chart_image(
                     alpha=0.8,
                     color=color,
                     s=10,
+                )
+            elif style in _dash_patterns:
+                ax.plot(
+                    x_values,
+                    values,
+                    label=display_name,
+                    linewidth=1.2,
+                    alpha=0.8,
+                    color=color,
+                    linestyle="--",
+                    dashes=_dash_patterns[style],
                 )
             else:
                 ax.plot(
@@ -625,7 +660,7 @@ def generate_segment_chart_image(
                 indicator_series[name] = [math.nan] * len(data)
                 tag = int(name[:2]) if name[:2].isdigit() else 99
                 indicator_tags[name] = tag
-                style = name[2] if len(name) > 2 and name[2] in "LHD" else "L"
+                style = name[2] if len(name) > 2 and name[2] in "LHD123" else "L"
                 indicator_styles[name] = style
                 color_code = (
                     name[3]
@@ -699,6 +734,17 @@ def generate_segment_chart_image(
                 color=color,
                 s=10,
             )
+        elif style in _dash_patterns:
+            ax_main.plot(
+                x_values,
+                values,
+                label=display_name,
+                linewidth=1.2,
+                alpha=0.8,
+                color=color,
+                linestyle="--",
+                dashes=_dash_patterns[style],
+            )
         else:
             ax_main.plot(
                 x_values,
@@ -735,6 +781,17 @@ def generate_segment_chart_image(
                     alpha=0.8,
                     color=color,
                     s=10,
+                )
+            elif style in _dash_patterns:
+                ax.plot(
+                    x_values,
+                    values,
+                    label=display_name,
+                    linewidth=1.2,
+                    alpha=0.8,
+                    color=color,
+                    linestyle="--",
+                    dashes=_dash_patterns[style],
                 )
             else:
                 ax.plot(

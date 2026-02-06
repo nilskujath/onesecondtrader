@@ -1,5 +1,7 @@
 site_name: OneSecondTrader
 site_url: https://www.onesecondtrader.com
+repo_url: https://github.com/NilsKujath/onesecondtrader
+repo_name: nilskujath/onesecondtrader
 copyright: "Copyright \xA9 2024-2025 Nils Kujath.<br><br>\n<div style='text-align:\
   \ justify; font-size: 0.8em;'>THE INFORMATION PROVIDED IS FOR EDUCATIONAL AND INFORMATIONAL\
   \ PURPOSES ONLY. IT DOES NOT CONSTITUTE FINANCIAL, INVESTMENT, OR TRADING ADVICE.\
@@ -130,12 +132,12 @@ theme:
       name: Switch to system preference
   features:
   - navigation.tabs
+  - navigation.top
   - content.code.copy
   - content.code.select
   - content.code.annotate
   - content.footnote.tooltips
   - content.tabs.linked
-  - navigation.top
 plugins:
 - search
 - glightbox:
@@ -166,8 +168,6 @@ plugins:
           show_if_no_docstring: true
           extra:
             show_class_source: false
-repo_url: https://github.com/NilsKujath/onesecondtrader
-repo_name: nilskujath/onesecondtrader
 markdown_extensions:
 - pymdownx.superfences:
     custom_fences:

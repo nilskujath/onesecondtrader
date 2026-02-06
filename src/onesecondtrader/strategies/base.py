@@ -472,6 +472,9 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
             models.PlotStyle.LINE: "L",
             models.PlotStyle.HISTOGRAM: "H",
             models.PlotStyle.DOTS: "D",
+            models.PlotStyle.DASH1: "1",
+            models.PlotStyle.DASH2: "2",
+            models.PlotStyle.DASH3: "3",
         }
         color_codes = {
             models.PlotColor.BLACK: "K",
