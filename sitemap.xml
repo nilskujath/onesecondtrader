@@ -153,7 +153,11 @@
          <lastmod>2026-02-06</lastmod>
     </url>
     <url>
-         <loc>https://www.onesecondtrader.com/reference/indicators/moving_averages/</loc>
+         <loc>https://www.onesecondtrader.com/reference/indicators/period_extreme/</loc>
+         <lastmod>2026-02-06</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/indicators/averages/simple_moving_average/</loc>
          <lastmod>2026-02-06</lastmod>
     </url>
     <url>
@@ -166,6 +170,18 @@
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/indicators/bollinger/bollinger_upper/</loc>
+         <lastmod>2026-02-06</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/indicators/oscillators/detrend/</loc>
+         <lastmod>2026-02-06</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/indicators/oscillators/roc/</loc>
+         <lastmod>2026-02-06</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/indicators/wilders/rsi/</loc>
          <lastmod>2026-02-06</lastmod>
     </url>
     <url>
@@ -189,7 +205,19 @@
          <lastmod>2026-02-06</lastmod>
     </url>
     <url>
+         <loc>https://www.onesecondtrader.com/reference/models/chart_type/</loc>
+         <lastmod>2026-02-06</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/models/extreme_type/</loc>
+         <lastmod>2026-02-06</lastmod>
+    </url>
+    <url>
          <loc>https://www.onesecondtrader.com/reference/models/order_types/</loc>
+         <lastmod>2026-02-06</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/models/plot_color/</loc>
          <lastmod>2026-02-06</lastmod>
     </url>
     <url>
