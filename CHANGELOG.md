@@ -1,3 +1,6 @@
+## v0.65.1
+- fix: restore progress bar on tab switch by querying running jobs on page load
+
 ## v0.65.0
 - feat: add dashed plot styles and improve mkdocs readability
 - feat: track indicator subpackages and fix gitignore scope
