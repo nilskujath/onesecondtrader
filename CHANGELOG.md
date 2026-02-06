@@ -1,3 +1,6 @@
+## v0.64.0
+- feat: changed dashboard UI
+
 ## v0.63.0
 - feat: added bollinger package, closes #16
 
