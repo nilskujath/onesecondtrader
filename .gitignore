@@ -21,7 +21,12 @@ runs/
 
 # Databases
 secmaster.db
+secmaster.db-shm
+secmaster.db-wal
 runs.db
+runs.db-shm
+runs.db-wal
+
 
 # Proprietary code
 /strategies/

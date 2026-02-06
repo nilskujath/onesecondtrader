@@ -19,16 +19,15 @@ router = APIRouter(prefix="/api/presets", tags=["presets"])
 
 
 def ensure_presets_table() -> None:
-    """Drop and recreate the symbol_presets table with the expanded schema."""
+    """Create the symbol_presets table if it does not already exist."""
     db_path = get_secmaster_path()
     if not os.path.exists(db_path):
         return
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    cursor.execute("DROP TABLE IF EXISTS symbol_presets")
     cursor.execute(
         """
-        CREATE TABLE symbol_presets (
+        CREATE TABLE IF NOT EXISTS symbol_presets (
             name TEXT PRIMARY KEY,
             rtype INTEGER NOT NULL,
             publisher_name TEXT NOT NULL,
