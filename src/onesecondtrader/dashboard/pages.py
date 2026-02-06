@@ -6,7 +6,14 @@ wrapped in the standard layout by `render_page`.
 """
 
 from .layout import render_page
-from .styles import BACKTEST_CSS, BACKTEST_JS, PERFORMANCE_CSS, PERFORMANCE_JS
+from .styles import (
+    BACKTEST_CSS,
+    BACKTEST_JS,
+    CHART_CSS,
+    CHART_JS,
+    PERFORMANCE_CSS,
+    PERFORMANCE_JS,
+)
 
 
 def backtest_page() -> str:
@@ -107,26 +114,32 @@ def performance_page() -> str:
     content = f"""
     <style>{PERFORMANCE_CSS}</style>
     <div class="performance-layout">
-        <div class="performance-left">
-            <div class="card">
-                <h2>Runs</h2>
-                <div id="runs-list" class="runs-list"></div>
-            </div>
-        </div>
-        <div class="performance-right">
-            <div class="card">
-                <h2>Round-Trip Trades</h2>
-                <div class="search-bar">
-                    <input type="text" id="symbol-filter" placeholder="Filter by symbol(s)..." oninput="filterRoundtrips()">
-                </div>
-                <div id="pnl-summary-container" class="pnl-summary-container"></div>
-                <div id="trade-journey-container" class="trade-journey-container"></div>
-                <div id="performance-content">
-                    <div class="empty-content"><p>Select a run to view performance</p></div>
-                </div>
-            </div>
-        </div>
+        <div class="settings-card" id="settings-panel"></div>
+        <div class="charts-row" id="charts-row"></div>
     </div>
     <script>{PERFORMANCE_JS}</script>
     """
     return render_page("Performance", content, "performance")
+
+
+def chart_page() -> str:
+    """
+    Generate the chart viewing page.
+
+    Returns:
+        HTML string for the chart page content.
+    """
+    content = f"""
+    <style>{CHART_CSS}</style>
+    <div class="chart-layout">
+        <div class="card">
+            <h2>Charts</h2>
+            <div id="settings-panel" class="settings-panel"></div>
+            <div id="charts-content">
+                <div class="empty-content"><p>Select a run to view charts</p></div>
+            </div>
+        </div>
+    </div>
+    <script>{CHART_JS}</script>
+    """
+    return render_page("Chart", content, "chart")

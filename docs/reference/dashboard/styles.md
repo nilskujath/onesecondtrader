@@ -790,72 +790,38 @@
     
     PERFORMANCE_CSS = """
     .container { max-width: none; height: 100vh; padding: 24px; display: flex; flex-direction: column; box-sizing: border-box; }
-    .performance-layout { display: flex; gap: 24px; flex: 1; min-height: 0; }
-    .performance-left { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-    .performance-right { flex: 3; min-width: 0; display: flex; flex-direction: column; overflow-y: auto; }
-    .performance-left .card { flex: 1; display: flex; flex-direction: column; margin-bottom: 0; min-height: 0; }
-    .performance-right .card { display: flex; flex-direction: column; margin-bottom: 0; }
-    .performance-left .runs-list { flex: 1; overflow-y: auto; }
-    .runs-list { display: flex; flex-direction: column; gap: 8px; }
-    .run-item { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 12px; cursor: pointer; }
-    .run-item:hover { border-color: #58a6ff; }
-    .run-item.selected { border-color: #58a6ff; background: #161b22; }
-    .run-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .run-name { font-family: monospace; font-size: 13px; color: #e6edf3; }
-    .run-id { color: #8b949e; font-size: 11px; margin-left: 6px; }
-    .run-status { font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 10px; }
-    .run-status.completed { background: #238636; color: #fff; }
-    .run-status.failed { background: #da3633; color: #fff; }
-    .run-status.error { background: #da3633; color: #fff; }
-    .run-meta { font-size: 12px; color: #8b949e; }
-    .empty-runs { text-align: center; padding: 48px 24px; color: #8b949e; }
-    .empty-runs p { font-size: 14px; }
-    .empty-content { text-align: center; padding: 48px 24px; color: #8b949e; }
-    .empty-content p { font-size: 14px; }
-    .search-bar { margin-bottom: 16px; }
-    .search-bar input { width: 100%; padding: 8px 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #e6edf3; font-size: 14px; }
-    .search-bar input:focus { outline: none; border-color: #58a6ff; }
-    .search-bar input::placeholder { color: #8b949e; }
-    .roundtrips-table-container { }
-    .roundtrips-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .roundtrips-table th { position: sticky; top: 0; background: #161b22; padding: 10px 12px; text-align: left; color: #8b949e; font-weight: 500; border-bottom: 1px solid #30363d; cursor: pointer; user-select: none; white-space: nowrap; }
-    .roundtrips-table th:hover { color: #e6edf3; }
-    .roundtrips-table th .sort-icon { margin-left: 4px; opacity: 0.5; }
-    .roundtrips-table th.sorted .sort-icon { opacity: 1; }
-    .roundtrips-table td { padding: 10px 12px; border-bottom: 1px solid #21262d; color: #e6edf3; white-space: nowrap; }
-    .roundtrips-table tr:hover td { background: #21262d; }
-    .roundtrips-table .symbol { font-family: monospace; }
-    .roundtrips-table .direction { font-weight: 500; }
-    .roundtrips-table .direction.long { color: #3fb950; }
-    .roundtrips-table .direction.short { color: #f85149; }
-    .roundtrips-table .pnl { font-weight: 500; font-family: monospace; }
-    .roundtrips-table .pnl.positive { color: #3fb950; }
-    .roundtrips-table .pnl.negative { color: #f85149; }
-    .roundtrips-table .number { font-family: monospace; text-align: right; }
-    .empty-table { text-align: center; padding: 48px 24px; color: #8b949e; }
-    .roundtrips-table tr.data-row { cursor: pointer; }
-    .roundtrips-table tr.chart-row { display: none; }
-    .roundtrips-table tr.chart-row.expanded { display: table-row; }
-    .roundtrips-table tr.chart-row td { padding: 16px; background: #0d1117; }
-    .chart-container { position: relative; text-align: center; }
-    .chart-container img { max-width: 100%; height: auto; border-radius: 4px; }
-    .chart-loading { color: #8b949e; padding: 48px; }
-    .pnl-summary-container { margin-bottom: 16px; text-align: center; }
-    .pnl-summary-container img { max-width: 100%; height: auto; border-radius: 4px; background: #fff; }
-    .pnl-summary-loading { color: #8b949e; padding: 24px; }
-    .trade-journey-container { margin-bottom: 16px; text-align: center; }
-    .trade-journey-container img { max-width: 100%; height: auto; border-radius: 4px; background: #fff; }
-    .trade-journey-loading { color: #8b949e; padding: 24px; }
-    .trade-journey-message { color: #8b949e; padding: 24px; font-style: italic; }
+    .performance-layout { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 16px; }
+    .settings-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; }
+    .settings-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+    .settings-group { display: flex; align-items: center; gap: 8px; }
+    .settings-group label { font-size: 13px; color: #8b949e; font-weight: 500; }
+    .settings-group select { padding: 8px 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #e6edf3; font-size: 13px; cursor: pointer; min-width: 250px; }
+    .settings-group select:focus { outline: none; border-color: #58a6ff; box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15); }
+    .settings-group input { padding: 8px 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #e6edf3; font-size: 13px; min-width: 200px; }
+    .settings-group input:focus { outline: none; border-color: #58a6ff; box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15); }
+    .settings-group input::placeholder { color: #484f58; }
+    .symbol-suggestions { position: absolute; top: 100%; left: 0; right: 0; background: #161b22; border: 1px solid #30363d; border-radius: 6px; max-height: 200px; overflow-y: auto; z-index: 100; display: none; margin-top: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+    .symbol-suggestions.show { display: block; }
+    .symbol-suggestion { padding: 8px 12px; cursor: pointer; font-size: 13px; color: #e6edf3; }
+    .symbol-suggestion:hover { background: #21262d; }
+    .symbol-suggestion.selected { background: #388bfd33; color: #58a6ff; }
+    .symbol-input-wrapper { position: relative; }
+    .charts-row { display: flex; gap: 16px; flex: 1; min-height: 0; }
+    .chart-card { flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; min-width: 0; }
+    .chart-card h3 { margin: 0 0 12px 0; font-size: 14px; font-weight: 500; color: #8b949e; }
+    .chart-card .chart-content { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 300px; }
+    .chart-card img { max-width: 100%; max-height: 100%; height: auto; border-radius: 4px; background: #fff; }
+    .chart-loading { color: #484f58; font-size: 13px; }
+    .empty-message { text-align: center; padding: 48px 24px; color: #484f58; font-size: 14px; }
+    @media (max-width: 900px) { .charts-row { flex-direction: column; } }
     """
     
     PERFORMANCE_JS = """
     let runs = [];
     let selectedRunId = null;
-    let roundtrips = [];
-    let filteredRoundtrips = [];
-    let sortColumn = 'symbol';
-    let sortAsc = true;
+    let selectedSymbol = null;
+    let symbols = [];
+    let suggestionIndex = -1;
     
     function getUrlRunId() {
         const params = new URLSearchParams(window.location.search);
@@ -866,10 +832,294 @@
         const res = await fetch('/api/runs');
         const data = await res.json();
         runs = (data.runs || []).filter(r => r.status === 'completed');
-        renderRuns();
+        renderSettings();
+        renderCharts();
         const urlRunId = getUrlRunId();
         if (urlRunId && runs.some(r => r.run_id === urlRunId)) {
             selectRun(urlRunId);
+        }
+    }
+    
+    function onRunChange() {
+        const select = document.getElementById('run-select');
+        const runId = select.value;
+        if (runId) {
+            selectRun(runId);
+        }
+    }
+    
+    function selectRun(runId) {
+        selectedRunId = runId;
+        selectedSymbol = null;
+        const url = new URL(window.location);
+        url.searchParams.set('run_id', runId);
+        window.history.replaceState({}, '', url);
+        const select = document.getElementById('run-select');
+        if (select && select.value !== runId) {
+            select.value = runId;
+        }
+        loadSymbols(runId);
+    }
+    
+    async function loadSymbols(runId) {
+        renderCharts();
+        const res = await fetch(`/api/runs/${runId}/roundtrips`);
+        const data = await res.json();
+        const roundtrips = data.roundtrips || [];
+        symbols = [...new Set(roundtrips.map(rt => rt.symbol))].sort();
+        renderSettings();
+        renderCharts();
+    }
+    
+    function onSymbolInput() {
+        const input = document.getElementById('symbol-input');
+        const query = input.value.trim().toUpperCase();
+        const suggestions = document.getElementById('symbol-suggestions');
+        suggestionIndex = -1;
+        if (!query) {
+            suggestions.classList.remove('show');
+            selectedSymbol = null;
+            renderCharts();
+            return;
+        }
+        const matches = symbols.filter(s => s.toUpperCase().includes(query));
+        if (matches.length === 0) {
+            suggestions.classList.remove('show');
+            return;
+        }
+        suggestions.innerHTML = matches.map((s, i) => `<div class="symbol-suggestion" data-symbol="${s}" onclick="selectSymbol('${s}')">${s}</div>`).join('');
+        suggestions.classList.add('show');
+    }
+    
+    function onSymbolKeydown(e) {
+        const suggestions = document.getElementById('symbol-suggestions');
+        const items = suggestions.querySelectorAll('.symbol-suggestion');
+        if (!suggestions.classList.contains('show') || items.length === 0) return;
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            suggestionIndex = Math.min(suggestionIndex + 1, items.length - 1);
+            updateSuggestionHighlight(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            suggestionIndex = Math.max(suggestionIndex - 1, 0);
+            updateSuggestionHighlight(items);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (suggestionIndex >= 0 && suggestionIndex < items.length) {
+                selectSymbol(items[suggestionIndex].dataset.symbol);
+            }
+        } else if (e.key === 'Escape') {
+            suggestions.classList.remove('show');
+        }
+    }
+    
+    function updateSuggestionHighlight(items) {
+        items.forEach((item, i) => {
+            item.classList.toggle('selected', i === suggestionIndex);
+        });
+    }
+    
+    function selectSymbol(symbol) {
+        selectedSymbol = symbol;
+        const input = document.getElementById('symbol-input');
+        if (input) input.value = symbol;
+        const suggestions = document.getElementById('symbol-suggestions');
+        if (suggestions) suggestions.classList.remove('show');
+        renderCharts();
+    }
+    
+    function renderSettings() {
+        const container = document.getElementById('settings-panel');
+        if (!container) return;
+        const runOptions = runs.length === 0
+            ? '<option value="">No completed runs</option>'
+            : '<option value="">Select a run...</option>' + runs.map(r => {
+                const config = r.config || {};
+                const strategies = config.strategies ? config.strategies.join(', ') : r.name;
+                const timePart = r.run_id.slice(11, 19).replace(/-/g, ':');
+                const selected = r.run_id === selectedRunId ? 'selected' : '';
+                return `<option value="${r.run_id}" ${selected}>${strategies} (${timePart})</option>`;
+            }).join('');
+        const symbolValue = selectedSymbol || '';
+        const symbolDisabled = symbols.length === 0 ? 'disabled' : '';
+        const symbolPlaceholder = symbols.length === 0 ? 'Select a run first...' : 'Search symbol...';
+        container.innerHTML = `
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label>Run:</label>
+                    <select id="run-select" onchange="onRunChange()">${runOptions}</select>
+                </div>
+                <div class="settings-group">
+                    <label>Symbol:</label>
+                    <div class="symbol-input-wrapper">
+                        <input type="text" id="symbol-input" value="${symbolValue}" placeholder="${symbolPlaceholder}" ${symbolDisabled} oninput="onSymbolInput()" onkeydown="onSymbolKeydown(event)" onfocus="onSymbolInput()" autocomplete="off">
+                        <div id="symbol-suggestions" class="symbol-suggestions"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    function renderCharts() {
+        const container = document.getElementById('charts-row');
+        if (!container) return;
+        const emptyPnl = !selectedRunId || !selectedSymbol ? '<div class="empty-message">Select a run and symbol</div>' : '<div class="chart-loading">Loading...</div>';
+        const emptyJourney = !selectedRunId || !selectedSymbol ? '<div class="empty-message">Select a run and symbol</div>' : '<div class="chart-loading">Loading...</div>';
+        container.innerHTML = `
+            <div class="chart-card"><h3>PnL Summary</h3><div class="chart-content" id="pnl-container">${emptyPnl}</div></div>
+            <div class="chart-card"><h3>Trade Journey</h3><div class="chart-content" id="journey-container">${emptyJourney}</div></div>
+        `;
+        if (selectedRunId && selectedSymbol) {
+            loadChartImage('pnl-container', `/api/runs/${selectedRunId}/pnl-summary.png?symbol=${encodeURIComponent(selectedSymbol)}`);
+            loadChartImage('journey-container', `/api/runs/${selectedRunId}/trade-journey.png?symbol=${encodeURIComponent(selectedSymbol)}`);
+        }
+    }
+    
+    function loadChartImage(containerId, url) {
+        const container = document.getElementById(containerId);
+        const img = new Image();
+        img.onload = () => { container.innerHTML = ''; container.appendChild(img); };
+        img.onerror = () => { container.innerHTML = '<div class="chart-loading">Failed to load chart</div>'; };
+        img.src = url;
+        img.alt = 'Chart';
+    }
+    
+    document.addEventListener('click', (e) => {
+        const suggestions = document.getElementById('symbol-suggestions');
+        const input = document.getElementById('symbol-input');
+        if (suggestions && input && !input.contains(e.target) && !suggestions.contains(e.target)) {
+            suggestions.classList.remove('show');
+        }
+    });
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        loadRuns();
+    });
+    """
+    
+    CHART_CSS = """
+    .container { max-width: none; height: 100vh; padding: 24px; display: flex; flex-direction: column; box-sizing: border-box; }
+    .chart-layout { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    .chart-layout > .card { flex: 1; display: flex; flex-direction: column; margin-bottom: 0; min-height: 0; overflow-y: auto; }
+    .empty-content { text-align: center; padding: 48px 24px; color: #8b949e; }
+    .empty-content p { font-size: 14px; }
+    .settings-panel { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 16px; margin-bottom: 16px; }
+    .settings-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+    .settings-group { display: flex; align-items: center; gap: 8px; }
+    .settings-group label { font-size: 13px; color: #8b949e; }
+    .settings-group input[type="radio"] { margin: 0; cursor: pointer; }
+    .settings-group input[type="number"] { width: 80px; padding: 6px 10px; background: #161b22; border: 1px solid #30363d; border-radius: 4px; color: #e6edf3; font-size: 13px; }
+    .settings-group input[type="number"]:focus { outline: none; border-color: #58a6ff; }
+    .settings-group select { padding: 6px 10px; background: #161b22; border: 1px solid #30363d; border-radius: 4px; color: #e6edf3; font-size: 13px; cursor: pointer; }
+    .settings-group select:focus { outline: none; border-color: #58a6ff; }
+    .settings-group select#run-select { min-width: 250px; }
+    .settings-group input#symbol-filter { width: 180px; padding: 6px 10px; background: #161b22; border: 1px solid #30363d; border-radius: 4px; color: #e6edf3; font-size: 13px; }
+    .settings-group input#symbol-filter:focus { outline: none; border-color: #58a6ff; }
+    .settings-group input#symbol-filter::placeholder { color: #8b949e; }
+    .settings-divider { width: 1px; height: 24px; background: #30363d; }
+    .segments-table-container { }
+    .segments-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .segments-table th { position: sticky; top: 0; background: #161b22; padding: 10px 12px; text-align: left; color: #8b949e; font-weight: 500; border-bottom: 1px solid #30363d; cursor: pointer; user-select: none; white-space: nowrap; }
+    .segments-table th:hover { color: #e6edf3; }
+    .segments-table th .sort-icon { margin-left: 4px; opacity: 0.5; }
+    .segments-table th.sorted .sort-icon { opacity: 1; }
+    .segments-table td { padding: 10px 12px; border-bottom: 1px solid #21262d; color: #e6edf3; white-space: nowrap; }
+    .segments-table tr:hover td { background: #21262d; }
+    .segments-table .symbol { font-family: monospace; }
+    .segments-table .number { font-family: monospace; text-align: right; }
+    .empty-table { text-align: center; padding: 48px 24px; color: #8b949e; }
+    .segments-table tr.data-row { cursor: pointer; }
+    .segments-table tr.chart-row { display: none; }
+    .segments-table tr.chart-row.expanded { display: table-row; }
+    .segments-table tr.chart-row td { padding: 16px; background: #0d1117; }
+    .chart-container { position: relative; text-align: center; }
+    .chart-container img { max-width: 100%; height: auto; border-radius: 4px; }
+    .chart-loading { color: #8b949e; padding: 48px; }
+    .trades-table-container { }
+    .trades-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .trades-table th { position: sticky; top: 0; background: #161b22; padding: 10px 12px; text-align: left; color: #8b949e; font-weight: 500; border-bottom: 1px solid #30363d; cursor: pointer; user-select: none; white-space: nowrap; }
+    .trades-table th:hover { color: #e6edf3; }
+    .trades-table th .sort-icon { margin-left: 4px; opacity: 0.5; }
+    .trades-table th.sorted .sort-icon { opacity: 1; }
+    .trades-table td { padding: 10px 12px; border-bottom: 1px solid #21262d; color: #e6edf3; white-space: nowrap; }
+    .trades-table tr:hover td { background: #21262d; }
+    .trades-table .symbol { font-family: monospace; }
+    .trades-table .number { font-family: monospace; text-align: right; }
+    .trades-table .direction { font-weight: 500; }
+    .trades-table .direction.long { color: #3fb950; }
+    .trades-table .direction.short { color: #f85149; }
+    .trades-table .pnl { font-weight: 500; font-family: monospace; }
+    .trades-table .pnl.positive { color: #3fb950; }
+    .trades-table .pnl.negative { color: #f85149; }
+    .trades-table tr.data-row { cursor: pointer; }
+    .trades-table tr.chart-row { display: none; }
+    .trades-table tr.chart-row.expanded { display: table-row; }
+    .trades-table tr.chart-row td { padding: 16px; background: #0d1117; }
+    """
+    
+    CHART_JS = """
+    let runs = [];
+    let selectedRunId = null;
+    let segments = [];
+    let filteredSegments = [];
+    let roundtrips = [];
+    let filteredRoundtrips = [];
+    let sortColumn = 'symbol';
+    let sortAsc = true;
+    let barPeriod = null;
+    
+    let settings = {
+        mode: 'bars',
+        barsPerChart: 500,
+        overlap: 100,
+        timePeriod: 'day'
+    };
+    
+    const TIME_PERIOD_OPTIONS = {
+        DAY: [{value: 'year', label: 'Year'}, {value: 'quarter', label: 'Quarter'}, {value: 'month', label: 'Month'}],
+        HOUR: [{value: 'month', label: 'Month'}, {value: 'week', label: 'Week'}, {value: 'day', label: 'Day'}],
+        MINUTE: [{value: 'day', label: 'Day'}, {value: '4hour', label: '4 Hours'}, {value: 'hour', label: 'Hour'}],
+        SECOND: [{value: '15min', label: '15 Minutes'}, {value: '5min', label: '5 Minutes'}, {value: '1min', label: '1 Minute'}]
+    };
+    
+    function loadSettings() {
+        const saved = localStorage.getItem('chartSettings');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                settings = {...settings, ...parsed};
+            } catch (e) {}
+        }
+    }
+    
+    function saveSettings() {
+        localStorage.setItem('chartSettings', JSON.stringify(settings));
+    }
+    
+    function getUrlRunId() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('run_id');
+    }
+    
+    async function loadRuns() {
+        loadSettings();
+        const res = await fetch('/api/runs');
+        const data = await res.json();
+        runs = (data.runs || []).filter(r => r.status === 'completed');
+        renderSettings();
+        const urlRunId = getUrlRunId();
+        if (urlRunId && runs.some(r => r.run_id === urlRunId)) {
+            selectRun(urlRunId);
+        }
+    }
+    
+    function onRunChange() {
+        const runId = document.getElementById('run-select').value;
+        if (runId) {
+            selectRun(runId);
+        } else {
+            selectedRunId = null;
+            document.getElementById('charts-content').innerHTML = '<div class="empty-content"><p>Select a run to view charts</p></div>';
         }
     }
     
@@ -878,109 +1128,162 @@
         const url = new URL(window.location);
         url.searchParams.set('run_id', runId);
         window.history.replaceState({}, '', url);
-        renderRuns();
-        loadPerformance(runId);
+        const select = document.getElementById('run-select');
+        if (select && select.value !== runId) {
+            select.value = runId;
+        }
+        loadData(runId);
     }
     
-    function renderRuns() {
-        const container = document.getElementById('runs-list');
-        if (runs.length === 0) {
-            container.innerHTML = '<div class="empty-runs"><p>No completed runs</p></div>';
-            return;
+    function renderSettings() {
+        const container = document.getElementById('settings-panel');
+        if (!container) return;
+        const timePeriodOpts = TIME_PERIOD_OPTIONS[barPeriod] || TIME_PERIOD_OPTIONS['DAY'];
+        if (settings.mode === 'time' && !timePeriodOpts.some(o => o.value === settings.timePeriod)) {
+            settings.timePeriod = timePeriodOpts[0].value;
         }
-        container.innerHTML = runs.map(r => {
-            const config = r.config || {};
-            const strategies = config.strategies ? config.strategies.join(', ') : r.name;
-            const symbols = config.symbols || [];
-            const symbolCount = symbols.length;
-            const startDate = config.start_date || '-';
-            const endDate = config.end_date || '-';
-            const timePart = r.run_id.slice(11, 19).replace(/-/g, ':');
-            const isSelected = r.run_id === selectedRunId;
-            return `<div class="run-item ${isSelected ? 'selected' : ''}" onclick="selectRun('${r.run_id}')">
-                <div class="run-header">
-                    <span class="run-name">${strategies} <span class="run-id">${timePart}</span></span>
-                    <span class="run-status ${r.status}">${r.status}</span>
+        const barsChecked = settings.mode === 'bars' ? 'checked' : '';
+        const timeChecked = settings.mode === 'time' ? 'checked' : '';
+        const tradesChecked = settings.mode === 'trades' ? 'checked' : '';
+        const barsDisabled = settings.mode !== 'bars' ? 'disabled' : '';
+        const timeDisabled = settings.mode !== 'time' ? 'disabled' : '';
+        const overlapDisabled = settings.mode === 'trades' ? 'disabled' : '';
+        const periodOptions = timePeriodOpts.map(o =>
+            `<option value="${o.value}" ${settings.timePeriod === o.value ? 'selected' : ''}>${o.label}</option>`
+        ).join('');
+        const runOptions = runs.length === 0
+            ? '<option value="">No completed runs</option>'
+            : '<option value="">Select a run...</option>' + runs.map(r => {
+                const config = r.config || {};
+                const strategies = config.strategies ? config.strategies.join(', ') : r.name;
+                const timePart = r.run_id.slice(11, 19).replace(/-/g, ':');
+                const selected = r.run_id === selectedRunId ? 'selected' : '';
+                return `<option value="${r.run_id}" ${selected}>${strategies} (${timePart})</option>`;
+            }).join('');
+        const symbolFilterValue = settings.symbolFilter || '';
+        container.innerHTML = `
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label>Run:</label>
+                    <select id="run-select" onchange="onRunChange()">${runOptions}</select>
                 </div>
-                <div class="run-meta">${symbolCount} symbol${symbolCount !== 1 ? 's' : ''} · ${startDate} to ${endDate}</div>
-            </div>`;
-        }).join('');
+                <div class="settings-group">
+                    <label>Symbol:</label>
+                    <input type="text" id="symbol-filter" placeholder="Filter symbols..." value="${symbolFilterValue}" oninput="filterData()">
+                </div>
+                <div class="settings-divider"></div>
+                <div class="settings-group">
+                    <input type="radio" id="mode-bars" name="split-mode" value="bars" ${barsChecked} onchange="onModeChange('bars')">
+                    <label for="mode-bars">By Bars</label>
+                </div>
+                <div class="settings-group">
+                    <label>Bars per chart:</label>
+                    <input type="number" id="bars-per-chart" value="${settings.barsPerChart}" min="10" max="5000" ${barsDisabled} onchange="onBarsPerChartChange(this.value)">
+                </div>
+                <div class="settings-divider"></div>
+                <div class="settings-group">
+                    <input type="radio" id="mode-time" name="split-mode" value="time" ${timeChecked} onchange="onModeChange('time')">
+                    <label for="mode-time">By Time</label>
+                </div>
+                <div class="settings-group">
+                    <label>Period:</label>
+                    <select id="time-period" ${timeDisabled} onchange="onTimePeriodChange(this.value)">${periodOptions}</select>
+                </div>
+                <div class="settings-divider"></div>
+                <div class="settings-group">
+                    <input type="radio" id="mode-trades" name="split-mode" value="trades" ${tradesChecked} onchange="onModeChange('trades')">
+                    <label for="mode-trades">By Trades</label>
+                </div>
+                <div class="settings-divider"></div>
+                <div class="settings-group">
+                    <label>Overlap:</label>
+                    <input type="number" id="overlap" value="${settings.overlap}" min="0" max="1000" ${overlapDisabled} onchange="onOverlapChange(this.value)">
+                </div>
+            </div>
+        `;
     }
     
-    async function loadPerformance(runId) {
-        const container = document.getElementById('performance-content');
+    function onModeChange(mode) {
+        settings.mode = mode;
+        saveSettings();
+        renderSettings();
+        if (selectedRunId) loadData(selectedRunId);
+    }
+    
+    function onBarsPerChartChange(value) {
+        settings.barsPerChart = parseInt(value) || 500;
+        saveSettings();
+        if (selectedRunId) loadData(selectedRunId);
+    }
+    
+    function onTimePeriodChange(value) {
+        settings.timePeriod = value;
+        saveSettings();
+        if (selectedRunId) loadData(selectedRunId);
+    }
+    
+    function onOverlapChange(value) {
+        settings.overlap = parseInt(value) || 0;
+        saveSettings();
+        if (selectedRunId) loadData(selectedRunId);
+    }
+    
+    async function loadData(runId) {
+        const container = document.getElementById('charts-content');
         container.innerHTML = '<div class="empty-content"><p>Loading...</p></div>';
-        const res = await fetch(`/api/runs/${runId}/roundtrips`);
-        const data = await res.json();
-        roundtrips = data.roundtrips || [];
-        const tradeNums = {};
-        roundtrips.forEach(rt => {
-            tradeNums[rt.symbol] = (tradeNums[rt.symbol] || 0) + 1;
-            rt.trade_num = tradeNums[rt.symbol];
-        });
-        filteredRoundtrips = [...roundtrips];
-        sortColumn = 'symbol';
-        sortAsc = true;
-        document.getElementById('symbol-filter').value = '';
-        updatePerformanceCharts();
-        sortAndRender();
-    }
-    
-    function updatePerformanceCharts() {
-        const pnlContainer = document.getElementById('pnl-summary-container');
-        const journeyContainer = document.getElementById('trade-journey-container');
-        if (!selectedRunId) {
-            pnlContainer.innerHTML = '';
-            journeyContainer.innerHTML = '';
-            return;
-        }
-        const allSymbols = [...new Set(roundtrips.map(rt => rt.symbol))];
-        const symbols = [...new Set(filteredRoundtrips.map(rt => rt.symbol))];
-        if (symbols.length !== 1 && allSymbols.length !== 1) {
-            pnlContainer.innerHTML = '';
-            journeyContainer.innerHTML = '<div class="trade-journey-message">Filter by symbol to see per-symbol Performance Statistics</div>';
-            return;
-        }
-        const symbol = symbols.length === 1 ? symbols[0] : allSymbols[0];
-    
-        pnlContainer.innerHTML = '<div class="pnl-summary-loading">Loading PnL Summary chart...</div>';
-        const pnlUrl = `/api/runs/${selectedRunId}/pnl-summary.png?symbol=${encodeURIComponent(symbol)}`;
-        const pnlImg = new Image();
-        pnlImg.onload = () => {
-            pnlContainer.innerHTML = '';
-            pnlContainer.appendChild(pnlImg);
-        };
-        pnlImg.onerror = () => {
-            pnlContainer.innerHTML = '<div class="pnl-summary-loading">Failed to load PnL Summary chart</div>';
-        };
-        pnlImg.src = pnlUrl;
-        pnlImg.alt = 'PnL Summary Chart';
-    
-        journeyContainer.innerHTML = '<div class="trade-journey-loading">Loading Trade Journey chart...</div>';
-        const journeyUrl = `/api/runs/${selectedRunId}/trade-journey.png?symbol=${encodeURIComponent(symbol)}`;
-        const journeyImg = new Image();
-        journeyImg.onload = () => {
-            journeyContainer.innerHTML = '';
-            journeyContainer.appendChild(journeyImg);
-        };
-        journeyImg.onerror = () => {
-            journeyContainer.innerHTML = '<div class="trade-journey-loading">Failed to load Trade Journey chart</div>';
-        };
-        journeyImg.src = journeyUrl;
-        journeyImg.alt = 'Trade Journey Chart';
-    }
-    
-    function filterRoundtrips() {
-        const query = document.getElementById('symbol-filter').value.toLowerCase().trim();
-        if (!query) {
-            filteredRoundtrips = [...roundtrips];
+        if (settings.mode === 'trades') {
+            const res = await fetch(`/api/runs/${runId}/roundtrips`);
+            const data = await res.json();
+            roundtrips = data.roundtrips || [];
+            const tradeNums = {};
+            roundtrips.forEach(rt => {
+                tradeNums[rt.symbol] = (tradeNums[rt.symbol] || 0) + 1;
+                rt.trade_num = tradeNums[rt.symbol];
+            });
+            sortColumn = 'symbol';
+            sortAsc = true;
+            renderSettings();
+            filterData();
         } else {
-            const terms = query.split(/[,\\s]+/).filter(t => t.length > 0);
-            filteredRoundtrips = roundtrips.filter(rt =>
-                terms.some(term => rt.symbol.toLowerCase().includes(term))
-            );
+            const params = new URLSearchParams({
+                mode: settings.mode,
+                bars_per_chart: settings.barsPerChart,
+                overlap: settings.overlap,
+                time_period: settings.timePeriod
+            });
+            const res = await fetch(`/api/runs/${runId}/chart-segments?${params}`);
+            const data = await res.json();
+            segments = data.segments || [];
+            barPeriod = data.bar_period;
+            sortColumn = 'symbol';
+            sortAsc = true;
+            renderSettings();
+            filterData();
         }
-        updatePerformanceCharts();
+    }
+    
+    function filterData() {
+        const query = document.getElementById('symbol-filter').value.toLowerCase().trim();
+        settings.symbolFilter = query;
+        if (settings.mode === 'trades') {
+            if (!query) {
+                filteredRoundtrips = [...roundtrips];
+            } else {
+                const terms = query.split(/[,\\s]+/).filter(t => t.length > 0);
+                filteredRoundtrips = roundtrips.filter(rt =>
+                    terms.some(term => rt.symbol.toLowerCase().includes(term))
+                );
+            }
+        } else {
+            if (!query) {
+                filteredSegments = [...segments];
+            } else {
+                const terms = query.split(/[,\\s]+/).filter(t => t.length > 0);
+                filteredSegments = segments.filter(seg =>
+                    terms.some(term => seg.symbol.toLowerCase().includes(term))
+                );
+            }
+        }
         sortAndRender();
     }
     
@@ -995,22 +1298,89 @@
     }
     
     function sortAndRender() {
-        filteredRoundtrips.sort((a, b) => {
-            let valA = a[sortColumn];
-            let valB = b[sortColumn];
-            if (typeof valA === 'string') {
-                valA = valA.toLowerCase();
-                valB = valB.toLowerCase();
-            }
-            if (valA < valB) return sortAsc ? -1 : 1;
-            if (valA > valB) return sortAsc ? 1 : -1;
-            return 0;
-        });
-        renderTable();
+        if (settings.mode === 'trades') {
+            filteredRoundtrips.sort((a, b) => {
+                let valA = a[sortColumn];
+                let valB = b[sortColumn];
+                if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+                if (valA < valB) return sortAsc ? -1 : 1;
+                if (valA > valB) return sortAsc ? 1 : -1;
+                return 0;
+            });
+            renderTradesTable();
+        } else {
+            filteredSegments.sort((a, b) => {
+                let valA = a[sortColumn];
+                let valB = b[sortColumn];
+                if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+                if (valA < valB) return sortAsc ? -1 : 1;
+                if (valA > valB) return sortAsc ? 1 : -1;
+                return 0;
+            });
+            renderSegmentsTable();
+        }
     }
     
-    function renderTable() {
-        const container = document.getElementById('performance-content');
+    function formatTimestamp(ns) {
+        const ms = BigInt(ns) / BigInt(1000000);
+        const date = new Date(Number(ms));
+        return date.toISOString().slice(0, 16).replace('T', ' ');
+    }
+    
+    function renderSegmentsTable() {
+        const container = document.getElementById('charts-content');
+        if (segments.length === 0) {
+            container.innerHTML = '<div class="empty-table"><p>No chart segments found</p></div>';
+            return;
+        }
+        const columns = [
+            {key: 'symbol', label: 'Symbol'},
+            {key: 'segment_num', label: 'Segment'},
+            {key: 'start_ts', label: 'Start'},
+            {key: 'end_ts', label: 'End'},
+            {key: 'bar_count', label: 'Bars'},
+        ];
+        const headerHtml = columns.map(c => {
+            const isSorted = sortColumn === c.key;
+            const arrow = isSorted ? (sortAsc ? '▲' : '▼') : '▲';
+            return `<th class="${isSorted ? 'sorted' : ''}" onclick="sortBy('${c.key}')">${c.label}<span class="sort-icon">${arrow}</span></th>`;
+        }).join('');
+        const rowsHtml = filteredSegments.map((seg, idx) => {
+            const displayStart = seg.period_start_ns || seg.start_ts;
+            const displayEnd = seg.period_end_ns || seg.end_ts;
+            return `<tr class="data-row" onclick="toggleChart(${idx})">
+                <td class="symbol">${seg.symbol}</td>
+                <td class="number">${seg.segment_num}</td>
+                <td>${formatTimestamp(displayStart)}</td>
+                <td>${formatTimestamp(displayEnd)}</td>
+                <td class="number">${seg.bar_count}</td>
+            </tr>
+            <tr class="chart-row" id="chart-row-${idx}">
+                <td colspan="5">
+                    <div class="chart-container" id="chart-container-${idx}">
+                        <div class="chart-loading">Loading chart...</div>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+        container.innerHTML = `
+            <div class="segments-table-container">
+                <table class="segments-table">
+                    <thead><tr>${headerHtml}</tr></thead>
+                    <tbody>${rowsHtml}</tbody>
+                </table>
+            </div>
+        `;
+    }
+    
+    function renderTradesTable() {
+        const container = document.getElementById('charts-content');
         if (roundtrips.length === 0) {
             container.innerHTML = '<div class="empty-table"><p>No round-trip trades found</p></div>';
             return;
@@ -1064,8 +1434,8 @@
             </tr>`;
         }).join('');
         container.innerHTML = `
-            <div class="roundtrips-table-container">
-                <table class="roundtrips-table">
+            <div class="trades-table-container">
+                <table class="trades-table">
                     <thead><tr>${headerHtml}</tr></thead>
                     <tbody>${rowsHtml}</tbody>
                 </table>
@@ -1082,15 +1452,30 @@
             return;
         }
         chartRow.classList.add('expanded');
-        const rt = filteredRoundtrips[idx];
         const container = document.getElementById(`chart-container-${idx}`);
-        const cacheKey = `${selectedRunId}_${rt.symbol}_${rt.entry_ts}_${rt.exit_ts}`;
-        if (chartCache[cacheKey]) {
-            container.innerHTML = `<img src="${chartCache[cacheKey]}" alt="Chart">`;
-            return;
+        let url, cacheKey;
+        if (settings.mode === 'trades') {
+            const rt = filteredRoundtrips[idx];
+            cacheKey = `${selectedRunId}_trade_${rt.symbol}_${rt.entry_ts}_${rt.exit_ts}`;
+            if (chartCache[cacheKey]) {
+                container.innerHTML = `<img src="${chartCache[cacheKey]}" alt="Chart">`;
+                return;
+            }
+            container.innerHTML = '<div class="chart-loading">Loading chart...</div>';
+            url = `/api/runs/${selectedRunId}/chart.png?symbol=${encodeURIComponent(rt.symbol)}&start_ns=${rt.entry_ts}&end_ns=${rt.exit_ts}&direction=${rt.direction}&pnl=${rt.pnl_after_commission}`;
+        } else {
+            const seg = filteredSegments[idx];
+            cacheKey = `${selectedRunId}_${seg.symbol}_${seg.start_ts}_${seg.end_ts}`;
+            if (chartCache[cacheKey]) {
+                container.innerHTML = `<img src="${chartCache[cacheKey]}" alt="Chart">`;
+                return;
+            }
+            container.innerHTML = '<div class="chart-loading">Loading chart...</div>';
+            url = `/api/runs/${selectedRunId}/segment-chart.png?symbol=${encodeURIComponent(seg.symbol)}&start_ns=${seg.start_ts}&end_ns=${seg.end_ts}`;
+            if (seg.period_start_ns && seg.period_end_ns) {
+                url += `&period_start_ns=${seg.period_start_ns}&period_end_ns=${seg.period_end_ns}`;
+            }
         }
-        container.innerHTML = '<div class="chart-loading">Loading chart...</div>';
-        const url = `/api/runs/${selectedRunId}/chart.png?symbol=${encodeURIComponent(rt.symbol)}&start_ns=${rt.entry_ts}&end_ns=${rt.exit_ts}&direction=${rt.direction}&pnl=${rt.pnl_after_commission}`;
         const img = new Image();
         img.onload = () => {
             chartCache[cacheKey] = url;

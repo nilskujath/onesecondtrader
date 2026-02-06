@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from onesecondtrader.indicators.base import discover_indicators
 from onesecondtrader.strategies.base import discover_strategies
 
-from .pages import backtest_page, performance_page
+from .pages import backtest_page, chart_page, performance_page
 from .routers import (
     runs_router,
     strategies_router,
@@ -40,6 +40,11 @@ async def backtest():
 @app.get("/performance", response_class=HTMLResponse)
 async def performance():
     return performance_page()
+
+
+@app.get("/chart", response_class=HTMLResponse)
+async def chart():
+    return chart_page()
 
 
 @app.get("/health")

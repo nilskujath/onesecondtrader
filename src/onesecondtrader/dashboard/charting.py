@@ -197,10 +197,26 @@ def generate_chart_image(
     ax_main = axes[1]
     ax_indicators = list(axes[2:]) if len(axes) > 2 else []
 
+    use_time_axis = bar_period in ("HOUR", "MINUTE", "SECOND")
+    if use_time_axis:
+        x_values = data["ts_event"].values
+        bar_width = (
+            pd.Timedelta(minutes=1)
+            if bar_period == "MINUTE"
+            else (
+                pd.Timedelta(seconds=1)
+                if bar_period == "SECOND"
+                else pd.Timedelta(hours=1)
+            )
+        )
+    else:
+        x_values = list(range(len(data)))  # type: ignore[assignment]
+        bar_width = 0.8  # type: ignore[assignment]
+
     entry_price = fills[0]["price"] if fills else 0
     fill_direction = fills[0]["side"] if fills else "BUY"
 
-    pos_indices = []
+    pos_x_values = []
     pnl_high_series = []
     pnl_low_series = []
     hwm_series = []
@@ -221,15 +237,15 @@ def generate_chart_image(
                 pnl_at_low = entry_price - bar_high
             running_hwm = max(running_hwm, pnl_at_high)
             running_lwm = min(running_lwm, pnl_at_low)
-            pos_indices.append(i)
+            pos_x_values.append(x_values[i])
             pnl_high_series.append(pnl_at_high)
             pnl_low_series.append(pnl_at_low)
             hwm_series.append(running_hwm)
             low_watermark_series.append(running_lwm)
 
-    if pos_indices:
+    if pos_x_values:
         ax_pnl.fill_between(
-            pos_indices,
+            pos_x_values,
             pnl_low_series,
             pnl_high_series,
             color="blue",
@@ -237,7 +253,7 @@ def generate_chart_image(
             label="Unrealized P&L",
         )
         ax_pnl.plot(
-            pos_indices,
+            pos_x_values,
             hwm_series,
             color="green",
             linewidth=1.5,
@@ -245,7 +261,7 @@ def generate_chart_image(
             alpha=0.8,
         )
         ax_pnl.plot(
-            pos_indices,
+            pos_x_values,
             low_watermark_series,
             color="red",
             linewidth=1.5,
@@ -258,15 +274,16 @@ def generate_chart_image(
     ax_pnl.legend(loc="upper left", fontsize=8)
 
     for i in range(len(data)):
+        x = x_values[i]
         ax_main.plot(
-            [i, i],
+            [x, x],
             [data["low"].iloc[i], data["high"].iloc[i]],
             color="black",
             linewidth=0.8,
             alpha=0.7,
         )
         ax_main.plot(
-            [i], [data["close"].iloc[i]], marker="_", color="blue", markersize=3
+            [x], [data["close"].iloc[i]], marker="_", color="blue", markersize=3
         )
 
     colors = ["orange", "purple", "cyan", "magenta", "brown", "pink", "olive", "teal"]
@@ -276,16 +293,16 @@ def generate_chart_image(
         style = indicator_styles.get(name, "L")
         if style == "H":
             ax_main.bar(
-                range(len(values)),
+                x_values,
                 values,
                 label=display_name,
                 alpha=0.6,
                 color=color,
-                width=0.8,
+                width=bar_width,
             )
         elif style == "D":
             ax_main.scatter(
-                range(len(values)),
+                x_values,
                 values,
                 label=display_name,
                 alpha=0.8,
@@ -294,7 +311,7 @@ def generate_chart_image(
             )
         else:
             ax_main.plot(
-                range(len(values)),
+                x_values,
                 values,
                 label=display_name,
                 linewidth=1.2,
@@ -313,16 +330,16 @@ def generate_chart_image(
             style = indicator_styles.get(name, "L")
             if style == "H":
                 ax.bar(
-                    range(len(values)),
+                    x_values,
                     values,
                     label=display_name,
                     alpha=0.6,
                     color=color,
-                    width=0.8,
+                    width=bar_width,
                 )
             elif style == "D":
                 ax.scatter(
-                    range(len(values)),
+                    x_values,
                     values,
                     label=display_name,
                     alpha=0.8,
@@ -331,7 +348,7 @@ def generate_chart_image(
                 )
             else:
                 ax.plot(
-                    range(len(values)),
+                    x_values,
                     values,
                     label=display_name,
                     linewidth=1.2,
@@ -344,11 +361,17 @@ def generate_chart_image(
 
     all_axes = [ax_pnl, ax_main] + ax_indicators
     if 0 <= highlight_start < len(data) and 0 <= highlight_end < len(data):
+        highlight_x_start = x_values[highlight_start]
+        highlight_x_end = x_values[highlight_end]
+        if use_time_axis:
+            highlight_width = highlight_x_end - highlight_x_start
+        else:
+            highlight_width = highlight_end - highlight_start
         for ax in all_axes:
             y_min, y_max = ax.get_ylim()
             rect = Rectangle(
-                (highlight_start, y_min),
-                highlight_end - highlight_start,
+                (highlight_x_start, y_min),  # type: ignore[arg-type]
+                highlight_width,  # type: ignore[arg-type]
                 y_max - y_min,
                 facecolor="lightblue",
                 alpha=0.2,
@@ -364,12 +387,13 @@ def generate_chart_image(
         if fill_idx is None:
             closest_idx = (data["ts_event"] - fill["ts_event"]).abs().argmin()
             fill_idx = closest_idx
+        fill_x = x_values[fill_idx]
         marker = "^" if fill["side"] == "BUY" else "v"
         color = "green" if fill["side"] == "BUY" else "red"
         qty = fill.get("quantity", 1)
         size = 120 * min(3.0, max(0.5, qty))
         ax_main.scatter(
-            fill_idx,
+            fill_x,
             fill["price"],
             marker=marker,
             color=color,
@@ -383,7 +407,7 @@ def generate_chart_image(
         offset_y = (y_lim[1] - y_lim[0]) * 0.02
         ax_main.annotate(
             f"{qty}",
-            (fill_idx, fill["price"] + offset_y),
+            (fill_x, fill["price"] + offset_y),
             ha="center",
             va="bottom",
             fontsize=8,
@@ -406,13 +430,281 @@ def generate_chart_image(
         fontsize=14,
     )
 
-    num_bars = len(data)
-    tick_interval = max(1, num_bars // 10)
-    tick_positions = list(range(0, num_bars, tick_interval))
-    tick_labels = [data["ts_event"].iloc[i].strftime("%m/%d") for i in tick_positions]
-    for ax in all_axes:
-        ax.set_xticks(tick_positions)
-        ax.set_xticklabels(tick_labels)
+    if use_time_axis:
+        import matplotlib.dates as mdates
+
+        for ax in all_axes:
+            ax.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d %H:%M"))
+            ax.xaxis.set_major_locator(mdates.AutoDateLocator())
+    else:
+        num_bars = len(data)
+        tick_interval = max(1, num_bars // 10)
+        tick_positions = list(range(0, num_bars, tick_interval))
+        tick_labels = [
+            data["ts_event"].iloc[i].strftime("%m/%d") for i in tick_positions
+        ]
+        for ax in all_axes:
+            ax.set_xticks(tick_positions)
+            ax.set_xticklabels(tick_labels)
+
+    plt.xticks(rotation=45, fontsize=9)
+    plt.tight_layout()
+
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", dpi=500, bbox_inches="tight")
+    plt.close(fig)
+    buf.seek(0)
+
+    return buf.read()
+
+
+def generate_segment_chart_image(
+    run_id: str,
+    symbol: str,
+    start_ns: int,
+    end_ns: int,
+    period_start_ns: int | None = None,
+    period_end_ns: int | None = None,
+) -> bytes:
+    """
+    Generate a PNG chart image for a bar segment.
+
+    Renders a multi-panel chart showing:
+    - Price panel with OHLC bars and overlay indicators
+    - Additional panels for non-overlay indicators grouped by tag
+
+    Parameters:
+        run_id:
+            Unique identifier of the backtest run.
+        symbol:
+            Instrument symbol.
+        start_ns:
+            Start timestamp in nanoseconds.
+        end_ns:
+            End timestamp in nanoseconds.
+        period_start_ns:
+            Optional period start for fixed x-axis limits.
+        period_end_ns:
+            Optional period end for fixed x-axis limits.
+
+    Returns:
+        PNG image bytes, or empty bytes if no data is available.
+    """
+    db_path = get_runs_db_path()
+    if not os.path.exists(db_path):
+        return b""
+
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT ts_event_ns, open, high, low, close, bar_period, indicators
+        FROM bars_processed
+        WHERE run_id = ? AND symbol = ? AND ts_event_ns >= ? AND ts_event_ns <= ?
+        ORDER BY ts_event_ns
+        """,
+        (run_id, symbol, start_ns, end_ns),
+    )
+    bar_rows = cursor.fetchall()
+    conn.close()
+
+    if not bar_rows:
+        return b""
+
+    bar_period = bar_rows[0][5] if bar_rows else "DAY"
+
+    data = pd.DataFrame(
+        bar_rows,
+        columns=[
+            "ts_event",
+            "open",
+            "high",
+            "low",
+            "close",
+            "bar_period",
+            "indicators",
+        ],
+    )
+    data["ts_event"] = pd.to_datetime(data["ts_event"], unit="ns")
+
+    indicator_series: dict[str, list[float]] = {}
+    indicator_tags: dict[str, int] = {}
+    indicator_styles: dict[str, str] = {}
+    for idx in range(len(data)):
+        row = data.iloc[idx]
+        indicators = json.loads(row["indicators"]) if row["indicators"] else {}
+        for name, value in indicators.items():
+            if name not in indicator_series:
+                indicator_series[name] = [math.nan] * len(data)
+                tag = int(name[:2]) if name[:2].isdigit() else 99
+                indicator_tags[name] = tag
+                style = name[2] if len(name) > 2 and name[2] in "LHD" else "L"
+                indicator_styles[name] = style
+            indicator_series[name][idx] = value if value == value else math.nan
+
+    overlay_indicators = {
+        k: v for k, v in indicator_series.items() if indicator_tags.get(k, 99) == 0
+    }
+    subplot_tags = sorted(set(t for t in indicator_tags.values() if 1 <= t <= 98))
+    subplot_indicators = {
+        tag: {k: v for k, v in indicator_series.items() if indicator_tags.get(k) == tag}
+        for tag in subplot_tags
+    }
+
+    num_subplots = 1 + len(subplot_tags)
+    height_ratios = [3] + [1] * len(subplot_tags)
+    fig_height = 6 + 2 * len(subplot_tags)
+    fig, axes = plt.subplots(
+        num_subplots,
+        1,
+        figsize=(14, fig_height),
+        sharex=True,
+        gridspec_kw={"height_ratios": height_ratios},
+    )
+    if num_subplots == 1:
+        axes = [axes]
+    ax_main = axes[0]
+    ax_indicators = list(axes[1:]) if len(axes) > 1 else []
+
+    use_time_axis = bar_period in ("HOUR", "MINUTE", "SECOND")
+    if use_time_axis:
+        x_values = data["ts_event"].values
+        bar_width = (
+            pd.Timedelta(minutes=1)
+            if bar_period == "MINUTE"
+            else (
+                pd.Timedelta(seconds=1)
+                if bar_period == "SECOND"
+                else pd.Timedelta(hours=1)
+            )
+        )
+    else:
+        x_values = list(range(len(data)))  # type: ignore[assignment]
+        bar_width = 0.8  # type: ignore[assignment]
+
+    for i in range(len(data)):
+        x = x_values[i]
+        ax_main.plot(
+            [x, x],
+            [data["low"].iloc[i], data["high"].iloc[i]],
+            color="black",
+            linewidth=0.8,
+            alpha=0.7,
+        )
+        ax_main.plot(
+            [x], [data["close"].iloc[i]], marker="_", color="blue", markersize=3
+        )
+
+    colors = ["orange", "purple", "cyan", "magenta", "brown", "pink", "olive", "teal"]
+    for idx, (name, values) in enumerate(overlay_indicators.items()):
+        display_name = name[4:] if len(name) > 4 else name
+        color = colors[idx % len(colors)]
+        style = indicator_styles.get(name, "L")
+        if style == "H":
+            ax_main.bar(
+                x_values,
+                values,
+                label=display_name,
+                alpha=0.6,
+                color=color,
+                width=bar_width,
+            )
+        elif style == "D":
+            ax_main.scatter(
+                x_values,
+                values,
+                label=display_name,
+                alpha=0.8,
+                color=color,
+                s=10,
+            )
+        else:
+            ax_main.plot(
+                x_values,
+                values,
+                label=display_name,
+                linewidth=1.2,
+                alpha=0.8,
+                color=color,
+            )
+    if overlay_indicators:
+        ax_main.legend(loc="upper left", fontsize=8)
+
+    for ax_idx, tag in enumerate(subplot_tags):
+        ax = ax_indicators[ax_idx]
+        tag_indicators = subplot_indicators[tag]
+        for idx, (name, values) in enumerate(tag_indicators.items()):
+            display_name = name[4:] if len(name) > 4 else name
+            color = colors[idx % len(colors)]
+            style = indicator_styles.get(name, "L")
+            if style == "H":
+                ax.bar(
+                    x_values,
+                    values,
+                    label=display_name,
+                    alpha=0.6,
+                    color=color,
+                    width=bar_width,
+                )
+            elif style == "D":
+                ax.scatter(
+                    x_values,
+                    values,
+                    label=display_name,
+                    alpha=0.8,
+                    color=color,
+                    s=10,
+                )
+            else:
+                ax.plot(
+                    x_values,
+                    values,
+                    label=display_name,
+                    linewidth=1.2,
+                    alpha=0.8,
+                    color=color,
+                )
+        ax.set_ylabel(f"Tag {tag}", fontsize=10)
+        ax.grid(True, alpha=0.3)
+        ax.legend(loc="upper left", fontsize=8)
+
+    ax_main.set_ylabel("Price", fontsize=10)
+    ax_main.grid(True, alpha=0.3)
+
+    start_time = data["ts_event"].iloc[0]
+    end_time = data["ts_event"].iloc[-1]
+    ax_main.set_title(
+        f"{symbol} - {start_time.strftime('%Y-%m-%d %H:%M')} to {end_time.strftime('%Y-%m-%d %H:%M')} ({len(data)} bars)",
+        fontsize=14,
+    )
+
+    all_axes = [ax_main] + ax_indicators
+    if use_time_axis:
+        import matplotlib.dates as mdates
+
+        if period_start_ns is not None and period_end_ns is not None:
+            xlim_start = pd.to_datetime(period_start_ns, unit="ns")
+            xlim_end = pd.to_datetime(period_end_ns, unit="ns")
+            for ax in all_axes:
+                ax.set_xlim(xlim_start, xlim_end)
+            first_data_time = data["ts_event"].iloc[0]
+            if first_data_time < xlim_start:
+                for ax in all_axes:
+                    ax.axvspan(first_data_time, xlim_start, facecolor="grey", alpha=0.2)
+        for ax in all_axes:
+            ax.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d %H:%M"))
+            ax.xaxis.set_major_locator(mdates.AutoDateLocator())
+    else:
+        num_bars = len(data)
+        tick_interval = max(1, num_bars // 10)
+        tick_positions = list(range(0, num_bars, tick_interval))
+        tick_labels = [
+            data["ts_event"].iloc[i].strftime("%m/%d %H:%M") for i in tick_positions
+        ]
+        for ax in all_axes:
+            ax.set_xticks(tick_positions)
+            ax.set_xticklabels(tick_labels)
 
     plt.xticks(rotation=45, fontsize=9)
     plt.tight_layout()
@@ -761,9 +1053,7 @@ def generate_pnl_summary_chart(roundtrips: list[dict]) -> bytes:
     """
     Generate a PnL Summary chart showing cumulative PnL and trade metrics.
 
-    Renders a two-panel chart:
-    - Top panel: Cumulative PnL (gross and net) with max drawdown bars
-    - Bottom panel: Max position size per trade (positive for longs, negative for shorts)
+    Renders a single-panel chart showing cumulative PnL (gross and net) with max drawdown bars.
 
     Parameters:
         roundtrips:
@@ -775,15 +1065,12 @@ def generate_pnl_summary_chart(roundtrips: list[dict]) -> bytes:
     if not roundtrips:
         return b""
 
-    fig, (ax_pnl, ax_pos) = plt.subplots(
-        2, 1, figsize=(14, 9), height_ratios=[2, 1], sharex=True
-    )
+    fig, ax = plt.subplots(figsize=(14, 7))
 
     trade_nums = list(range(1, len(roundtrips) + 1))
     cumulative_pnl_gross = []
     cumulative_pnl_net = []
     max_drawdowns = []
-    signed_positions = []
 
     running_gross = 0.0
     running_net = 0.0
@@ -793,10 +1080,8 @@ def generate_pnl_summary_chart(roundtrips: list[dict]) -> bytes:
         cumulative_pnl_gross.append(running_gross)
         cumulative_pnl_net.append(running_net)
         max_drawdowns.append(rt["max_drawdown"])
-        sign = 1 if rt["direction"] == "LONG" else -1
-        signed_positions.append(sign * rt["max_position"])
 
-    ax_pnl.plot(
+    ax.plot(
         trade_nums,
         cumulative_pnl_gross,
         color="#3fb950",
@@ -805,7 +1090,7 @@ def generate_pnl_summary_chart(roundtrips: list[dict]) -> bytes:
         marker="o",
         markersize=4,
     )
-    ax_pnl.plot(
+    ax.plot(
         trade_nums,
         cumulative_pnl_net,
         color="#1f6feb",
@@ -814,7 +1099,7 @@ def generate_pnl_summary_chart(roundtrips: list[dict]) -> bytes:
         marker="o",
         markersize=4,
     )
-    ax_pnl.bar(
+    ax.bar(
         trade_nums,
         [-d for d in max_drawdowns],
         color="#f85149",
@@ -857,36 +1142,28 @@ def generate_pnl_summary_chart(roundtrips: list[dict]) -> bytes:
     props = dict(
         boxstyle="round,pad=0.5", facecolor="#add8e6", edgecolor="#4682b4", alpha=0.9
     )
-    ax_pnl.text(
+    ax.text(
         0.02,
         0.98,
         summary_text,
-        transform=ax_pnl.transAxes,
+        transform=ax.transAxes,
         fontsize=9,
         verticalalignment="top",
         fontfamily="monospace",
         bbox=props,
     )
 
-    ax_pnl.legend(loc="upper right", fontsize=9)
-    ax_pnl.axhline(y=0, color="black", linestyle="-", alpha=0.5, linewidth=0.8)
-    ax_pnl.set_title(
-        "PnL Summary - Cumulative Performance & Trade Metrics", fontsize=14
-    )
-    ax_pnl.set_ylabel("PnL", fontsize=11)
-    ax_pnl.grid(True, alpha=0.3, axis="y")
-
-    colors = ["#3fb950" if p >= 0 else "#f85149" for p in signed_positions]
-    ax_pos.bar(trade_nums, signed_positions, color=colors, alpha=0.7, width=0.6)
-    ax_pos.axhline(y=0, color="black", linestyle="-", alpha=0.5, linewidth=0.8)
-    ax_pos.set_ylabel("Max Position", fontsize=11)
-    ax_pos.set_xlabel("Trade Number", fontsize=11)
-    ax_pos.grid(True, alpha=0.3, axis="y")
+    ax.legend(loc="upper right", fontsize=9)
+    ax.axhline(y=0, color="black", linestyle="-", alpha=0.5, linewidth=0.8)
+    ax.set_title("PnL Summary - Cumulative Performance & Trade Metrics", fontsize=14)
+    ax.set_ylabel("PnL", fontsize=11)
+    ax.set_xlabel("Trade Number", fontsize=11)
+    ax.grid(True, alpha=0.3, axis="y")
 
     if total_trades > 20:
         tick_interval = max(1, total_trades // 15)
         tick_positions = list(range(1, total_trades + 1, tick_interval))
-        ax_pos.set_xticks(tick_positions)
+        ax.set_xticks(tick_positions)
 
     plt.tight_layout()
 
