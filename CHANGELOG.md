@@ -1,3 +1,9 @@
+## v0.65.0
+- feat: add dashed plot styles and improve mkdocs readability
+- feat: track indicator subpackages and fix gitignore scope
+- feat: add user-configurable plot_color to indicators
+- feat: changed charting
+
 ## v0.64.0
 - feat: changed dashboard UI
 
