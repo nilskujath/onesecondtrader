@@ -17,7 +17,8 @@ from typing import Any
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle
 import pandas as pd
 
@@ -31,8 +32,8 @@ _dash_patterns = {
 
 
 def _render_background_shading(
-    all_axes: list[plt.Axes],
-    tag_to_ax: dict[int, plt.Axes],
+    all_axes: list[Axes],
+    tag_to_ax: dict[int, Axes],
     x_values: Any,
     bar_width: Any,
     indicator_series: dict[str, list[float]],
@@ -92,7 +93,7 @@ def _render_background_shading(
 
 
 def _draw_ohlc_bars(
-    ax: plt.Axes,
+    ax: Axes,
     data: pd.DataFrame,
     x_values: Any,
     chart_type: str,
@@ -354,10 +355,10 @@ def generate_chart_image(
     num_subplots = 2 + len(subplot_tags)
     height_ratios = [1, 3] + [1] * len(subplot_tags)
     fig_height = 8 + 2 * len(subplot_tags)
-    fig, axes = plt.subplots(
+    fig = Figure(figsize=(14, fig_height))
+    axes = fig.subplots(
         num_subplots,
         1,
-        figsize=(14, fig_height),
         sharex=True,
         gridspec_kw={"height_ratios": height_ratios},
     )
@@ -544,7 +545,7 @@ def generate_chart_image(
         ax.legend(loc="upper left", fontsize=8)
 
     all_axes = [ax_pnl, ax_main] + ax_indicators
-    tag_to_ax: dict[int, plt.Axes] = {0: ax_main}
+    tag_to_ax: dict[int, Axes] = {0: ax_main}
     for ax_idx, tag in enumerate(subplot_tags):
         tag_to_ax[tag] = ax_indicators[ax_idx]
     _render_background_shading(
@@ -658,12 +659,14 @@ def generate_chart_image(
             ax.set_xticks(tick_positions)
             ax.set_xticklabels(tick_labels)
 
-    plt.xticks(rotation=45, fontsize=9)
-    plt.tight_layout()
+    for ax in all_axes:
+        for label in ax.get_xticklabels():
+            label.set_rotation(45)
+            label.set_fontsize(9)
+    fig.tight_layout()
 
     buf = io.BytesIO()
-    plt.savefig(buf, format="png", dpi=500, bbox_inches="tight")
-    plt.close(fig)
+    fig.savefig(buf, format="png", dpi=500, bbox_inches="tight")
     buf.seek(0)
 
     return buf.read()
@@ -806,10 +809,10 @@ def generate_segment_chart_image(
     num_subplots = 1 + len(subplot_tags)
     height_ratios = [3] + [1] * len(subplot_tags)
     fig_height = 6 + 2 * len(subplot_tags)
-    fig, axes = plt.subplots(
+    fig = Figure(figsize=(14, fig_height))
+    axes = fig.subplots(
         num_subplots,
         1,
-        figsize=(14, fig_height),
         sharex=True,
         gridspec_kw={"height_ratios": height_ratios},
     )
@@ -945,7 +948,7 @@ def generate_segment_chart_image(
     )
 
     all_axes = [ax_main] + ax_indicators
-    tag_to_ax: dict[int, plt.Axes] = {0: ax_main}
+    tag_to_ax: dict[int, Axes] = {0: ax_main}
     for ax_idx, tag in enumerate(subplot_tags):
         tag_to_ax[tag] = ax_indicators[ax_idx]
     _render_background_shading(
@@ -998,12 +1001,14 @@ def generate_segment_chart_image(
             ax.set_xticks(tick_positions)
             ax.set_xticklabels(tick_labels)
 
-    plt.xticks(rotation=45, fontsize=9)
-    plt.tight_layout()
+    for ax in all_axes:
+        for label in ax.get_xticklabels():
+            label.set_rotation(45)
+            label.set_fontsize(9)
+    fig.tight_layout()
 
     buf = io.BytesIO()
-    plt.savefig(buf, format="png", dpi=500, bbox_inches="tight")
-    plt.close(fig)
+    fig.savefig(buf, format="png", dpi=500, bbox_inches="tight")
     buf.seek(0)
 
     return buf.read()
@@ -1163,7 +1168,8 @@ def generate_trade_journey_chart(run_id: str, roundtrips: list[dict]) -> bytes:
     if not journey_data:
         return b""
 
-    fig, ax = plt.subplots(figsize=(14, 7))
+    fig = Figure(figsize=(14, 7))
+    ax = fig.subplots()
 
     win_color = "#3fb950"
     loss_color = "#f85149"
@@ -1331,11 +1337,10 @@ def generate_trade_journey_chart(run_id: str, roundtrips: list[dict]) -> bytes:
         tick_positions = list(range(1, num_trades + 1, tick_interval))
         ax.set_xticks(tick_positions)
 
-    plt.tight_layout()
+    fig.tight_layout()
 
     buf = io.BytesIO()
-    plt.savefig(buf, format="png", dpi=500, bbox_inches="tight")
-    plt.close(fig)
+    fig.savefig(buf, format="png", dpi=500, bbox_inches="tight")
     buf.seek(0)
 
     return buf.read()
@@ -1357,7 +1362,8 @@ def generate_pnl_summary_chart(roundtrips: list[dict]) -> bytes:
     if not roundtrips:
         return b""
 
-    fig, ax = plt.subplots(figsize=(14, 7))
+    fig = Figure(figsize=(14, 7))
+    ax = fig.subplots()
 
     trade_nums = list(range(1, len(roundtrips) + 1))
     cumulative_pnl_gross = []
@@ -1457,11 +1463,10 @@ def generate_pnl_summary_chart(roundtrips: list[dict]) -> bytes:
         tick_positions = list(range(1, total_trades + 1, tick_interval))
         ax.set_xticks(tick_positions)
 
-    plt.tight_layout()
+    fig.tight_layout()
 
     buf = io.BytesIO()
-    plt.savefig(buf, format="png", dpi=500, bbox_inches="tight")
-    plt.close(fig)
+    fig.savefig(buf, format="png", dpi=500, bbox_inches="tight")
     buf.seek(0)
 
     return buf.read()

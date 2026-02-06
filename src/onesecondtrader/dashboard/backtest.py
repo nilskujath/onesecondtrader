@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import enum
 import sqlite3
+import threading
 import time
 from typing import Any
 
@@ -52,6 +53,7 @@ class BacktestRequest(BaseModel):
 running_jobs: dict[str, str] = {}
 _orchestrator_refs: dict[str, Any] = {}
 _running_metadata: dict[str, dict] = {}
+_jobs_lock = threading.Lock()
 
 RTYPE_TO_BAR_PERIOD = {32: "SECOND", 33: "MINUTE", 34: "HOUR", 35: "DAY"}
 
@@ -120,17 +122,19 @@ def run_backtest(request: BacktestRequest, run_id: str) -> None:
     from onesecondtrader.strategies.base import ParamSpec
 
     try:
-        running_jobs[run_id] = "running"
-        _running_metadata[run_id] = {
-            "strategy": request.strategy,
-            "symbols": request.symbols,
-            "start_date": request.start_date,
-            "end_date": request.end_date,
-        }
+        with _jobs_lock:
+            running_jobs[run_id] = "running"
+            _running_metadata[run_id] = {
+                "strategy": request.strategy,
+                "symbols": request.symbols,
+                "start_date": request.start_date,
+                "end_date": request.end_date,
+            }
 
         strategy_cls = registry.get_strategies().get(request.strategy)
         if not strategy_cls:
-            running_jobs[run_id] = "error: invalid strategy"
+            with _jobs_lock:
+                running_jobs[run_id] = "error: invalid strategy"
             return
 
         bar_period = BarPeriod[RTYPE_TO_BAR_PERIOD[request.rtype]]
@@ -167,9 +171,10 @@ def run_backtest(request: BacktestRequest, run_id: str) -> None:
         row = cursor.fetchone()
         conn.close()
         if not row:
-            running_jobs[run_id] = (
-                f"error: publisher_id {request.publisher_id} not found"
-            )
+            with _jobs_lock:
+                running_jobs[run_id] = (
+                    f"error: publisher_id {request.publisher_id} not found"
+                )
             return
         publisher_name, dataset = row
 
@@ -206,16 +211,21 @@ def run_backtest(request: BacktestRequest, run_id: str) -> None:
             broker=SimulatedBroker,
             datafeed=configured_datafeed,
         )
-        _orchestrator_refs[run_id] = orchestrator
+        with _jobs_lock:
+            _orchestrator_refs[run_id] = orchestrator
         try:
             orchestrator.run()
             _ensure_db_status(orchestrator.run_id, "completed")
-            running_jobs[run_id] = "completed"
+            with _jobs_lock:
+                running_jobs[run_id] = "completed"
         except Exception as e:
             _ensure_db_status(getattr(orchestrator, "run_id", None), "failed")
-            running_jobs[run_id] = f"error: {e}"
+            with _jobs_lock:
+                running_jobs[run_id] = f"error: {e}"
         finally:
-            _orchestrator_refs.pop(run_id, None)
-            _running_metadata.pop(run_id, None)
+            with _jobs_lock:
+                _orchestrator_refs.pop(run_id, None)
+                _running_metadata.pop(run_id, None)
     except Exception as e:
-        running_jobs[run_id] = f"error: {e}"
+        with _jobs_lock:
+            running_jobs[run_id] = f"error: {e}"

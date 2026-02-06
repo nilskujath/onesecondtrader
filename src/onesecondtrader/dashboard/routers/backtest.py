@@ -16,6 +16,7 @@ from ..backtest import (
     running_jobs,
     _orchestrator_refs,
     _running_metadata,
+    _jobs_lock,
 )
 
 router = APIRouter(prefix="/api/backtest", tags=["backtest"])
@@ -26,7 +27,7 @@ async def api_backtest_run(
     request: BacktestRequest, background_tasks: BackgroundTasks
 ) -> dict:
     """Start a backtest in the background and return the run ID."""
-    run_id = str(uuid.uuid4())[:8]
+    run_id = str(uuid.uuid4())
     background_tasks.add_task(run_backtest, request, run_id)
     return {"run_id": run_id, "status": "started"}
 
@@ -35,10 +36,14 @@ async def api_backtest_run(
 async def api_backtest_running() -> dict:
     """Return all currently running backtests with metadata and progress."""
     result = []
-    for run_id, status in running_jobs.items():
+    with _jobs_lock:
+        items = list(running_jobs.items())
+        meta_snapshot = dict(_running_metadata)
+        orch_snapshot = dict(_orchestrator_refs)
+    for run_id, status in items:
         if status == "running":
-            meta = _running_metadata.get(run_id, {})
-            orch = _orchestrator_refs.get(run_id)
+            meta = meta_snapshot.get(run_id, {})
+            orch = orch_snapshot.get(run_id)
             progress = int(orch.progress * 100) if orch is not None else 0
             result.append(
                 {
@@ -53,10 +58,11 @@ async def api_backtest_running() -> dict:
 @router.get("/status/{run_id}")
 async def api_backtest_status(run_id: str) -> dict:
     """Return the current status of a backtest job."""
-    status = running_jobs.get(run_id, "not found")
+    with _jobs_lock:
+        status = running_jobs.get(run_id, "not found")
+        orch = _orchestrator_refs.get(run_id)
     progress = 0
     if status == "running":
-        orch = _orchestrator_refs.get(run_id)
         if orch is not None:
             progress = int(orch.progress * 100)
     elif status == "completed":
