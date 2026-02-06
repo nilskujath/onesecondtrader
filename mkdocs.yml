@@ -71,6 +71,11 @@ nav:
       - Bollinger Bandwidth: reference/indicators/bollinger/bollinger_bandwidth.md
       - Bollinger Lower: reference/indicators/bollinger/bollinger_lower.md
       - Bollinger Upper: reference/indicators/bollinger/bollinger_upper.md
+    - Oscillators:
+      - Detrend: reference/indicators/oscillators/detrend.md
+      - Roc: reference/indicators/oscillators/roc.md
+    - Wilders:
+      - Rsi: reference/indicators/wilders/rsi.md
   - Messaging:
     - Eventbus: reference/messaging/eventbus.md
     - Subscriber: reference/messaging/subscriber.md
@@ -78,6 +83,7 @@ nav:
     - Action Types: reference/models/action_types.md
     - Bar Fields: reference/models/bar_fields.md
     - Bar Period: reference/models/bar_period.md
+    - Chart Type: reference/models/chart_type.md
     - Order Types: reference/models/order_types.md
     - Plot Style: reference/models/plot_style.md
     - Rejection Reasons: reference/models/rejection_reasons.md

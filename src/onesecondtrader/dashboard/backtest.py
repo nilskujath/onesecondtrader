@@ -126,7 +126,7 @@ def run_backtest(request: BacktestRequest, run_id: str) -> None:
                 updated_parameters[name] = spec
 
         configured_strategy = type(
-            f"Configured{request.strategy}",
+            f"_Configured{request.strategy}",
             (strategy_cls,),
             {"symbols": request.symbols, "parameters": updated_parameters},
         )

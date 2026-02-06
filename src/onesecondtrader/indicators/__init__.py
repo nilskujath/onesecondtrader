@@ -6,6 +6,8 @@ from .base import IndicatorBase, discover_indicators, get_registered_indicators
 from .moving_averages import SimpleMovingAverage
 from .market_fields import Open, High, Low, Close, Volume
 from .bollinger import BollingerLower, BollingerUpper, BollingerBandwidth
+from .wilders import RSI
+from .oscillators import ROC, DetrendOscillator
 
 __all__ = [
     "IndicatorBase",
@@ -20,4 +22,7 @@ __all__ = [
     "BollingerLower",
     "BollingerUpper",
     "BollingerBandwidth",
+    "RSI",
+    "ROC",
+    "DetrendOscillator",
 ]

@@ -78,9 +78,12 @@ async def api_run_chart_image(
     end_ns: int,
     direction: str,
     pnl: float,
+    chart_type: str = "c_bars",
 ) -> Response:
     """Return a PNG chart image for a round-trip trade."""
-    image_bytes = generate_chart_image(run_id, symbol, start_ns, end_ns, direction, pnl)
+    image_bytes = generate_chart_image(
+        run_id, symbol, start_ns, end_ns, direction, pnl, chart_type
+    )
     return Response(content=image_bytes, media_type="image/png")
 
 
@@ -295,10 +298,11 @@ async def api_segment_chart_image(
     end_ns: int,
     period_start_ns: int | None = None,
     period_end_ns: int | None = None,
+    chart_type: str = "c_bars",
 ) -> Response:
     """Return a PNG chart image for a bar segment."""
     image_bytes = generate_segment_chart_image(
-        run_id, symbol, start_ns, end_ns, period_start_ns, period_end_ns
+        run_id, symbol, start_ns, end_ns, period_start_ns, period_end_ns, chart_type
     )
     return Response(content=image_bytes, media_type="image/png")
 

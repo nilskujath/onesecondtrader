@@ -391,6 +391,7 @@
         const res = await fetch('/api/strategies');
         const data = await res.json();
         const sel = document.getElementById('strategy');
+        sel.innerHTML = '';
         data.strategies.forEach(s => sel.innerHTML += `<option value="${s.id}">${s.name}</option>`);
         if (data.strategies.length > 0) {
             sel.value = data.strategies[0].id;
@@ -1072,8 +1073,16 @@
         mode: 'bars',
         barsPerChart: 500,
         overlap: 100,
-        timePeriod: 'day'
+        timePeriod: 'day',
+        chartType: 'c_bars'
     };
+    
+    const CHART_TYPE_OPTIONS = [
+        {value: 'candlestick', label: 'Candlestick'},
+        {value: 'oc_bars', label: 'OC Bars'},
+        {value: 'c_bars', label: 'C Bars'},
+        {value: 'bars', label: 'Bars'}
+    ];
     
     const TIME_PERIOD_OPTIONS = {
         DAY: [{value: 'year', label: 'Year'}, {value: 'quarter', label: 'Quarter'}, {value: 'month', label: 'Month'}],
@@ -1151,6 +1160,9 @@
         const periodOptions = timePeriodOpts.map(o =>
             `<option value="${o.value}" ${settings.timePeriod === o.value ? 'selected' : ''}>${o.label}</option>`
         ).join('');
+        const chartTypeOptions = CHART_TYPE_OPTIONS.map(o =>
+            `<option value="${o.value}" ${settings.chartType === o.value ? 'selected' : ''}>${o.label}</option>`
+        ).join('');
         const runOptions = runs.length === 0
             ? '<option value="">No completed runs</option>'
             : '<option value="">Select a run...</option>' + runs.map(r => {
@@ -1199,6 +1211,11 @@
                     <label>Overlap:</label>
                     <input type="number" id="overlap" value="${settings.overlap}" min="0" max="1000" ${overlapDisabled} onchange="onOverlapChange(this.value)">
                 </div>
+                <div class="settings-divider"></div>
+                <div class="settings-group">
+                    <label>Chart Type:</label>
+                    <select id="chart-type" onchange="onChartTypeChange(this.value)">${chartTypeOptions}</select>
+                </div>
             </div>
         `;
     }
@@ -1224,6 +1241,12 @@
     
     function onOverlapChange(value) {
         settings.overlap = parseInt(value) || 0;
+        saveSettings();
+        if (selectedRunId) loadData(selectedRunId);
+    }
+    
+    function onChartTypeChange(value) {
+        settings.chartType = value;
         saveSettings();
         if (selectedRunId) loadData(selectedRunId);
     }
@@ -1456,22 +1479,22 @@
         let url, cacheKey;
         if (settings.mode === 'trades') {
             const rt = filteredRoundtrips[idx];
-            cacheKey = `${selectedRunId}_trade_${rt.symbol}_${rt.entry_ts}_${rt.exit_ts}`;
+            cacheKey = `${selectedRunId}_trade_${rt.symbol}_${rt.entry_ts}_${rt.exit_ts}_${settings.chartType}`;
             if (chartCache[cacheKey]) {
                 container.innerHTML = `<img src="${chartCache[cacheKey]}" alt="Chart">`;
                 return;
             }
             container.innerHTML = '<div class="chart-loading">Loading chart...</div>';
-            url = `/api/runs/${selectedRunId}/chart.png?symbol=${encodeURIComponent(rt.symbol)}&start_ns=${rt.entry_ts}&end_ns=${rt.exit_ts}&direction=${rt.direction}&pnl=${rt.pnl_after_commission}`;
+            url = `/api/runs/${selectedRunId}/chart.png?symbol=${encodeURIComponent(rt.symbol)}&start_ns=${rt.entry_ts}&end_ns=${rt.exit_ts}&direction=${rt.direction}&pnl=${rt.pnl_after_commission}&chart_type=${settings.chartType}`;
         } else {
             const seg = filteredSegments[idx];
-            cacheKey = `${selectedRunId}_${seg.symbol}_${seg.start_ts}_${seg.end_ts}`;
+            cacheKey = `${selectedRunId}_${seg.symbol}_${seg.start_ts}_${seg.end_ts}_${settings.chartType}`;
             if (chartCache[cacheKey]) {
                 container.innerHTML = `<img src="${chartCache[cacheKey]}" alt="Chart">`;
                 return;
             }
             container.innerHTML = '<div class="chart-loading">Loading chart...</div>';
-            url = `/api/runs/${selectedRunId}/segment-chart.png?symbol=${encodeURIComponent(seg.symbol)}&start_ns=${seg.start_ts}&end_ns=${seg.end_ts}`;
+            url = `/api/runs/${selectedRunId}/segment-chart.png?symbol=${encodeURIComponent(seg.symbol)}&start_ns=${seg.start_ts}&end_ns=${seg.end_ts}&chart_type=${settings.chartType}`;
             if (seg.period_start_ns && seg.period_end_ns) {
                 url += `&period_start_ns=${seg.period_start_ns}&period_end_ns=${seg.period_end_ns}`;
             }

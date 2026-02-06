@@ -1,12 +1,10 @@
-csv_port/
-csv_port_archive
+# Editor and IDE files
 .idea/
 site/
 .coverage
 coverage.xml
 **/__pycache__/
 htmlcov/
-ignore/
 
 # Environment configuration
 .env
@@ -18,10 +16,13 @@ data/
 *.csv
 runs/
 
+# Compressed data files
 **/*.zip
+
+# Databases
 secmaster.db
 runs.db
-./charts/
-charts/
 
-quarantine/
+# Proprietary code
+strategies/
+indicators/

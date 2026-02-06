@@ -23,6 +23,62 @@ import pandas as pd
 from .db import get_runs_db_path
 
 
+def _draw_ohlc_bars(ax, data, x_values, chart_type: str, bar_width) -> None:
+    """
+    Draw OHLC bars on the given axis based on chart type.
+
+    Parameters:
+        ax: Matplotlib axis to draw on.
+        data: DataFrame with open, high, low, close columns.
+        x_values: X-axis values for each bar.
+        chart_type: One of 'candlestick', 'oc_bars', 'c_bars', 'bars'.
+        bar_width: Width of bars (for candlesticks).
+    """
+    for i in range(len(data)):
+        x = x_values[i]
+        o = data["open"].iloc[i]
+        h = data["high"].iloc[i]
+        low = data["low"].iloc[i]
+        c = data["close"].iloc[i]
+
+        if chart_type == "candlestick":
+            color = "black" if c <= o else "white"
+            edge_color = "black"
+            body_bottom = min(o, c)
+            body_height = abs(c - o)
+            if isinstance(bar_width, pd.Timedelta):
+                rect_width = bar_width * 0.8  # type: ignore[assignment]
+            else:
+                rect_width = bar_width * 0.8
+            ax.plot([x, x], [low, h], color="black", linewidth=0.8, alpha=0.7)
+            rect = Rectangle(
+                (x - rect_width / 2, body_bottom),
+                rect_width,  # type: ignore[arg-type]
+                body_height if body_height > 0 else 0.001,
+                facecolor=color,
+                edgecolor=edge_color,
+                linewidth=0.5,
+            )
+            ax.add_patch(rect)
+        elif chart_type == "oc_bars":
+            ax.plot([x, x], [low, h], color="black", linewidth=0.8, alpha=0.7)
+            if isinstance(bar_width, pd.Timedelta):
+                tick_offset = bar_width * 0.3
+            else:
+                tick_offset = 0.3  # type: ignore[assignment]
+            ax.plot(
+                [x - tick_offset, x], [o, o], color="black", linewidth=0.8, alpha=0.7
+            )
+            ax.plot(
+                [x, x + tick_offset], [c, c], color="blue", linewidth=0.8, alpha=0.7
+            )
+        elif chart_type == "c_bars":
+            ax.plot([x, x], [low, h], color="black", linewidth=0.8, alpha=0.7)
+            ax.plot([x], [c], marker="_", color="blue", markersize=3)
+        else:
+            ax.plot([x, x], [low, h], color="black", linewidth=0.8, alpha=0.7)
+
+
 def generate_chart_image(
     run_id: str,
     symbol: str,
@@ -30,6 +86,7 @@ def generate_chart_image(
     end_ns: int,
     direction: str,
     pnl: float,
+    chart_type: str = "c_bars",
 ) -> bytes:
     """
     Generate a PNG chart image for a round-trip trade.
@@ -52,6 +109,8 @@ def generate_chart_image(
             Trade direction, either "LONG" or "SHORT".
         pnl:
             Net profit/loss for the trade.
+        chart_type:
+            OHLC rendering style: 'candlestick', 'oc_bars', 'c_bars', or 'bars'.
 
     Returns:
         PNG image bytes, or empty bytes if no data is available.
@@ -273,18 +332,7 @@ def generate_chart_image(
     ax_pnl.grid(True, alpha=0.3)
     ax_pnl.legend(loc="upper left", fontsize=8)
 
-    for i in range(len(data)):
-        x = x_values[i]
-        ax_main.plot(
-            [x, x],
-            [data["low"].iloc[i], data["high"].iloc[i]],
-            color="black",
-            linewidth=0.8,
-            alpha=0.7,
-        )
-        ax_main.plot(
-            [x], [data["close"].iloc[i]], marker="_", color="blue", markersize=3
-        )
+    _draw_ohlc_bars(ax_main, data, x_values, chart_type, bar_width)
 
     colors = ["orange", "purple", "cyan", "magenta", "brown", "pink", "olive", "teal"]
     for idx, (name, values) in enumerate(overlay_indicators.items()):
@@ -465,6 +513,7 @@ def generate_segment_chart_image(
     end_ns: int,
     period_start_ns: int | None = None,
     period_end_ns: int | None = None,
+    chart_type: str = "c_bars",
 ) -> bytes:
     """
     Generate a PNG chart image for a bar segment.
@@ -486,6 +535,8 @@ def generate_segment_chart_image(
             Optional period start for fixed x-axis limits.
         period_end_ns:
             Optional period end for fixed x-axis limits.
+        chart_type:
+            OHLC rendering style: 'candlestick', 'oc_bars', 'c_bars', or 'bars'.
 
     Returns:
         PNG image bytes, or empty bytes if no data is available.
@@ -583,18 +634,7 @@ def generate_segment_chart_image(
         x_values = list(range(len(data)))  # type: ignore[assignment]
         bar_width = 0.8  # type: ignore[assignment]
 
-    for i in range(len(data)):
-        x = x_values[i]
-        ax_main.plot(
-            [x, x],
-            [data["low"].iloc[i], data["high"].iloc[i]],
-            color="black",
-            linewidth=0.8,
-            alpha=0.7,
-        )
-        ax_main.plot(
-            [x], [data["close"].iloc[i]], marker="_", color="blue", markersize=3
-        )
+    _draw_ohlc_bars(ax_main, data, x_values, chart_type, bar_width)
 
     colors = ["orange", "purple", "cyan", "magenta", "brown", "pink", "olive", "teal"]
     for idx, (name, values) in enumerate(overlay_indicators.items()):
