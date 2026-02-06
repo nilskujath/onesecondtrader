@@ -473,9 +473,22 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
             models.PlotStyle.HISTOGRAM: "H",
             models.PlotStyle.DOTS: "D",
         }
+        color_codes = {
+            models.PlotColor.BLACK: "K",
+            models.PlotColor.RED: "R",
+            models.PlotColor.BLUE: "B",
+            models.PlotColor.GREEN: "G",
+            models.PlotColor.ORANGE: "O",
+            models.PlotColor.PURPLE: "P",
+            models.PlotColor.CYAN: "C",
+            models.PlotColor.MAGENTA: "M",
+            models.PlotColor.YELLOW: "Y",
+            models.PlotColor.WHITE: "W",
+            models.PlotColor.TEAL: "T",
+        }
 
         indicator_values = {
-            f"{ind.plot_at:02d}{style_codes[ind.plot_as]}_{ind.name}": ind.latest(
+            f"{ind.plot_at:02d}{style_codes[ind.plot_as]}{color_codes[ind.plot_color]}_{ind.name}": ind.latest(
                 event.symbol
             )
             for ind in self._indicators

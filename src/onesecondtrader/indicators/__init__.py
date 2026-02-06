@@ -3,11 +3,12 @@ Provides a library of common technical indicators and a base class for creating 
 """
 
 from .base import IndicatorBase, discover_indicators, get_registered_indicators
-from .moving_averages import SimpleMovingAverage
+from .averages import SimpleMovingAverage
 from .market_fields import Open, High, Low, Close, Volume
 from .bollinger import BollingerLower, BollingerUpper, BollingerBandwidth
 from .wilders import RSI
 from .oscillators import ROC, DetrendOscillator
+from .period_extreme import PeriodExtreme
 
 __all__ = [
     "IndicatorBase",
@@ -25,4 +26,5 @@ __all__ = [
     "RSI",
     "ROC",
     "DetrendOscillator",
+    "PeriodExtreme",
 ]

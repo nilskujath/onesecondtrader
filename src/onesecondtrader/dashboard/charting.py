@@ -191,9 +191,24 @@ def generate_chart_image(
     )
     data["ts_event"] = pd.to_datetime(data["ts_event"], unit="ns")
 
+    color_code_to_matplotlib = {
+        "K": "black",
+        "R": "red",
+        "B": "blue",
+        "G": "green",
+        "O": "orange",
+        "P": "purple",
+        "C": "cyan",
+        "M": "magenta",
+        "Y": "yellow",
+        "W": "white",
+        "T": "teal",
+    }
+
     indicator_series: dict[str, list[float]] = {}
     indicator_tags: dict[str, int] = {}
     indicator_styles: dict[str, str] = {}
+    indicator_colors: dict[str, str] = {}
     for idx in range(len(data)):
         row = data.iloc[idx]
         indicators = json.loads(row["indicators"]) if row["indicators"] else {}
@@ -204,6 +219,12 @@ def generate_chart_image(
                 indicator_tags[name] = tag
                 style = name[2] if len(name) > 2 and name[2] in "LHD" else "L"
                 indicator_styles[name] = style
+                color_code = (
+                    name[3]
+                    if len(name) > 3 and name[3] in color_code_to_matplotlib
+                    else "K"
+                )
+                indicator_colors[name] = color_code_to_matplotlib[color_code]
             indicator_series[name][idx] = value if value == value else math.nan
 
     overlay_indicators = {
@@ -334,10 +355,9 @@ def generate_chart_image(
 
     _draw_ohlc_bars(ax_main, data, x_values, chart_type, bar_width)
 
-    colors = ["orange", "purple", "cyan", "magenta", "brown", "pink", "olive", "teal"]
     for idx, (name, values) in enumerate(overlay_indicators.items()):
-        display_name = name[4:] if len(name) > 4 else name
-        color = colors[idx % len(colors)]
+        display_name = name[5:] if len(name) > 5 else name
+        color = indicator_colors.get(name, "black")
         style = indicator_styles.get(name, "L")
         if style == "H":
             ax_main.bar(
@@ -373,8 +393,8 @@ def generate_chart_image(
         ax = ax_indicators[ax_idx]
         tag_indicators = subplot_indicators[tag]
         for idx, (name, values) in enumerate(tag_indicators.items()):
-            display_name = name[4:] if len(name) > 4 else name
-            color = colors[idx % len(colors)]
+            display_name = name[5:] if len(name) > 5 else name
+            color = indicator_colors.get(name, "black")
             style = indicator_styles.get(name, "L")
             if style == "H":
                 ax.bar(
@@ -579,9 +599,24 @@ def generate_segment_chart_image(
     )
     data["ts_event"] = pd.to_datetime(data["ts_event"], unit="ns")
 
+    color_code_to_matplotlib = {
+        "K": "black",
+        "R": "red",
+        "B": "blue",
+        "G": "green",
+        "O": "orange",
+        "P": "purple",
+        "C": "cyan",
+        "M": "magenta",
+        "Y": "yellow",
+        "W": "white",
+        "T": "teal",
+    }
+
     indicator_series: dict[str, list[float]] = {}
     indicator_tags: dict[str, int] = {}
     indicator_styles: dict[str, str] = {}
+    indicator_colors: dict[str, str] = {}
     for idx in range(len(data)):
         row = data.iloc[idx]
         indicators = json.loads(row["indicators"]) if row["indicators"] else {}
@@ -592,6 +627,12 @@ def generate_segment_chart_image(
                 indicator_tags[name] = tag
                 style = name[2] if len(name) > 2 and name[2] in "LHD" else "L"
                 indicator_styles[name] = style
+                color_code = (
+                    name[3]
+                    if len(name) > 3 and name[3] in color_code_to_matplotlib
+                    else "K"
+                )
+                indicator_colors[name] = color_code_to_matplotlib[color_code]
             indicator_series[name][idx] = value if value == value else math.nan
 
     overlay_indicators = {
@@ -636,10 +677,9 @@ def generate_segment_chart_image(
 
     _draw_ohlc_bars(ax_main, data, x_values, chart_type, bar_width)
 
-    colors = ["orange", "purple", "cyan", "magenta", "brown", "pink", "olive", "teal"]
     for idx, (name, values) in enumerate(overlay_indicators.items()):
-        display_name = name[4:] if len(name) > 4 else name
-        color = colors[idx % len(colors)]
+        display_name = name[5:] if len(name) > 5 else name
+        color = indicator_colors.get(name, "black")
         style = indicator_styles.get(name, "L")
         if style == "H":
             ax_main.bar(
@@ -675,8 +715,8 @@ def generate_segment_chart_image(
         ax = ax_indicators[ax_idx]
         tag_indicators = subplot_indicators[tag]
         for idx, (name, values) in enumerate(tag_indicators.items()):
-            display_name = name[4:] if len(name) > 4 else name
-            color = colors[idx % len(colors)]
+            display_name = name[5:] if len(name) > 5 else name
+            color = indicator_colors.get(name, "black")
             style = indicator_styles.get(name, "L")
             if style == "H":
                 ax.bar(

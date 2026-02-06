@@ -389,14 +389,12 @@ async def api_run_bars(run_id: str, symbol: str) -> dict:
                 indicator_series[name] = []
                 tag = int(name[:2]) if len(name) >= 2 and name[:2].isdigit() else 99
                 style = name[2] if len(name) > 2 and name[2] in "LHD" else "L"
-                display_name = (
-                    name[4:]
-                    if len(name) > 4 and name[2] == "_"
-                    else (name[3:] if len(name) > 3 else name)
-                )
+                color_code = name[3] if len(name) > 3 else "K"
+                display_name = name[5:] if len(name) > 5 else name
                 indicator_meta[name] = {
                     "tag": tag,
                     "style": style,
+                    "color": color_code,
                     "display_name": display_name,
                 }
             if value is not None and value == value:

@@ -25,4 +25,5 @@ runs.db
 
 # Proprietary code
 strategies/
-indicators/
+./indicators/
+.claude/

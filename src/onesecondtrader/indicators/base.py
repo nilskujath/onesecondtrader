@@ -103,6 +103,7 @@ class IndicatorBase(abc.ABC):
         max_history: int = 100,
         plot_at: int = 99,
         plot_as: models.PlotStyle = models.PlotStyle.LINE,
+        plot_color: models.PlotColor = models.PlotColor.BLACK,
     ) -> None:
         """
         Parameters:
@@ -113,12 +114,15 @@ class IndicatorBase(abc.ABC):
                 Opaque plotting identifier forwarded to the charting backend.
             plot_as:
                 Visual style used to render the indicator.
+            plot_color:
+                Color used to render the indicator.
         """
         self._lock = threading.Lock()
         self._max_history = max(1, int(max_history))
         self._history_data: dict[str, collections.deque[float]] = {}
         self._plot_at = plot_at
         self._plot_as = plot_as
+        self._plot_color = plot_color
 
     @property
     @abc.abstractmethod
@@ -227,3 +231,13 @@ class IndicatorBase(abc.ABC):
             Visual style used to render the indicator.
         """
         return self._plot_as
+
+    @property
+    def plot_color(self) -> models.PlotColor:
+        """
+        Plotting color.
+
+        Returns:
+            Color used to render the indicator.
+        """
+        return self._plot_color

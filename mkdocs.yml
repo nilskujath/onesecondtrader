@@ -66,7 +66,9 @@ nav:
   - Indicators:
     - Base: reference/indicators/base.md
     - Market Fields: reference/indicators/market_fields.md
-    - Moving Averages: reference/indicators/moving_averages.md
+    - Period Extreme: reference/indicators/period_extreme.md
+    - Averages:
+      - Simple Moving Average: reference/indicators/averages/simple_moving_average.md
     - Bollinger:
       - Bollinger Bandwidth: reference/indicators/bollinger/bollinger_bandwidth.md
       - Bollinger Lower: reference/indicators/bollinger/bollinger_lower.md
@@ -84,7 +86,9 @@ nav:
     - Bar Fields: reference/models/bar_fields.md
     - Bar Period: reference/models/bar_period.md
     - Chart Type: reference/models/chart_type.md
+    - Extreme Type: reference/models/extreme_type.md
     - Order Types: reference/models/order_types.md
+    - Plot Color: reference/models/plot_color.md
     - Plot Style: reference/models/plot_style.md
     - Rejection Reasons: reference/models/rejection_reasons.md
     - Trade Sides: reference/models/trade_sides.md

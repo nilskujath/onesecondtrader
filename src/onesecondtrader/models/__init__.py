@@ -7,6 +7,7 @@ from .bar_fields import BarField
 from .bar_period import BarPeriod
 from .chart_type import ChartType
 from .order_types import OrderType
+from .plot_color import PlotColor
 from .plot_style import PlotStyle
 from .rejection_reasons import (
     OrderRejectionReason,
@@ -14,6 +15,7 @@ from .rejection_reasons import (
     ModificationRejectionReason,
 )
 from .trade_sides import TradeSide
+from .extreme_type import ExtremeType
 
 __all__ = [
     "ActionType",
@@ -21,9 +23,11 @@ __all__ = [
     "BarPeriod",
     "ChartType",
     "OrderType",
+    "PlotColor",
     "PlotStyle",
     "TradeSide",
     "OrderRejectionReason",
     "CancellationRejectionReason",
     "ModificationRejectionReason",
+    "ExtremeType",
 ]

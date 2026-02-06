@@ -3,7 +3,7 @@ import time
 
 
 from onesecondtrader import events, models
-from onesecondtrader.indicators.moving_averages import SimpleMovingAverage
+from onesecondtrader.indicators.averages import SimpleMovingAverage
 
 
 def make_bar(

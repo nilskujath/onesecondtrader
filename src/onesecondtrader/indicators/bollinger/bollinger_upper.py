@@ -25,6 +25,7 @@ class BollingerUpper(indicators.IndicatorBase):
         bar_field: models.BarField = models.BarField.CLOSE,
         plot_at: int = 0,
         plot_as: models.PlotStyle = models.PlotStyle.LINE,
+        plot_color: models.PlotColor = models.PlotColor.BLACK,
     ) -> None:
         """
         Parameters:
@@ -40,8 +41,15 @@ class BollingerUpper(indicators.IndicatorBase):
                 Opaque plotting identifier forwarded to the charting backend.
             plot_as:
                 Visual style used to render the indicator.
+            plot_color:
+                Color used to render the indicator.
         """
-        super().__init__(max_history=max_history, plot_at=plot_at, plot_as=plot_as)
+        super().__init__(
+            max_history=max_history,
+            plot_at=plot_at,
+            plot_as=plot_as,
+            plot_color=plot_color,
+        )
 
         self.period: int = max(1, int(period))
         self.num_std: float = float(num_std)

@@ -6,7 +6,7 @@ import numpy as np
 
 from onesecondtrader.events.market import BarReceived
 from onesecondtrader.indicators.base import IndicatorBase
-from onesecondtrader.models import BarPeriod
+from onesecondtrader.models import BarPeriod, PlotColor
 
 
 class CloseIndicator(IndicatorBase):
@@ -44,6 +44,16 @@ def test_name_is_stable_string() -> None:
 def test_plot_at_is_exposed() -> None:
     ind = CloseIndicator(plot_at=123)
     assert ind.plot_at == 123
+
+
+def test_plot_color_defaults_to_black() -> None:
+    ind = CloseIndicator()
+    assert ind.plot_color == PlotColor.BLACK
+
+
+def test_plot_color_exposes_user_supplied_value() -> None:
+    ind = CloseIndicator(plot_color=PlotColor.RED)
+    assert ind.plot_color == PlotColor.RED
 
 
 def test_missing_symbol_returns_nan() -> None:
