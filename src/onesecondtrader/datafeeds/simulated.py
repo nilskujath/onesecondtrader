@@ -61,6 +61,8 @@ class SimulatedDatafeed(DatafeedBase):
         self._thread: threading.Thread | None = None
         self._stop_event = threading.Event()
         self._publisher_id: int | None = None
+        self._bars_total: int = 0
+        self._bars_sent: int = 0
 
     def connect(self) -> None:
         """
@@ -145,6 +147,13 @@ class SimulatedDatafeed(DatafeedBase):
             self._thread.start()
         self._thread.join()
 
+    @property
+    def progress(self) -> float:
+        total = self._bars_total
+        if total <= 0:
+            return 0.0
+        return min(self._bars_sent / total, 1.0)
+
     def _stream(self) -> None:
         if not self._connection or self._publisher_id is None:
             return
@@ -166,8 +175,7 @@ class SimulatedDatafeed(DatafeedBase):
         if self.end_ts is not None:
             params.append(self.end_ts)
 
-        query = f"""
-            SELECT s.symbol, o.rtype, o.ts_event, o.open, o.high, o.low, o.close, o.volume
+        where_clause = f"""
             FROM ohlcv o
             JOIN instruments i ON i.instrument_id = o.instrument_id
             JOIN symbology s
@@ -181,6 +189,16 @@ class SimulatedDatafeed(DatafeedBase):
               AND o.rtype IN ({",".join("?" * len(rtypes))})
               {"AND o.ts_event >= ?" if self.start_ts is not None else ""}
               {"AND o.ts_event <= ?" if self.end_ts is not None else ""}
+        """
+
+        count_query = f"SELECT COUNT(*) {where_clause}"
+        row = self._connection.execute(count_query, params).fetchone()
+        self._bars_total = row[0] if row else 0
+        self._bars_sent = 0
+
+        query = f"""
+            SELECT s.symbol, o.rtype, o.ts_event, o.open, o.high, o.low, o.close, o.volume
+            {where_clause}
             ORDER BY o.ts_event, s.symbol
         """
 
@@ -204,6 +222,8 @@ class SimulatedDatafeed(DatafeedBase):
         for _, group in itertools.groupby(rows, key=lambda r: r[2]):
             if self._stop_event.is_set():
                 return
-            for bar in filter(None, map(to_bar, group)):
+            group_rows = list(group)
+            self._bars_sent += len(group_rows)
+            for bar in filter(None, map(to_bar, group_rows)):
                 self._publish(bar)
             self._event_bus.wait_until_system_idle()

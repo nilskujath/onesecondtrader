@@ -21,6 +21,11 @@ nav:
   - Getting Started: tutorials/getting_started.md
 - Explanation:
   - Overview: explanation/overview.md
+  - Event-Driven Architecture: explanation/event_driven_architecture.md
+  - Indicator Model: explanation/indicator_model.md
+  - Strategy Lifecycle: explanation/strategy_lifecycle.md
+  - Broker and Datafeed: explanation/broker_and_datafeed.md
+  - Orchestration and Recording: explanation/orchestration_and_recording.md
 - Reference:
   - Overview: reference/overview.md
   - Brokers:
@@ -79,6 +84,11 @@ nav:
       - Detrend: reference/indicators/oscillators/detrend.md
       - Roc: reference/indicators/oscillators/roc.md
     - Wilders:
+      - Adx: reference/indicators/wilders/adx.md
+      - Atr: reference/indicators/wilders/atr.md
+      - Minus Di: reference/indicators/wilders/minus_di.md
+      - Parabolic Sar: reference/indicators/wilders/parabolic_sar.md
+      - Plus Di: reference/indicators/wilders/plus_di.md
       - Rsi: reference/indicators/wilders/rsi.md
   - Messaging:
     - Eventbus: reference/messaging/eventbus.md

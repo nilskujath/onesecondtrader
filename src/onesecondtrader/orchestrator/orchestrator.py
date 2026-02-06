@@ -52,6 +52,13 @@ class Orchestrator:
         self._datafeed: DatafeedBase | None = None
         self._recorder: RunRecorder | None = None
 
+    @property
+    def progress(self) -> float:
+        datafeed = self._datafeed
+        if datafeed is None:
+            return 0.0
+        return datafeed.progress
+
     def run(self) -> None:
         """
         Execute the trading run.
@@ -59,11 +66,11 @@ class Orchestrator:
         Creates all components, connects them, subscribes to symbols, waits for
         the datafeed to complete, and then shuts down all components.
         """
-        run_id = self._generate_run_id()
+        self.run_id = self._generate_run_id()
 
         self._event_bus = messaging.EventBus()
 
-        self._recorder = self._create_recorder(run_id)
+        self._recorder = self._create_recorder(self.run_id)
         self._broker = self._broker_class(self._event_bus)
         self._strategies = [s(self._event_bus) for s in self._strategy_classes]
         self._datafeed = self._datafeed_class(self._event_bus)

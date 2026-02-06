@@ -88,3 +88,7 @@ class DatafeedBase(abc.ABC):
         The default implementation does nothing.
         """
         pass
+
+    @property
+    def progress(self) -> float:
+        return 0.0

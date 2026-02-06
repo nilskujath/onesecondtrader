@@ -30,6 +30,67 @@ _dash_patterns = {
 }
 
 
+def _render_background_shading(
+    all_axes: list[plt.Axes],
+    tag_to_ax: dict[int, plt.Axes],
+    x_values: Any,
+    bar_width: Any,
+    indicator_series: dict[str, list[float]],
+    indicator_tags: dict[str, int],
+    indicator_styles: dict[str, str],
+    indicator_colors: dict[str, str],
+) -> None:
+    """
+    Render background shading for BACKGROUND1 ("A") and BACKGROUND2 ("E") indicators.
+
+    For each contiguous run of non-zero, non-NaN values, draws an ``axvspan``
+    on the appropriate axes.
+
+    Parameters:
+        all_axes: Every axis in the figure (used for "E" style).
+        tag_to_ax: Mapping of indicator tag to its axis (used for "A" style).
+        x_values: X-axis values for each bar.
+        bar_width: Width of a single bar.
+        indicator_series: Indicator name to value list mapping.
+        indicator_tags: Indicator name to tag mapping.
+        indicator_styles: Indicator name to style code mapping.
+        indicator_colors: Indicator name to matplotlib color mapping.
+    """
+    half = bar_width / 2 if not isinstance(bar_width, pd.Timedelta) else bar_width / 2
+
+    for name, values in indicator_series.items():
+        style = indicator_styles.get(name, "L")
+        if style not in ("A", "E"):
+            continue
+
+        color = indicator_colors.get(name, "green")
+        tag = indicator_tags.get(name, 0)
+
+        if style == "A":
+            target_axes = [tag_to_ax[tag]] if tag in tag_to_ax else []
+        else:
+            target_axes = all_axes
+
+        if not target_axes:
+            continue
+
+        # Find contiguous runs of non-zero, non-NaN values
+        i = 0
+        n = len(values)
+        while i < n:
+            if not math.isnan(values[i]) and values[i] != 0.0:
+                run_start = i
+                while i < n and not math.isnan(values[i]) and values[i] != 0.0:
+                    i += 1
+                run_end = i - 1
+                x_start = x_values[run_start] - half
+                x_end = x_values[run_end] + half
+                for ax in target_axes:
+                    ax.axvspan(x_start, x_end, color=color, alpha=0.10)
+            else:
+                i += 1
+
+
 def _draw_ohlc_bars(
     ax: plt.Axes,
     data: pd.DataFrame,
@@ -222,15 +283,31 @@ def generate_chart_image(
     indicator_tags: dict[str, int] = {}
     indicator_styles: dict[str, str] = {}
     indicator_colors: dict[str, str] = {}
+    fill_between_specs: list[dict] = []
+    _fb_seen: set[str] = set()
     for idx in range(len(data)):
         row = data.iloc[idx]
         indicators = json.loads(row["indicators"]) if row["indicators"] else {}
         for name, value in indicators.items():
+            if name.startswith("FB:"):
+                if name not in _fb_seen:
+                    _fb_seen.add(name)
+                    parts = name.split(":")
+                    if len(parts) >= 5:
+                        fill_between_specs.append(
+                            {
+                                "upper": parts[1],
+                                "lower": parts[2],
+                                "color": color_code_to_matplotlib.get(parts[3], "blue"),
+                                "alpha": float(parts[4]),
+                            }
+                        )
+                continue
             if name not in indicator_series:
                 indicator_series[name] = [math.nan] * len(data)
                 tag = int(name[:2]) if name[:2].isdigit() else 99
                 indicator_tags[name] = tag
-                style = name[2] if len(name) > 2 and name[2] in "LHD123" else "L"
+                style = name[2] if len(name) > 2 and name[2] in "LHD123AE" else "L"
                 indicator_styles[name] = style
                 color_code = (
                     name[3]
@@ -372,6 +449,8 @@ def generate_chart_image(
         display_name = name[5:] if len(name) > 5 else name
         color = indicator_colors.get(name, "black")
         style = indicator_styles.get(name, "L")
+        if style in ("A", "E"):
+            continue
         if style == "H":
             ax_main.bar(
                 x_values,
@@ -420,6 +499,8 @@ def generate_chart_image(
             display_name = name[5:] if len(name) > 5 else name
             color = indicator_colors.get(name, "black")
             style = indicator_styles.get(name, "L")
+            if style in ("A", "E"):
+                continue
             if style == "H":
                 ax.bar(
                     x_values,
@@ -463,6 +544,33 @@ def generate_chart_image(
         ax.legend(loc="upper left", fontsize=8)
 
     all_axes = [ax_pnl, ax_main] + ax_indicators
+    tag_to_ax: dict[int, plt.Axes] = {0: ax_main}
+    for ax_idx, tag in enumerate(subplot_tags):
+        tag_to_ax[tag] = ax_indicators[ax_idx]
+    _render_background_shading(
+        all_axes,
+        tag_to_ax,
+        x_values,
+        bar_width,
+        indicator_series,
+        indicator_tags,
+        indicator_styles,
+        indicator_colors,
+    )
+    for fb in fill_between_specs:
+        upper_series = indicator_series.get(fb["upper"])
+        lower_series = indicator_series.get(fb["lower"])
+        if upper_series is not None and lower_series is not None:
+            tag = indicator_tags.get(fb["upper"], 0)
+            target_ax = tag_to_ax.get(tag, ax_main)
+            target_ax.fill_between(
+                x_values,
+                lower_series,
+                upper_series,
+                color=fb["color"],
+                alpha=fb["alpha"],
+            )
+
     if 0 <= highlight_start < len(data) and 0 <= highlight_end < len(data):
         highlight_x_start = x_values[highlight_start]
         highlight_x_end = x_values[highlight_end]
@@ -652,15 +760,31 @@ def generate_segment_chart_image(
     indicator_tags: dict[str, int] = {}
     indicator_styles: dict[str, str] = {}
     indicator_colors: dict[str, str] = {}
+    fill_between_specs: list[dict] = []
+    _fb_seen: set[str] = set()
     for idx in range(len(data)):
         row = data.iloc[idx]
         indicators = json.loads(row["indicators"]) if row["indicators"] else {}
         for name, value in indicators.items():
+            if name.startswith("FB:"):
+                if name not in _fb_seen:
+                    _fb_seen.add(name)
+                    parts = name.split(":")
+                    if len(parts) >= 5:
+                        fill_between_specs.append(
+                            {
+                                "upper": parts[1],
+                                "lower": parts[2],
+                                "color": color_code_to_matplotlib.get(parts[3], "blue"),
+                                "alpha": float(parts[4]),
+                            }
+                        )
+                continue
             if name not in indicator_series:
                 indicator_series[name] = [math.nan] * len(data)
                 tag = int(name[:2]) if name[:2].isdigit() else 99
                 indicator_tags[name] = tag
-                style = name[2] if len(name) > 2 and name[2] in "LHD123" else "L"
+                style = name[2] if len(name) > 2 and name[2] in "LHD123AE" else "L"
                 indicator_styles[name] = style
                 color_code = (
                     name[3]
@@ -716,6 +840,8 @@ def generate_segment_chart_image(
         display_name = name[5:] if len(name) > 5 else name
         color = indicator_colors.get(name, "black")
         style = indicator_styles.get(name, "L")
+        if style in ("A", "E"):
+            continue
         if style == "H":
             ax_main.bar(
                 x_values,
@@ -764,6 +890,8 @@ def generate_segment_chart_image(
             display_name = name[5:] if len(name) > 5 else name
             color = indicator_colors.get(name, "black")
             style = indicator_styles.get(name, "L")
+            if style in ("A", "E"):
+                continue
             if style == "H":
                 ax.bar(
                     x_values,
@@ -817,6 +945,33 @@ def generate_segment_chart_image(
     )
 
     all_axes = [ax_main] + ax_indicators
+    tag_to_ax: dict[int, plt.Axes] = {0: ax_main}
+    for ax_idx, tag in enumerate(subplot_tags):
+        tag_to_ax[tag] = ax_indicators[ax_idx]
+    _render_background_shading(
+        all_axes,
+        tag_to_ax,
+        x_values,
+        bar_width,
+        indicator_series,
+        indicator_tags,
+        indicator_styles,
+        indicator_colors,
+    )
+    for fb in fill_between_specs:
+        upper_series = indicator_series.get(fb["upper"])
+        lower_series = indicator_series.get(fb["lower"])
+        if upper_series is not None and lower_series is not None:
+            tag = indicator_tags.get(fb["upper"], 0)
+            target_ax = tag_to_ax.get(tag, ax_main)
+            target_ax.fill_between(
+                x_values,
+                lower_series,
+                upper_series,
+                color=fb["color"],
+                alpha=fb["alpha"],
+            )
+
     if use_time_axis:
         import matplotlib.dates as mdates
 

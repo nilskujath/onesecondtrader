@@ -238,6 +238,14 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
         self._submitted_orders: dict[uuid.UUID, OrderRecord] = {}
         self._submitted_modifications: dict[uuid.UUID, OrderRecord] = {}
         self._submitted_cancellations: dict[uuid.UUID, OrderRecord] = {}
+        self._fill_betweens: list[
+            tuple[
+                indicators.IndicatorBase,
+                indicators.IndicatorBase,
+                models.PlotColor,
+                float,
+            ]
+        ] = []
 
         # OHLCV as indicators for history access: self.bar.close.history
         self.bar = SimpleNamespace(
@@ -266,6 +274,28 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
         """
         self._indicators.append(ind)
         return ind
+
+    def add_fill_between(
+        self,
+        upper: indicators.IndicatorBase,
+        lower: indicators.IndicatorBase,
+        color: models.PlotColor = models.PlotColor.BLUE,
+        alpha: float = 0.15,
+    ) -> None:
+        """
+        Register a shaded fill region between two indicators.
+
+        Parameters:
+            upper:
+                Indicator providing the upper boundary of the fill region.
+            lower:
+                Indicator providing the lower boundary of the fill region.
+            color:
+                Color used to shade the fill region.
+            alpha:
+                Opacity of the fill region.
+        """
+        self._fill_betweens.append((upper, lower, color, alpha))
 
     @property
     def position(self) -> float:
@@ -475,6 +505,8 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
             models.PlotStyle.DASH1: "1",
             models.PlotStyle.DASH2: "2",
             models.PlotStyle.DASH3: "3",
+            models.PlotStyle.BACKGROUND1: "A",
+            models.PlotStyle.BACKGROUND2: "E",
         }
         color_codes = {
             models.PlotColor.BLACK: "K",
@@ -497,6 +529,14 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
             for ind in self._indicators
             if ind.name not in ohlcv_names or ind.plot_at != 99
         }
+
+        for upper_ind, lower_ind, fb_color, fb_alpha in self._fill_betweens:
+            upper_key = f"{upper_ind.plot_at:02d}{style_codes[upper_ind.plot_as]}{color_codes[upper_ind.plot_color]}_{upper_ind.name}"
+            lower_key = f"{lower_ind.plot_at:02d}{style_codes[lower_ind.plot_as]}{color_codes[lower_ind.plot_color]}_{lower_ind.name}"
+            fb_color_code = color_codes.get(fb_color, "B")
+            indicator_values[
+                f"FB:{upper_key}:{lower_key}:{fb_color_code}:{fb_alpha}"
+            ] = 0.0
 
         processed_bar = events.market.BarProcessed(
             ts_event_ns=event.ts_event_ns,

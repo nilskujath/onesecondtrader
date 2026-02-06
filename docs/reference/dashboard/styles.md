@@ -146,7 +146,7 @@
     .symbol-section { background: #0d1117; border-radius: 6px; padding: 12px; }
     .publisher-row { display: flex; gap: 8px; margin-bottom: 12px; }
     .publisher-row select { flex: 1; }
-    .preset-row { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
+    .preset-row { display: flex; gap: 8px; align-items: center; background: #0d1117; border-radius: 6px; padding: 8px 12px; }
     .preset-row select { flex: 1; }
     .preset-row input { flex: 1; }
     .preset-row .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; cursor: not-allowed; }
@@ -218,6 +218,7 @@
     let publishers = [];
     let datasets = [];
     let selectedPublisherId = null;
+    let isLoadingPreset = false;
     
     const RTYPE_LABELS = {32: 'Second', 33: 'Minute', 34: 'Hour', 35: 'Day'};
     
@@ -237,6 +238,8 @@
     }
     
     async function onPublisherChange() {
+        if (isLoadingPreset) return;
+        document.getElementById('preset-select').value = '';
         const name = document.getElementById('publisher-name').value;
         const rtype = getSelectedRtype();
         const datasetSel = document.getElementById('publisher-dataset');
@@ -258,6 +261,8 @@
     }
     
     async function onDatasetChange() {
+        if (isLoadingPreset) return;
+        document.getElementById('preset-select').value = '';
         const pubId = document.getElementById('publisher-dataset').value;
         selectedPublisherId = pubId ? parseInt(pubId) : null;
         selectedSymbols = [];
@@ -268,7 +273,6 @@
         if (selectedPublisherId) {
             await loadCoverageForPublisher(selectedPublisherId);
             document.getElementById('symbol-selection').style.display = 'block';
-            await loadPresets();
         } else {
             document.getElementById('symbol-selection').style.display = 'none';
         }
@@ -296,42 +300,69 @@
         const res = await fetch('/api/presets');
         const data = await res.json();
         presets = data.presets || [];
-        await filterAndRenderPresets();
+        renderPresetDropdown();
     }
     
-    async function filterAndRenderPresets() {
+    function renderPresetDropdown() {
         const sel = document.getElementById('preset-select');
         sel.innerHTML = '<option value="">-- Select Preset --</option>';
-        const rtype = getSelectedRtype();
-        const availableSymbols = symbolsForRtype[rtype] || [];
-        for (const p of presets) {
-            const res = await fetch(`/api/presets/${encodeURIComponent(p)}`);
-            const data = await res.json();
-            const hasAvailable = (data.symbols || []).some(s => availableSymbols.includes(s));
-            if (hasAvailable) {
-                sel.innerHTML += `<option value="${p}">${p}</option>`;
-            }
-        }
+        presets.forEach(p => {
+            sel.innerHTML += `<option value="${p.name}">${p.name}</option>`;
+        });
         updateButtonStates();
     }
     
     async function loadPreset() {
         const name = document.getElementById('preset-select').value;
         updateButtonStates();
-        if (!name) {
-            selectedSymbols = [];
-            renderSelectedSymbols();
-            updateDateRange();
-            return;
-        }
-        const rtype = getSelectedRtype();
-        const symbols = symbolsForRtype[rtype] || [];
-        const res = await fetch(`/api/presets/${encodeURIComponent(name)}`);
-        const data = await res.json();
-        if (data.symbols) {
-            selectedSymbols = data.symbols.filter(s => symbols.includes(s));
+        if (!name) return;
+        const preset = presets.find(p => p.name === name);
+        if (!preset) return;
+        await applyPreset(preset);
+    }
+    
+    async function applyPreset(preset) {
+        isLoadingPreset = true;
+        try {
+            // 1. Set bar period and show symbols section
+            const barPeriodEl = document.getElementById('bar-period');
+            barPeriodEl.value = String(preset.rtype);
+            const section = document.getElementById('symbols-section');
+            section.style.display = 'block';
+    
+            // Load publishers for this rtype
+            await loadPublishers();
+    
+            // 2. Set publisher and load datasets
+            const pubNameEl = document.getElementById('publisher-name');
+            pubNameEl.value = preset.publisher_name;
+    
+            const rtype = preset.rtype;
+            const url = `/api/secmaster/publishers/${encodeURIComponent(preset.publisher_name)}/datasets?rtype=${rtype}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            datasets = data.datasets || [];
+            const datasetSel = document.getElementById('publisher-dataset');
+            datasetSel.innerHTML = '<option value="">-- Select Dataset --</option>';
+            datasets.forEach(d => datasetSel.innerHTML += `<option value="${d.publisher_id}">${d.dataset}</option>`);
+    
+            // 3. Set dataset
+            datasetSel.value = String(preset.publisher_id);
+            selectedPublisherId = preset.publisher_id;
+    
+            // 4. Load coverage and show symbol selection
+            await loadCoverageForPublisher(selectedPublisherId);
+            document.getElementById('symbol-selection').style.display = 'block';
+            document.getElementById('symbol-search').value = '';
+            document.getElementById('search-results').innerHTML = '';
+    
+            // 5. Set symbols (filtered to available)
+            const availableSymbols = symbolsForRtype[rtype] || [];
+            selectedSymbols = preset.symbols.filter(s => availableSymbols.includes(s));
             renderSelectedSymbolsKeepPreset();
             updateDateRange();
+        } finally {
+            isLoadingPreset = false;
         }
     }
     
@@ -339,17 +370,28 @@
         const nameInput = document.getElementById('preset-name');
         const name = nameInput.value.trim();
         if (!name) { alert('Enter a preset name'); return; }
+        const rtype = getSelectedRtype();
+        if (!rtype) { alert('Select a bar period first'); return; }
+        if (!selectedPublisherId) { alert('Select a publisher and dataset first'); return; }
         if (selectedSymbols.length === 0) { alert('Select at least one symbol'); return; }
-        const exists = presets.includes(name);
+        const publisherName = document.getElementById('publisher-name').value;
+        const exists = presets.some(p => p.name === name);
         const method = exists ? 'PUT' : 'POST';
-        const url = exists ? `/api/presets/${encodeURIComponent(name)}` : '/api/presets';
-        await fetch(url, {
+        const apiUrl = exists ? `/api/presets/${encodeURIComponent(name)}` : '/api/presets';
+        await fetch(apiUrl, {
             method, headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({name, symbols: selectedSymbols})
+            body: JSON.stringify({
+                name,
+                rtype,
+                publisher_name: publisherName,
+                publisher_id: selectedPublisherId,
+                symbols: selectedSymbols
+            })
         });
         nameInput.value = '';
         await loadPresets();
         document.getElementById('preset-select').value = name;
+        updateButtonStates();
     }
     
     async function deletePreset() {
@@ -378,7 +420,7 @@
         runBtn.disabled = !canRun;
         const hasPresetSelected = !!(presetSelect && presetSelect.value);
         const hasPresetName = !!(presetNameInput && presetNameInput.value.trim().length > 0);
-        const canSave = hasPresetName && selectedSymbols.length > 0;
+        const canSave = hasPresetName && rtype && selectedPublisherId && selectedSymbols.length > 0;
         if (saveBtn) {
             saveBtn.classList.toggle('active', canSave);
         }
@@ -464,6 +506,8 @@
     }
     
     function onBarPeriodChange() {
+        if (isLoadingPreset) return;
+        document.getElementById('preset-select').value = '';
         selectedSymbols = [];
         selectedPublisherId = null;
         symbolsForRtype = {};
@@ -702,6 +746,31 @@
         container.innerHTML = html;
     }
     
+    async function pollBacktestStatus(runId, refreshCount) {
+        if (refreshCount === undefined) refreshCount = 0;
+        try {
+            const r = await fetch(`/api/backtest/status/${runId}`);
+            const d = await r.json();
+            if (d.status === 'completed' || d.status.startsWith('error')) {
+                delete activeRuns[runId];
+                renderRuns();
+                await loadDbRuns();
+                // Keep refreshing DB a few times to ensure status is reflected
+                if (refreshCount < 5) {
+                    setTimeout(() => pollBacktestStatus(runId, refreshCount + 1), 500);
+                }
+                return;
+            }
+            if (activeRuns[runId]) {
+                activeRuns[runId].progress = d.progress || 0;
+                renderRuns();
+            }
+        } catch (e) {
+            // fetch failed, will retry on next poll
+        }
+        setTimeout(() => pollBacktestStatus(runId), 1000);
+    }
+    
     async function runBacktest() {
         const btn = document.getElementById('run-btn');
         const rtype = getSelectedRtype();
@@ -749,29 +818,12 @@
                 startDate: startDate,
                 endDate: endDate,
                 status: 'running',
-                progress: 10
+                progress: 0
             };
             renderRuns();
             btn.disabled = false;
     
-            let progress = 10;
-            const poll = setInterval(async () => {
-                const r = await fetch(`/api/backtest/status/${runId}`);
-                const d = await r.json();
-                if (d.status === 'completed') {
-                    clearInterval(poll);
-                    delete activeRuns[runId];
-                    await loadDbRuns();
-                } else if (d.status.startsWith('error')) {
-                    clearInterval(poll);
-                    delete activeRuns[runId];
-                    await loadDbRuns();
-                } else {
-                    progress = Math.min(progress + 5, 90);
-                    activeRuns[runId].progress = progress;
-                    renderRuns();
-                }
-            }, 1000);
+            pollBacktestStatus(runId);
         } catch (e) {
             alert(`Error: ${e.message}`);
             btn.disabled = false;
@@ -782,10 +834,29 @@
         window.location.href = `/performance?run_id=${runId}`;
     }
     
+    async function restoreActiveRuns() {
+        const res = await fetch('/api/backtest/running');
+        const data = await res.json();
+        (data.running || []).forEach(r => {
+            activeRuns[r.run_id] = {
+                strategy: r.strategy || 'Unknown',
+                symbols: r.symbols || [],
+                startDate: r.start_date || null,
+                endDate: r.end_date || null,
+                status: 'running',
+                progress: r.progress || 0
+            };
+            pollBacktestStatus(r.run_id);
+        });
+        renderRuns();
+    }
+    
     document.addEventListener('DOMContentLoaded', () => {
         loadStrategies();
         loadCoverage();
+        loadPresets();
         loadDbRuns();
+        restoreActiveRuns();
     });
     """
     

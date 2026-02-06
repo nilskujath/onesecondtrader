@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import enum
 import sqlite3
+import time
+from typing import Any
 
 import pandas as pd
 from pydantic import BaseModel
@@ -48,6 +50,8 @@ class BacktestRequest(BaseModel):
 
 
 running_jobs: dict[str, str] = {}
+_orchestrator_refs: dict[str, Any] = {}
+_running_metadata: dict[str, dict] = {}
 
 RTYPE_TO_BAR_PERIOD = {32: "SECOND", 33: "MINUTE", 34: "HOUR", 35: "DAY"}
 
@@ -79,6 +83,22 @@ def deserialize_params(params: dict, param_specs: dict) -> dict:
     return result
 
 
+def _ensure_db_status(db_run_id: str | None, status: str) -> None:
+    """Force-update the run status in SQLite using a fresh connection."""
+    if not db_run_id:
+        return
+    try:
+        conn = sqlite3.connect(get_runs_db_path())
+        conn.execute(
+            "UPDATE runs SET status = ?, ts_end = ? WHERE run_id = ? AND status = 'running'",
+            (status, time.time_ns(), db_run_id),
+        )
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass
+
+
 def run_backtest(request: BacktestRequest, run_id: str) -> None:
     """
     Execute a backtest in a background task.
@@ -101,6 +121,12 @@ def run_backtest(request: BacktestRequest, run_id: str) -> None:
 
     try:
         running_jobs[run_id] = "running"
+        _running_metadata[run_id] = {
+            "strategy": request.strategy,
+            "symbols": request.symbols,
+            "start_date": request.start_date,
+            "end_date": request.end_date,
+        }
 
         strategy_cls = registry.get_strategies().get(request.strategy)
         if not strategy_cls:
@@ -180,7 +206,16 @@ def run_backtest(request: BacktestRequest, run_id: str) -> None:
             broker=SimulatedBroker,
             datafeed=configured_datafeed,
         )
-        orchestrator.run()
-        running_jobs[run_id] = "completed"
+        _orchestrator_refs[run_id] = orchestrator
+        try:
+            orchestrator.run()
+            _ensure_db_status(orchestrator.run_id, "completed")
+            running_jobs[run_id] = "completed"
+        except Exception as e:
+            _ensure_db_status(getattr(orchestrator, "run_id", None), "failed")
+            running_jobs[run_id] = f"error: {e}"
+        finally:
+            _orchestrator_refs.pop(run_id, None)
+            _running_metadata.pop(run_id, None)
     except Exception as e:
         running_jobs[run_id] = f"error: {e}"

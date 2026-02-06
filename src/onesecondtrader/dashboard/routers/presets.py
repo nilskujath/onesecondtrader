@@ -18,34 +18,82 @@ from ..db import get_secmaster_path
 router = APIRouter(prefix="/api/presets", tags=["presets"])
 
 
+def ensure_presets_table() -> None:
+    """Drop and recreate the symbol_presets table with the expanded schema."""
+    db_path = get_secmaster_path()
+    if not os.path.exists(db_path):
+        return
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("DROP TABLE IF EXISTS symbol_presets")
+    cursor.execute(
+        """
+        CREATE TABLE symbol_presets (
+            name TEXT PRIMARY KEY,
+            rtype INTEGER NOT NULL,
+            publisher_name TEXT NOT NULL,
+            publisher_id INTEGER NOT NULL,
+            symbols TEXT NOT NULL
+        )
+        """
+    )
+    conn.commit()
+    conn.close()
+
+
 @router.get("")
 async def list_presets() -> dict:
-    """Return list of all preset names."""
+    """Return list of all preset objects."""
     db_path = get_secmaster_path()
     if not os.path.exists(db_path):
         return {"presets": []}
     conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute("SELECT name FROM symbol_presets ORDER BY name")
-    presets = [row[0] for row in cursor.fetchall()]
+    cursor.execute(
+        "SELECT name, rtype, publisher_name, publisher_id, symbols "
+        "FROM symbol_presets ORDER BY name"
+    )
+    rows = cursor.fetchall()
     conn.close()
+    presets = [
+        {
+            "name": row["name"],
+            "rtype": row["rtype"],
+            "publisher_name": row["publisher_name"],
+            "publisher_id": row["publisher_id"],
+            "symbols": json.loads(row["symbols"]),
+        }
+        for row in rows
+    ]
     return {"presets": presets}
 
 
 @router.get("/{name}")
 async def get_preset(name: str) -> dict:
-    """Return symbols for a specific preset."""
+    """Return all fields for a specific preset."""
     db_path = get_secmaster_path()
     if not os.path.exists(db_path):
         return {"error": "Preset not found"}
     conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute("SELECT symbols FROM symbol_presets WHERE name = ?", (name,))
+    cursor.execute(
+        "SELECT name, rtype, publisher_name, publisher_id, symbols "
+        "FROM symbol_presets WHERE name = ?",
+        (name,),
+    )
     row = cursor.fetchone()
     conn.close()
     if row is None:
         return {"error": "Preset not found"}
-    return {"name": name, "symbols": json.loads(row[0])}
+    return {
+        "name": row["name"],
+        "rtype": row["rtype"],
+        "publisher_name": row["publisher_name"],
+        "publisher_id": row["publisher_id"],
+        "symbols": json.loads(row["symbols"]),
+    }
 
 
 class PresetRequest(BaseModel):
@@ -55,11 +103,20 @@ class PresetRequest(BaseModel):
     Attributes:
         name:
             Name of the preset.
+        rtype:
+            Bar period rtype value.
+        publisher_name:
+            Name of the publisher.
+        publisher_id:
+            ID of the publisher dataset.
         symbols:
             List of symbol strings in the preset.
     """
 
     name: str
+    rtype: int
+    publisher_name: str
+    publisher_id: int
     symbols: list[str]
 
 
@@ -70,8 +127,15 @@ async def create_preset(request: PresetRequest) -> dict:
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO symbol_presets (name, symbols) VALUES (?, ?)",
-        (request.name, json.dumps(request.symbols)),
+        "INSERT INTO symbol_presets (name, rtype, publisher_name, publisher_id, symbols) "
+        "VALUES (?, ?, ?, ?, ?)",
+        (
+            request.name,
+            request.rtype,
+            request.publisher_name,
+            request.publisher_id,
+            json.dumps(request.symbols),
+        ),
     )
     conn.commit()
     conn.close()
@@ -85,8 +149,15 @@ async def update_preset(name: str, request: PresetRequest) -> dict:
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute(
-        "UPDATE symbol_presets SET symbols = ? WHERE name = ?",
-        (json.dumps(request.symbols), name),
+        "UPDATE symbol_presets SET rtype = ?, publisher_name = ?, publisher_id = ?, "
+        "symbols = ? WHERE name = ?",
+        (
+            request.rtype,
+            request.publisher_name,
+            request.publisher_id,
+            json.dumps(request.symbols),
+            name,
+        ),
     )
     conn.commit()
     conn.close()

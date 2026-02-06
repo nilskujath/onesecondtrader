@@ -219,21 +219,22 @@ class RunRecorder(messaging.Subscriber):
 
     def _flush_all(self) -> None:
         """
-        Flush all event buffers to the database.
+        Flush all event buffers to the database with a single commit.
         """
-        self._flush_bars()
-        self._flush_bars_processed()
-        self._flush_order_submissions()
-        self._flush_order_cancellations()
-        self._flush_order_modifications()
-        self._flush_orders_accepted()
-        self._flush_orders_rejected()
-        self._flush_cancellations_accepted()
-        self._flush_cancellations_rejected()
-        self._flush_modifications_accepted()
-        self._flush_modifications_rejected()
-        self._flush_fills()
-        self._flush_expirations()
+        self._flush_bars(commit=False)
+        self._flush_bars_processed(commit=False)
+        self._flush_order_submissions(commit=False)
+        self._flush_order_cancellations(commit=False)
+        self._flush_order_modifications(commit=False)
+        self._flush_orders_accepted(commit=False)
+        self._flush_orders_rejected(commit=False)
+        self._flush_cancellations_accepted(commit=False)
+        self._flush_cancellations_rejected(commit=False)
+        self._flush_modifications_accepted(commit=False)
+        self._flush_modifications_rejected(commit=False)
+        self._flush_fills(commit=False)
+        self._flush_expirations(commit=False)
+        self._conn.commit()
 
     def _buffer_bar_received(self, event: events.market.BarReceived) -> None:
         """
@@ -550,7 +551,7 @@ class RunRecorder(messaging.Subscriber):
         if len(self._buffers["expirations"]) >= BATCH_SIZE:
             self._flush_expirations()
 
-    def _flush_bars(self) -> None:
+    def _flush_bars(self, *, commit: bool = True) -> None:
         """
         Insert buffered bar received records into the database.
         """
@@ -563,10 +564,11 @@ class RunRecorder(messaging.Subscriber):
             """,
             self._buffers["bars"],
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         self._buffers["bars"].clear()
 
-    def _flush_bars_processed(self) -> None:
+    def _flush_bars_processed(self, *, commit: bool = True) -> None:
         """
         Insert buffered bar processed records into the database.
         """
@@ -579,10 +581,11 @@ class RunRecorder(messaging.Subscriber):
             """,
             self._buffers["bars_processed"],
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         self._buffers["bars_processed"].clear()
 
-    def _flush_order_submissions(self) -> None:
+    def _flush_order_submissions(self, *, commit: bool = True) -> None:
         """
         Insert buffered order submission records into the database.
         """
@@ -595,10 +598,11 @@ class RunRecorder(messaging.Subscriber):
             """,
             self._buffers["order_submissions"],
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         self._buffers["order_submissions"].clear()
 
-    def _flush_order_cancellations(self) -> None:
+    def _flush_order_cancellations(self, *, commit: bool = True) -> None:
         """
         Insert buffered order cancellation records into the database.
         """
@@ -611,10 +615,11 @@ class RunRecorder(messaging.Subscriber):
             """,
             self._buffers["order_cancellations"],
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         self._buffers["order_cancellations"].clear()
 
-    def _flush_order_modifications(self) -> None:
+    def _flush_order_modifications(self, *, commit: bool = True) -> None:
         """
         Insert buffered order modification records into the database.
         """
@@ -627,10 +632,11 @@ class RunRecorder(messaging.Subscriber):
             """,
             self._buffers["order_modifications"],
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         self._buffers["order_modifications"].clear()
 
-    def _flush_orders_accepted(self) -> None:
+    def _flush_orders_accepted(self, *, commit: bool = True) -> None:
         """
         Insert buffered order accepted records into the database.
         """
@@ -643,10 +649,11 @@ class RunRecorder(messaging.Subscriber):
             """,
             self._buffers["orders_accepted"],
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         self._buffers["orders_accepted"].clear()
 
-    def _flush_orders_rejected(self) -> None:
+    def _flush_orders_rejected(self, *, commit: bool = True) -> None:
         """
         Insert buffered order rejected records into the database.
         """
@@ -659,10 +666,11 @@ class RunRecorder(messaging.Subscriber):
             """,
             self._buffers["orders_rejected"],
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         self._buffers["orders_rejected"].clear()
 
-    def _flush_cancellations_accepted(self) -> None:
+    def _flush_cancellations_accepted(self, *, commit: bool = True) -> None:
         """
         Insert buffered cancellation accepted records into the database.
         """
@@ -675,10 +683,11 @@ class RunRecorder(messaging.Subscriber):
             """,
             self._buffers["cancellations_accepted"],
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         self._buffers["cancellations_accepted"].clear()
 
-    def _flush_cancellations_rejected(self) -> None:
+    def _flush_cancellations_rejected(self, *, commit: bool = True) -> None:
         """
         Insert buffered cancellation rejected records into the database.
         """
@@ -691,10 +700,11 @@ class RunRecorder(messaging.Subscriber):
             """,
             self._buffers["cancellations_rejected"],
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         self._buffers["cancellations_rejected"].clear()
 
-    def _flush_modifications_accepted(self) -> None:
+    def _flush_modifications_accepted(self, *, commit: bool = True) -> None:
         """
         Insert buffered modification accepted records into the database.
         """
@@ -707,10 +717,11 @@ class RunRecorder(messaging.Subscriber):
             """,
             self._buffers["modifications_accepted"],
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         self._buffers["modifications_accepted"].clear()
 
-    def _flush_modifications_rejected(self) -> None:
+    def _flush_modifications_rejected(self, *, commit: bool = True) -> None:
         """
         Insert buffered modification rejected records into the database.
         """
@@ -723,10 +734,11 @@ class RunRecorder(messaging.Subscriber):
             """,
             self._buffers["modifications_rejected"],
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         self._buffers["modifications_rejected"].clear()
 
-    def _flush_fills(self) -> None:
+    def _flush_fills(self, *, commit: bool = True) -> None:
         """
         Insert buffered fill records into the database.
         """
@@ -739,10 +751,11 @@ class RunRecorder(messaging.Subscriber):
             """,
             self._buffers["fills"],
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         self._buffers["fills"].clear()
 
-    def _flush_expirations(self) -> None:
+    def _flush_expirations(self, *, commit: bool = True) -> None:
         """
         Insert buffered expiration records into the database.
         """
@@ -755,5 +768,6 @@ class RunRecorder(messaging.Subscriber):
             """,
             self._buffers["expirations"],
         )
-        self._conn.commit()
+        if commit:
+            self._conn.commit()
         self._buffers["expirations"].clear()

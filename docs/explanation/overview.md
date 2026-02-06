@@ -1,38 +1,99 @@
+---
+hide:
+#  - navigation
+#  - toc
+---
+
 # Explanation
 
-## Models Package
+## What This Section Covers
 
-The `models` package defines the fundamental domain concepts used throughout the trading system.
+The pages in this section are **understanding-oriented**. They explain *why* OneSecondTrader is designed the way it is, discuss the trade-offs behind key decisions, and build mental models for how the pieces fit together.
 
-Concrete definitions and their semantics are documented in the API Reference.
+You will not find step-by-step instructions here (those belong in [Tutorials](../tutorials/getting_started.md)) or exhaustive API listings (those belong in [Reference](../reference/overview.md)). Instead, these pages answer questions like:
 
-[:material-link-variant: View Models Package API Reference](../reference/overview.md).
+- Why is the system event-driven rather than using direct function calls?
+- Why does each indicator produce exactly one number per bar?
+- How does the same strategy code run in both backtest and live environments?
 
+## System at a Glance
 
-## Events Package
+The diagram below shows the major components and how events flow between them during a trading run.
 
-The `events` package defines the event message objects propagated through the system.
+```mermaid
+flowchart LR
+    DF["Datafeed"]
+    EB["EventBus"]
+    ST["Strategy"]
+    BR["Broker"]
+    ORC["Orchestrator"]
+    RR["RunRecorder"]
 
-Concrete types of event message objects and their payloads are documented in the API Reference.
+    ORC -. "creates & wires" .-> DF
+    ORC -. "creates & wires" .-> ST
+    ORC -. "creates & wires" .-> BR
+    ORC -. "creates & wires" .-> RR
 
-[:material-link-variant: View Events Package API Reference](../reference/overview.md).
+    DF -- "BarReceived" --> EB
+    EB -- "BarReceived" --> ST
+    EB -- "BarReceived" --> BR
+    EB -- "BarReceived" --> RR
+    ST -- "BarProcessed" --> EB
+    EB -- "BarProcessed" --> RR
+    ST -- "OrderSubmissionRequest" --> EB
+    EB -- "OrderSubmissionRequest" --> BR
+    EB -- "OrderSubmissionRequest" --> RR
+    BR -- "OrderAccepted / FillEvent / ..." --> EB
+    EB -- "OrderAccepted / FillEvent / ..." --> ST
+    EB -- "OrderAccepted / FillEvent / ..." --> RR
+```
 
+Every component communicates through the **EventBus** using immutable event objects. The Orchestrator assembles all components at the start of a run and tears them down when it finishes. The RunRecorder subscribes to every event type and persists the full history to a SQLite database.
 
-## Indicators Package
+## Reading Guide
 
-The `indicators` package provides a library of common technical indicators and a base class for creating custom ones.
-Indicators are intended to be used in the context of (multi-symbol) strategies and provide a thread-safe mechanism for storing and retrieving per-symbol indicator values computed from incoming market bars.
+The pages below are arranged in recommended reading order. Each one builds on concepts introduced in the previous pages.
 
-Concrete indicators and their computation logic, as well as the base class for creating custom indicators, are documented in the API Reference.
+<div class="grid cards" markdown>
 
-[:material-link-variant: View Indicators Package API Reference](../reference/overview.md).
+-   __Event-Driven Architecture__
 
+    ---
 
-## Messaging Package
+    The foundational design decision. Explains why the system uses publish-subscribe, how the EventBus dispatches events, the threading model, and how idle-wait synchronization makes backtesting deterministic.
 
-The `messaging` package provides the infrastructure for event-based communication between system components.
-It provides an event dispatch mechanism for propagating event objects to subscribers and a base class for system components that subscribe to or publish events.
+    [:material-link-variant: Read more](event_driven_architecture.md)
 
-The event bus and subscriber base class are documented in the API Reference.
+-   __Indicator Model__
 
-[:material-link-variant: View Messaging Package API Reference](../reference/overview.md).
+    ---
+
+    Why each indicator produces exactly one scalar value per bar, how per-symbol state isolation works, the auto-registration mechanism, and how plotting metadata is encoded.
+
+    [:material-link-variant: Read more](indicator_model.md)
+
+-   __Strategy Lifecycle__
+
+    ---
+
+    How strategies subscribe to events, the bar processing pipeline from raw data to indicator values to trading logic, order lifecycle tracking, and position management.
+
+    [:material-link-variant: Read more](strategy_lifecycle.md)
+
+-   __Broker and Datafeed__
+
+    ---
+
+    The abstraction that makes strategy code portable between backtest and live environments. Covers simulated fill models, datafeed replay, and what changes when going live.
+
+    [:material-link-variant: Read more](broker_and_datafeed.md)
+
+-   __Orchestration and Recording__
+
+    ---
+
+    How a trading run is assembled, executed, and persisted. Covers component creation order, the shutdown sequence, buffered database recording, and dashboard integration.
+
+    [:material-link-variant: Read more](orchestration_and_recording.md)
+
+</div>

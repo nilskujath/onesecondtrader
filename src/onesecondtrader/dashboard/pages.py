@@ -45,6 +45,15 @@ def backtest_page() -> str:
                     <div id="strategy-params" class="params-container"></div>
                 </div>
                 <div class="form-group">
+                    <label>Preset</label>
+                    <div class="preset-row">
+                        <select id="preset-select" onchange="loadPreset()"></select>
+                        <input type="text" id="preset-name" placeholder="New preset name..." oninput="updateButtonStates()">
+                        <button id="preset-save-btn" class="btn btn-sm btn-secondary" onclick="savePreset()">Save</button>
+                        <button id="preset-delete-btn" class="btn btn-sm btn-danger" onclick="deletePreset()">Delete</button>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label>Bar Period</label>
                     <select id="bar-period" onchange="onBarPeriodChange()">
                         <option value="">-- Select bar period --</option>
@@ -62,12 +71,6 @@ def backtest_page() -> str:
                             </select>
                         </div>
                         <div id="symbol-selection" style="display: none;">
-                            <div class="preset-row">
-                                <select id="preset-select" onchange="loadPreset()"></select>
-                                <input type="text" id="preset-name" placeholder="New preset name..." oninput="updateButtonStates()">
-                                <button id="preset-save-btn" class="btn btn-sm btn-secondary" onclick="savePreset()">Save</button>
-                                <button id="preset-delete-btn" class="btn btn-sm btn-danger" onclick="deletePreset()">Delete</button>
-                            </div>
                             <div class="search-row">
                                 <input type="text" id="symbol-search" placeholder="Search symbols..." oninput="searchSymbols()">
                             </div>
