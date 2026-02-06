@@ -24,6 +24,6 @@ secmaster.db
 runs.db
 
 # Proprietary code
-strategies/
-./indicators/
+/strategies/
+/indicators/
 .claude/
