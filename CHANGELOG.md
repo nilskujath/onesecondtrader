@@ -1,3 +1,6 @@
+## v0.68.0
+- feat: Filter per condition in chart dashboard
+
 ## v0.67.0
 - feat: moved indicator plotting logic to dashboard
 
