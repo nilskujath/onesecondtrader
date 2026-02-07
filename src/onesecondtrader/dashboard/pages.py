@@ -138,6 +138,7 @@ def chart_page() -> str:
         <div class="card">
             <h2>Charts</h2>
             <div id="settings-panel" class="settings-panel"></div>
+            <div id="conditional-settings-container"></div>
             <div id="ind-settings-container"></div>
             <div id="charts-content">
                 <div class="empty-content"><p>Select a run to view charts</p></div>

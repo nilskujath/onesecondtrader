@@ -7,6 +7,7 @@ Provides endpoints for listing, deleting, and querying runs and their round-trip
 from __future__ import annotations
 
 import asyncio
+import json as json_module
 import logging
 import os
 import sqlite3
@@ -32,6 +33,33 @@ from ..charting import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _get_strategy_key(run_id: str) -> str:
+    """Derive a strategy class key from a run's config for settings persistence.
+
+    Queries the runs table, extracts ``config["strategies"]``, and returns
+    a deterministic comma-joined sorted string.  Falls back to *run_id*
+    when no strategies list is found.
+    """
+    db_path = get_runs_db_path()
+    if not os.path.exists(db_path):
+        return run_id
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT config FROM runs WHERE run_id = ?", (run_id,))
+        row = cursor.fetchone()
+        conn.close()
+        if row and row[0]:
+            config = json_module.loads(row[0])
+            strategies = config.get("strategies")
+            if strategies and isinstance(strategies, list):
+                return ",".join(sorted(strategies))
+    except Exception:
+        pass
+    return run_id
+
 
 router = APIRouter(prefix="/api", tags=["runs"])
 
@@ -142,7 +170,8 @@ async def api_run_chart_image(
     chart_type: str = "c_bars",
 ) -> Response:
     """Return a PNG chart image for a round-trip trade."""
-    chart_settings = load_chart_settings(run_id) or None
+    strategy_key = _get_strategy_key(run_id)
+    chart_settings = load_chart_settings(strategy_key) or None
     image_bytes = generate_chart_image(
         run_id,
         symbol,
@@ -314,6 +343,182 @@ def _split_by_time(
     return segments
 
 
+BAR_FIELDS = {"open", "high", "low", "close", "volume"}
+
+
+def _get_bar_field_value(bar_dict: dict, field_name: str) -> float | None:
+    """Return a value from OHLCV columns or the indicator JSON."""
+    lower = field_name.lower()
+    if lower in BAR_FIELDS:
+        return bar_dict.get(lower)
+    indicators = bar_dict.get("indicators", {})
+    return indicators.get(field_name)
+
+
+def _evaluate_condition(left: float | None, op: str, right: float | None) -> bool:
+    """Evaluate left {op} right, returning False if either is NaN/None."""
+    if left is None or right is None:
+        return False
+    import math as _math
+
+    if _math.isnan(left) or _math.isnan(right):
+        return False
+    if op == "<=":
+        return left <= right
+    elif op == ">=":
+        return left >= right
+    elif op == "<":
+        return left < right
+    elif op == ">":
+        return left > right
+    elif op == "==":
+        return left == right
+    elif op == "!=":
+        return left != right
+    return False
+
+
+def _find_conditional_segments(
+    cursor,
+    run_id: str,
+    symbol: str,
+    left_field: str,
+    operator: str,
+    right_field: str | None,
+    right_value: float | None,
+    context_bars: int,
+    gap_tolerance: int,
+) -> list[dict]:
+    cursor.execute(
+        """
+        SELECT ts_event_ns, open, high, low, close, volume, indicators
+        FROM bars_processed
+        WHERE run_id = ? AND symbol = ?
+        ORDER BY ts_event_ns
+        """,
+        (run_id, symbol),
+    )
+    rows = cursor.fetchall()
+    if not rows:
+        return []
+
+    bars = []
+    for row in rows:
+        indicators = json_module.loads(row[6]) if row[6] else {}
+        bars.append(
+            {
+                "ts": row[0],
+                "open": row[1],
+                "high": row[2],
+                "low": row[3],
+                "close": row[4],
+                "volume": row[5],
+                "indicators": indicators,
+            }
+        )
+
+    # Evaluate condition per bar
+    condition_flags = []
+    for bar in bars:
+        left_val = _get_bar_field_value(bar, left_field)
+        if right_field:
+            right_val = _get_bar_field_value(bar, right_field)
+        else:
+            right_val = right_value
+        condition_flags.append(_evaluate_condition(left_val, operator, right_val))
+
+    # Group consecutive True bars into raw regions
+    raw_regions = []
+    i = 0
+    n = len(condition_flags)
+    while i < n:
+        if condition_flags[i]:
+            start = i
+            while i < n and condition_flags[i]:
+                i += 1
+            raw_regions.append((start, i - 1))
+        else:
+            i += 1
+
+    if not raw_regions:
+        return []
+
+    # Merge regions separated by <= gap_tolerance False bars
+    merged = [raw_regions[0]]
+    for region in raw_regions[1:]:
+        prev_end = merged[-1][1]
+        gap = region[0] - prev_end - 1
+        if gap <= gap_tolerance:
+            merged[-1] = (merged[-1][0], region[1])
+        else:
+            merged.append(region)
+
+    # Build segments with context
+    segments = []
+    total_bars = len(bars)
+    for seg_num, (cond_start, cond_end) in enumerate(merged, 1):
+        ctx_start = max(0, cond_start - context_bars)
+        ctx_end = min(total_bars - 1, cond_end + context_bars)
+        segments.append(
+            {
+                "symbol": symbol,
+                "segment_num": seg_num,
+                "start_ts": str(bars[ctx_start]["ts"]),
+                "end_ts": str(bars[ctx_end]["ts"]),
+                "condition_start_ts": str(bars[cond_start]["ts"]),
+                "condition_end_ts": str(bars[cond_end]["ts"]),
+                "bar_count": ctx_end - ctx_start + 1,
+                "condition_bar_count": cond_end - cond_start + 1,
+            }
+        )
+
+    return segments
+
+
+@router.get("/runs/{run_id}/conditional-segments")
+async def api_conditional_segments(
+    run_id: str,
+    left_field: str,
+    operator: str,
+    right_field: str | None = None,
+    right_value: float | None = None,
+    context_bars: int = 50,
+    gap_tolerance: int = 0,
+) -> dict:
+    """Return conditional chart segments for a run."""
+    if operator not in ("<=", ">=", "<", ">", "==", "!="):
+        raise HTTPException(status_code=400, detail=f"Invalid operator: {operator}")
+    db_path = get_runs_db_path()
+    if not os.path.exists(db_path):
+        return {"segments": []}
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT DISTINCT symbol FROM bars_processed WHERE run_id = ? ORDER BY symbol
+        """,
+        (run_id,),
+    )
+    symbols = [row[0] for row in cursor.fetchall()]
+    segments = []
+    for symbol in symbols:
+        segments.extend(
+            _find_conditional_segments(
+                cursor,
+                run_id,
+                symbol,
+                left_field,
+                operator,
+                right_field,
+                right_value,
+                context_bars,
+                gap_tolerance,
+            )
+        )
+    conn.close()
+    return {"segments": segments}
+
+
 @router.get("/runs/{run_id}/chart-segments")
 async def api_chart_segments(
     run_id: str,
@@ -368,9 +573,12 @@ async def api_segment_chart_image(
     period_start_ns: int | None = None,
     period_end_ns: int | None = None,
     chart_type: str = "c_bars",
+    highlight_start_ns: int | None = None,
+    highlight_end_ns: int | None = None,
 ) -> Response:
     """Return a PNG chart image for a bar segment."""
-    chart_settings = load_chart_settings(run_id) or None
+    strategy_key = _get_strategy_key(run_id)
+    chart_settings = load_chart_settings(strategy_key) or None
     image_bytes = generate_segment_chart_image(
         run_id,
         symbol,
@@ -380,6 +588,8 @@ async def api_segment_chart_image(
         period_end_ns,
         chart_type,
         chart_settings=chart_settings,
+        highlight_start_ns=highlight_start_ns,
+        highlight_end_ns=highlight_end_ns,
     )
     return Response(content=image_bytes, media_type="image/png")
 
@@ -433,8 +643,9 @@ async def api_run_indicators(run_id: str) -> dict:
 
 @router.get("/runs/{run_id}/chart-settings")
 async def api_get_chart_settings(run_id: str) -> dict:
-    """Return saved chart settings for a run."""
-    return load_chart_settings(run_id)
+    """Return saved chart settings for a run (keyed by strategy class)."""
+    strategy_key = _get_strategy_key(run_id)
+    return load_chart_settings(strategy_key)
 
 
 class ChartSettingsRequest(BaseModel):
@@ -442,17 +653,24 @@ class ChartSettingsRequest(BaseModel):
 
     indicators: dict | None = None
     fill_between: list | None = None
+    chart_type: str | None = None
+    overlap: int | None = None
 
 
 @router.put("/runs/{run_id}/chart-settings")
 async def api_put_chart_settings(run_id: str, request: ChartSettingsRequest) -> dict:
-    """Save chart settings for a run."""
+    """Save chart settings for a run (keyed by strategy class)."""
+    strategy_key = _get_strategy_key(run_id)
     settings: dict = {}
     if request.indicators is not None:
         settings["indicators"] = request.indicators
     if request.fill_between is not None:
         settings["fill_between"] = request.fill_between
-    save_chart_settings(run_id, settings)
+    if request.chart_type is not None:
+        settings["chart_type"] = request.chart_type
+    if request.overlap is not None:
+        settings["overlap"] = request.overlap
+    save_chart_settings(strategy_key, settings)
     return {"status": "ok"}
 
 
@@ -480,9 +698,6 @@ async def api_run_bar_timestamps(run_id: str, symbol: str) -> dict:
 @router.get("/runs/{run_id}/bars")
 async def api_run_bars(run_id: str, symbol: str) -> dict:
     """Return bar data for a run and symbol in lightweight-charts format with indicators."""
-    import json as json_module
-
-    from ..chart_settings import load_chart_settings
     from ..charting import _get_indicator_setting
 
     db_path = get_runs_db_path()
@@ -502,7 +717,8 @@ async def api_run_bars(run_id: str, symbol: str) -> dict:
     rows = cursor.fetchall()
     conn.close()
 
-    chart_settings = load_chart_settings(run_id) or None
+    strategy_key = _get_strategy_key(run_id)
+    chart_settings = load_chart_settings(strategy_key) or None
 
     bars = []
     indicator_series: dict[str, list[dict]] = {}

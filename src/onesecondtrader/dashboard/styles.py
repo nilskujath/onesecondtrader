@@ -1071,11 +1071,12 @@ CHART_CSS = """
 .chart-layout > .card { flex: 1; display: flex; flex-direction: column; margin-bottom: 0; min-height: 0; overflow-y: auto; }
 .empty-content { text-align: center; padding: 48px 24px; color: #8b949e; }
 .empty-content p { font-size: 14px; }
-.settings-panel { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 16px; margin-bottom: 16px; }
+.settings-panel { display: flex; gap: 16px; margin-bottom: 16px; }
+.settings-box { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 16px; flex: 1; }
+.settings-box .settings-group { flex: 1; }
 .settings-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 .settings-group { display: flex; align-items: center; gap: 8px; }
-.settings-group label { font-size: 13px; color: #8b949e; }
-.settings-group input[type="radio"] { margin: 0; cursor: pointer; }
+.settings-group label { font-size: 13px; color: #8b949e; white-space: nowrap; }
 .settings-group input[type="number"] { width: 80px; padding: 6px 10px; background: #161b22; border: 1px solid #30363d; border-radius: 4px; color: #e6edf3; font-size: 13px; }
 .settings-group input[type="number"]:focus { outline: none; border-color: #58a6ff; }
 .settings-group select { padding: 6px 10px; background: #161b22; border: 1px solid #30363d; border-radius: 4px; color: #e6edf3; font-size: 13px; cursor: pointer; }
@@ -1084,7 +1085,6 @@ CHART_CSS = """
 .settings-group input#symbol-filter { width: 180px; padding: 6px 10px; background: #161b22; border: 1px solid #30363d; border-radius: 4px; color: #e6edf3; font-size: 13px; }
 .settings-group input#symbol-filter:focus { outline: none; border-color: #58a6ff; }
 .settings-group input#symbol-filter::placeholder { color: #8b949e; }
-.settings-divider { width: 1px; height: 24px; background: #30363d; }
 .segments-table-container { }
 .segments-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .segments-table th { position: sticky; top: 0; background: #161b22; padding: 10px 12px; text-align: left; color: #8b949e; font-weight: 500; border-bottom: 1px solid #30363d; cursor: pointer; user-select: none; white-space: nowrap; }
@@ -1124,12 +1124,9 @@ CHART_CSS = """
 .trades-table tr.chart-row.expanded { display: table-row; }
 .trades-table tr.chart-row td { padding: 16px; background: #0d1117; }
 .indicator-settings-panel { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; margin-bottom: 16px; }
-.indicator-settings-header { display: flex; align-items: center; gap: 8px; padding: 12px 16px; cursor: pointer; user-select: none; color: #8b949e; font-size: 13px; font-weight: 500; }
-.indicator-settings-header:hover { color: #e6edf3; }
-.indicator-settings-header .toggle-icon { transition: transform 0.2s; font-size: 10px; }
-.indicator-settings-header .toggle-icon.expanded { transform: rotate(90deg); }
-.indicator-settings-body { display: none; padding: 0 16px 16px; }
-.indicator-settings-body.expanded { display: block; }
+.indicator-settings-header { display: flex; align-items: center; gap: 8px; padding: 12px 16px; user-select: none; color: #8b949e; font-size: 13px; font-weight: 500; }
+.indicator-settings-body { display: block; padding: 0 16px 16px; }
+.chart-settings-controls { display: flex; align-items: center; gap: 24px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #21262d; }
 .indicator-settings-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .indicator-settings-table th { padding: 8px 10px; text-align: left; color: #8b949e; font-weight: 500; border-bottom: 1px solid #30363d; }
 .indicator-settings-table td { padding: 6px 10px; border-bottom: 1px solid #21262d; color: #e6edf3; }
@@ -1146,6 +1143,22 @@ CHART_CSS = """
 .fill-between-row .btn-sm.btn-danger { color: #f85149; }
 .fill-between-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #21262d; }
 .fill-between-section label { font-size: 13px; color: #8b949e; font-weight: 500; }
+.conditional-settings-box {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+.conditional-settings-box .settings-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.conditional-settings-box .settings-row + .settings-row {
+    margin-top: 12px;
+}
 """
 
 CHART_JS = """
@@ -1162,15 +1175,29 @@ let barPeriod = null;
 let settings = {
     mode: 'bars',
     barsPerChart: 500,
-    overlap: 100,
-    timePeriod: 'day',
-    chartType: 'c_bars'
+    timePeriod: 'day'
 };
+
+let chartType = 'c_bars';
+let chartOverlap = 100;
+
+let conditionalSettings = {
+    leftField: '',
+    operator: '<=',
+    rightField: '',
+    rightValue: 0,
+    contextBars: 50,
+    gapTolerance: 0
+};
+let conditionalSegments = [];
+let filteredConditionalSegments = [];
 
 let indicatorNames = [];
 let chartSettingsData = {};
-let indPanelExpanded = true;
 let _settingsVersion = 0;
+
+const CONDITION_BAR_FIELDS = ['OPEN', 'HIGH', 'LOW', 'CLOSE', 'VOLUME'];
+const CONDITION_OPERATORS = ['<=', '>=', '<', '>', '==', '!='];
 
 const VALID_STYLES = ['line', 'histogram', 'dots', 'dash1', 'dash2', 'dash3', 'background1', 'background2'];
 const VALID_COLORS = ['black', 'red', 'blue', 'green', 'orange', 'purple', 'cyan', 'magenta', 'yellow', 'teal'];
@@ -1199,10 +1226,17 @@ function loadSettings() {
             settings = {...settings, ...parsed};
         } catch (e) {}
     }
+    const savedCond = localStorage.getItem('conditionalSettings');
+    if (savedCond) {
+        try {
+            conditionalSettings = {...conditionalSettings, ...JSON.parse(savedCond)};
+        } catch (e) {}
+    }
 }
 
 function saveSettings() {
     localStorage.setItem('chartSettings', JSON.stringify(settings));
+    localStorage.setItem('conditionalSettings', JSON.stringify(conditionalSettings));
 }
 
 function getUrlRunId() {
@@ -1232,7 +1266,7 @@ function onRunChange() {
     }
 }
 
-function selectRun(runId) {
+async function selectRun(runId) {
     selectedRunId = runId;
     const url = new URL(window.location);
     url.searchParams.set('run_id', runId);
@@ -1241,7 +1275,8 @@ function selectRun(runId) {
     if (select && select.value !== runId) {
         select.value = runId;
     }
-    loadIndicatorSettings(runId);
+    await loadIndicatorSettings(runId);
+    renderConditionalSettings();
     loadData(runId);
 }
 
@@ -1252,17 +1287,8 @@ function renderSettings() {
     if (settings.mode === 'time' && !timePeriodOpts.some(o => o.value === settings.timePeriod)) {
         settings.timePeriod = timePeriodOpts[0].value;
     }
-    const barsChecked = settings.mode === 'bars' ? 'checked' : '';
-    const timeChecked = settings.mode === 'time' ? 'checked' : '';
-    const tradesChecked = settings.mode === 'trades' ? 'checked' : '';
-    const barsDisabled = settings.mode !== 'bars' ? 'disabled' : '';
-    const timeDisabled = settings.mode !== 'time' ? 'disabled' : '';
-    const overlapDisabled = settings.mode === 'trades' ? 'disabled' : '';
     const periodOptions = timePeriodOpts.map(o =>
         `<option value="${o.value}" ${settings.timePeriod === o.value ? 'selected' : ''}>${o.label}</option>`
-    ).join('');
-    const chartTypeOptions = CHART_TYPE_OPTIONS.map(o =>
-        `<option value="${o.value}" ${settings.chartType === o.value ? 'selected' : ''}>${o.label}</option>`
     ).join('');
     const runOptions = runs.length === 0
         ? '<option value="">No completed runs</option>'
@@ -1274,48 +1300,43 @@ function renderSettings() {
             return `<option value="${r.run_id}" ${selected}>${strategies} (${timePart})</option>`;
         }).join('');
     const symbolFilterValue = settings.symbolFilter || '';
+    let subControl = '';
+    if (settings.mode === 'bars') {
+        subControl = `<div class="settings-group">
+            <label>Bars per chart:</label>
+            <input type="number" id="bars-per-chart" value="${settings.barsPerChart}" min="10" max="5000" onchange="onBarsPerChartChange(this.value)">
+        </div>`;
+    } else if (settings.mode === 'time') {
+        subControl = `<div class="settings-group">
+            <label>Period:</label>
+            <select id="time-period" onchange="onTimePeriodChange(this.value)">${periodOptions}</select>
+        </div>`;
+    }
     container.innerHTML = `
-        <div class="settings-row">
-            <div class="settings-group">
-                <label>Run:</label>
-                <select id="run-select" onchange="onRunChange()">${runOptions}</select>
+        <div class="settings-box">
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label>Run:</label>
+                    <select id="run-select" onchange="onRunChange()">${runOptions}</select>
+                </div>
+                <div class="settings-group">
+                    <label>Symbol:</label>
+                    <input type="text" id="symbol-filter" placeholder="Filter symbols..." value="${symbolFilterValue}" oninput="filterData()">
+                </div>
             </div>
-            <div class="settings-group">
-                <label>Symbol:</label>
-                <input type="text" id="symbol-filter" placeholder="Filter symbols..." value="${symbolFilterValue}" oninput="filterData()">
-            </div>
-            <div class="settings-divider"></div>
-            <div class="settings-group">
-                <input type="radio" id="mode-bars" name="split-mode" value="bars" ${barsChecked} onchange="onModeChange('bars')">
-                <label for="mode-bars">By Bars</label>
-            </div>
-            <div class="settings-group">
-                <label>Bars per chart:</label>
-                <input type="number" id="bars-per-chart" value="${settings.barsPerChart}" min="10" max="5000" ${barsDisabled} onchange="onBarsPerChartChange(this.value)">
-            </div>
-            <div class="settings-divider"></div>
-            <div class="settings-group">
-                <input type="radio" id="mode-time" name="split-mode" value="time" ${timeChecked} onchange="onModeChange('time')">
-                <label for="mode-time">By Time</label>
-            </div>
-            <div class="settings-group">
-                <label>Period:</label>
-                <select id="time-period" ${timeDisabled} onchange="onTimePeriodChange(this.value)">${periodOptions}</select>
-            </div>
-            <div class="settings-divider"></div>
-            <div class="settings-group">
-                <input type="radio" id="mode-trades" name="split-mode" value="trades" ${tradesChecked} onchange="onModeChange('trades')">
-                <label for="mode-trades">By Trades</label>
-            </div>
-            <div class="settings-divider"></div>
-            <div class="settings-group">
-                <label>Overlap:</label>
-                <input type="number" id="overlap" value="${settings.overlap}" min="0" max="1000" ${overlapDisabled} onchange="onOverlapChange(this.value)">
-            </div>
-            <div class="settings-divider"></div>
-            <div class="settings-group">
-                <label>Chart Type:</label>
-                <select id="chart-type" onchange="onChartTypeChange(this.value)">${chartTypeOptions}</select>
+        </div>
+        <div class="settings-box">
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label>Split by:</label>
+                    <select id="split-mode" onchange="onModeChange(this.value)">
+                        <option value="bars" ${settings.mode === 'bars' ? 'selected' : ''}>By Bars</option>
+                        <option value="time" ${settings.mode === 'time' ? 'selected' : ''}>By Time</option>
+                        <option value="trades" ${settings.mode === 'trades' ? 'selected' : ''}>By Trades</option>
+                        <option value="conditional" ${settings.mode === 'conditional' ? 'selected' : ''}>Conditional</option>
+                    </select>
+                </div>
+                ${subControl}
             </div>
         </div>
     `;
@@ -1325,6 +1346,8 @@ function onModeChange(mode) {
     settings.mode = mode;
     saveSettings();
     renderSettings();
+    renderConditionalSettings();
+    renderIndicatorSettings();
     if (selectedRunId) loadData(selectedRunId);
 }
 
@@ -1341,20 +1364,24 @@ function onTimePeriodChange(value) {
 }
 
 function onOverlapChange(value) {
-    settings.overlap = parseInt(value) || 0;
-    saveSettings();
+    chartOverlap = parseInt(value) || 0;
+    saveIndicatorSettings();
     if (selectedRunId) loadData(selectedRunId);
 }
 
 function onChartTypeChange(value) {
-    settings.chartType = value;
-    saveSettings();
+    chartType = value;
+    saveIndicatorSettings();
     if (selectedRunId) loadData(selectedRunId);
 }
 
 async function loadData(runId) {
     const container = document.getElementById('charts-content');
     container.innerHTML = '<div class="empty-content"><p>Loading...</p></div>';
+    if (settings.mode === 'conditional') {
+        loadConditionalData();
+        return;
+    }
     if (settings.mode === 'trades') {
         const res = await fetch(`/api/runs/${runId}/roundtrips`);
         const data = await res.json();
@@ -1372,7 +1399,7 @@ async function loadData(runId) {
         const params = new URLSearchParams({
             mode: settings.mode,
             bars_per_chart: settings.barsPerChart,
-            overlap: settings.overlap,
+            overlap: chartOverlap,
             time_period: settings.timePeriod
         });
         const res = await fetch(`/api/runs/${runId}/chart-segments?${params}`);
@@ -1389,7 +1416,16 @@ async function loadData(runId) {
 function filterData() {
     const query = document.getElementById('symbol-filter').value.toLowerCase().trim();
     settings.symbolFilter = query;
-    if (settings.mode === 'trades') {
+    if (settings.mode === 'conditional') {
+        if (!query) {
+            filteredConditionalSegments = [...conditionalSegments];
+        } else {
+            const terms = query.split(/[,\\s]+/).filter(t => t.length > 0);
+            filteredConditionalSegments = conditionalSegments.filter(seg =>
+                terms.some(term => seg.symbol.toLowerCase().includes(term))
+            );
+        }
+    } else if (settings.mode === 'trades') {
         if (!query) {
             filteredRoundtrips = [...roundtrips];
         } else {
@@ -1422,7 +1458,20 @@ function sortBy(column) {
 }
 
 function sortAndRender() {
-    if (settings.mode === 'trades') {
+    if (settings.mode === 'conditional') {
+        filteredConditionalSegments.sort((a, b) => {
+            let valA = a[sortColumn];
+            let valB = b[sortColumn];
+            if (typeof valA === 'string') {
+                valA = valA.toLowerCase();
+                valB = valB.toLowerCase();
+            }
+            if (valA < valB) return sortAsc ? -1 : 1;
+            if (valA > valB) return sortAsc ? 1 : -1;
+            return 0;
+        });
+        renderConditionalTable();
+    } else if (settings.mode === 'trades') {
         filteredRoundtrips.sort((a, b) => {
             let valA = a[sortColumn];
             let valB = b[sortColumn];
@@ -1578,24 +1627,33 @@ function toggleChart(idx) {
     chartRow.classList.add('expanded');
     const container = document.getElementById(`chart-container-${idx}`);
     let url, cacheKey;
-    if (settings.mode === 'trades') {
-        const rt = filteredRoundtrips[idx];
-        cacheKey = `${selectedRunId}_trade_${rt.symbol}_${rt.entry_ts}_${rt.exit_ts}_${settings.chartType}_v${_settingsVersion}`;
+    if (settings.mode === 'conditional') {
+        const seg = filteredConditionalSegments[idx];
+        cacheKey = `${selectedRunId}_cond_${seg.symbol}_${seg.start_ts}_${seg.end_ts}_${seg.condition_start_ts}_${seg.condition_end_ts}_${chartType}_v${_settingsVersion}`;
         if (chartCache[cacheKey]) {
             container.innerHTML = `<img src="${chartCache[cacheKey]}" alt="Chart">`;
             return;
         }
         container.innerHTML = '<div class="chart-loading">Loading chart...</div>';
-        url = `/api/runs/${selectedRunId}/chart.png?symbol=${encodeURIComponent(rt.symbol)}&start_ns=${rt.entry_ts}&end_ns=${rt.exit_ts}&direction=${rt.direction}&pnl=${rt.pnl_after_commission}&chart_type=${settings.chartType}`;
+        url = `/api/runs/${selectedRunId}/segment-chart.png?symbol=${encodeURIComponent(seg.symbol)}&start_ns=${seg.start_ts}&end_ns=${seg.end_ts}&highlight_start_ns=${seg.condition_start_ts}&highlight_end_ns=${seg.condition_end_ts}&chart_type=${chartType}`;
+    } else if (settings.mode === 'trades') {
+        const rt = filteredRoundtrips[idx];
+        cacheKey = `${selectedRunId}_trade_${rt.symbol}_${rt.entry_ts}_${rt.exit_ts}_${chartType}_v${_settingsVersion}`;
+        if (chartCache[cacheKey]) {
+            container.innerHTML = `<img src="${chartCache[cacheKey]}" alt="Chart">`;
+            return;
+        }
+        container.innerHTML = '<div class="chart-loading">Loading chart...</div>';
+        url = `/api/runs/${selectedRunId}/chart.png?symbol=${encodeURIComponent(rt.symbol)}&start_ns=${rt.entry_ts}&end_ns=${rt.exit_ts}&direction=${rt.direction}&pnl=${rt.pnl_after_commission}&chart_type=${chartType}`;
     } else {
         const seg = filteredSegments[idx];
-        cacheKey = `${selectedRunId}_${seg.symbol}_${seg.start_ts}_${seg.end_ts}_${settings.chartType}_v${_settingsVersion}`;
+        cacheKey = `${selectedRunId}_${seg.symbol}_${seg.start_ts}_${seg.end_ts}_${chartType}_v${_settingsVersion}`;
         if (chartCache[cacheKey]) {
             container.innerHTML = `<img src="${chartCache[cacheKey]}" alt="Chart">`;
             return;
         }
         container.innerHTML = '<div class="chart-loading">Loading chart...</div>';
-        url = `/api/runs/${selectedRunId}/segment-chart.png?symbol=${encodeURIComponent(seg.symbol)}&start_ns=${seg.start_ts}&end_ns=${seg.end_ts}&chart_type=${settings.chartType}`;
+        url = `/api/runs/${selectedRunId}/segment-chart.png?symbol=${encodeURIComponent(seg.symbol)}&start_ns=${seg.start_ts}&end_ns=${seg.end_ts}&chart_type=${chartType}`;
         if (seg.period_start_ns && seg.period_end_ns) {
             url += `&period_start_ns=${seg.period_start_ns}&period_end_ns=${seg.period_end_ns}`;
         }
@@ -1647,6 +1705,8 @@ async function loadIndicatorSettings(runId) {
         chartSettingsData = settingsJson || {};
         if (!chartSettingsData.indicators) chartSettingsData.indicators = {};
         if (!chartSettingsData.fill_between) chartSettingsData.fill_between = [];
+        chartType = chartSettingsData.chart_type || 'c_bars';
+        chartOverlap = chartSettingsData.overlap != null ? chartSettingsData.overlap : 100;
         const assignedPanels = {};
         indicatorNames.forEach((name, idx) => {
             if (!chartSettingsData.indicators[name]) {
@@ -1673,6 +1733,7 @@ async function loadIndicatorSettings(runId) {
             }
         });
         renderIndicatorSettings();
+        renderConditionalSettings();
     } catch (e) {
         console.error('Failed to load indicator settings', e);
     }
@@ -1684,7 +1745,7 @@ async function saveIndicatorSettings() {
         await fetch(`/api/runs/${selectedRunId}/chart-settings`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(chartSettingsData)
+            body: JSON.stringify({...chartSettingsData, chart_type: chartType, overlap: chartOverlap})
         });
         _settingsVersion++;
         Object.keys(chartCache).forEach(k => delete chartCache[k]);
@@ -1696,14 +1757,6 @@ async function saveIndicatorSettings() {
     } catch (e) {
         console.error('Failed to save indicator settings', e);
     }
-}
-
-function toggleIndicatorPanel() {
-    indPanelExpanded = !indPanelExpanded;
-    const body = document.getElementById('ind-settings-body');
-    const icon = document.getElementById('ind-toggle-icon');
-    if (body) body.classList.toggle('expanded', indPanelExpanded);
-    if (icon) icon.classList.toggle('expanded', indPanelExpanded);
 }
 
 function onIndSettingChange(name, field, value) {
@@ -1751,10 +1804,6 @@ function removeFillBetween(idx) {
 function renderIndicatorSettings() {
     const container = document.getElementById('ind-settings-container');
     if (!container) return;
-    if (indicatorNames.length === 0) {
-        container.innerHTML = '';
-        return;
-    }
     const styleOptions = VALID_STYLES.map(s =>
         `<option value="${s}">${s}</option>`
     ).join('');
@@ -1797,15 +1846,11 @@ function renderIndicatorSettings() {
             <button class="btn-sm btn-danger" onclick="removeFillBetween(${idx})">Remove</button>
         </div>`;
     }).join('');
-    const bodyClass = indPanelExpanded ? 'expanded' : '';
-    const iconClass = indPanelExpanded ? 'expanded' : '';
-    container.innerHTML = `
-        <div class="indicator-settings-panel">
-            <div class="indicator-settings-header" onclick="toggleIndicatorPanel()">
-                <span id="ind-toggle-icon" class="toggle-icon ${iconClass}">&#9654;</span>
-                Indicator Settings (${indicatorNames.length} indicators)
-            </div>
-            <div id="ind-settings-body" class="indicator-settings-body ${bodyClass}">
+    const chartTypeOptions = CHART_TYPE_OPTIONS.map(o =>
+        `<option value="${o.value}" ${chartType === o.value ? 'selected' : ''}>${o.label}</option>`
+    ).join('');
+    const overlapDisabled = (settings.mode === 'trades' || settings.mode === 'conditional') ? 'disabled' : '';
+    const indTable = indicatorNames.length > 0 ? `
                 <table class="indicator-settings-table">
                     <thead><tr><th>Indicator</th><th>Panel</th><th>Below</th><th>Style</th><th>Color</th><th>Width</th><th>Visible</th></tr></thead>
                     <tbody>${rows}</tbody>
@@ -1814,8 +1859,180 @@ function renderIndicatorSettings() {
                     <label>Fill Between</label>
                     ${fbRows}
                     <div style="margin-top:8px"><button class="btn-sm" onclick="addFillBetween()">+ Add Fill Between</button></div>
+                </div>` : '';
+    container.innerHTML = `
+        <div class="indicator-settings-panel">
+            <div class="indicator-settings-header">
+                Chart Settings
+            </div>
+            <div id="ind-settings-body" class="indicator-settings-body">
+                <div class="chart-settings-controls">
+                    <div class="settings-group">
+                        <label>Chart Type:</label>
+                        <select onchange="onChartTypeChange(this.value)">${chartTypeOptions}</select>
+                    </div>
+                    <div class="settings-group">
+                        <label>Overlap:</label>
+                        <input type="number" value="${chartOverlap}" min="0" max="1000" ${overlapDisabled} onchange="onOverlapChange(this.value)">
+                    </div>
+                </div>
+                ${indTable}
+            </div>
+        </div>
+    `;
+}
+
+function renderConditionalSettings() {
+    const container = document.getElementById('conditional-settings-container');
+    if (!container) return;
+    if (settings.mode !== 'conditional' || !selectedRunId) {
+        container.innerHTML = '';
+        return;
+    }
+    // Auto-default left field if empty
+    if (!conditionalSettings.leftField) {
+        if (indicatorNames.length > 0) {
+            conditionalSettings.leftField = indicatorNames[0];
+        } else if (CONDITION_BAR_FIELDS.length > 0) {
+            conditionalSettings.leftField = CONDITION_BAR_FIELDS[0];
+        }
+    }
+    const barFieldOpts = CONDITION_BAR_FIELDS.map(f =>
+        `<option value="${f}" ${conditionalSettings.leftField === f ? 'selected' : ''}>${f}</option>`
+    ).join('');
+    const indOpts = indicatorNames.map(n =>
+        `<option value="${n}" ${conditionalSettings.leftField === n ? 'selected' : ''}>${n}</option>`
+    ).join('');
+    const leftOptions = `<optgroup label="Bar Fields">${barFieldOpts}</optgroup><optgroup label="Indicators">${indOpts}</optgroup>`;
+
+    const rightBarFieldOpts = CONDITION_BAR_FIELDS.map(f =>
+        `<option value="${f}" ${conditionalSettings.rightField === f ? 'selected' : ''}>${f}</option>`
+    ).join('');
+    const rightIndOpts = indicatorNames.map(n =>
+        `<option value="${n}" ${conditionalSettings.rightField === n ? 'selected' : ''}>${n}</option>`
+    ).join('');
+    const rightOptions = `<option value="" ${!conditionalSettings.rightField ? 'selected' : ''}>(Value)</option><optgroup label="Bar Fields">${rightBarFieldOpts}</optgroup><optgroup label="Indicators">${rightIndOpts}</optgroup>`;
+
+    const opOptions = CONDITION_OPERATORS.map(op =>
+        `<option value="${op}" ${conditionalSettings.operator === op ? 'selected' : ''}>${op}</option>`
+    ).join('');
+
+    const valueInputStyle = conditionalSettings.rightField ? 'display:none' : '';
+
+    container.innerHTML = `
+        <div class="conditional-settings-box">
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label>Left:</label>
+                    <select onchange="onConditionalChange('leftField', this.value)">${leftOptions}</select>
+                </div>
+                <div class="settings-group">
+                    <label>Operator:</label>
+                    <select onchange="onConditionalChange('operator', this.value)">${opOptions}</select>
+                </div>
+                <div class="settings-group">
+                    <label>Right:</label>
+                    <select onchange="onConditionalChange('rightField', this.value)">${rightOptions}</select>
+                </div>
+                <div class="settings-group" id="cond-value-group" style="${valueInputStyle}">
+                    <label>Value:</label>
+                    <input type="number" step="any" value="${conditionalSettings.rightValue}" onchange="onConditionalChange('rightValue', parseFloat(this.value))">
                 </div>
             </div>
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label>Context bars:</label>
+                    <input type="number" value="${conditionalSettings.contextBars}" min="0" max="500" onchange="onConditionalChange('contextBars', parseInt(this.value))">
+                </div>
+                <div class="settings-group">
+                    <label>Gap tolerance:</label>
+                    <input type="number" value="${conditionalSettings.gapTolerance}" min="0" max="100" onchange="onConditionalChange('gapTolerance', parseInt(this.value))">
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function onConditionalChange(field, value) {
+    conditionalSettings[field] = value;
+    saveSettings();
+    if (field === 'rightField') {
+        renderConditionalSettings();
+    }
+    loadConditionalData();
+}
+
+async function loadConditionalData() {
+    if (!selectedRunId) return;
+    if (!conditionalSettings.leftField) return;
+    if (!conditionalSettings.rightField && (conditionalSettings.rightValue === null || conditionalSettings.rightValue === undefined)) return;
+    const container = document.getElementById('charts-content');
+    container.innerHTML = '<div class="empty-content"><p>Loading...</p></div>';
+    const params = new URLSearchParams({
+        left_field: conditionalSettings.leftField,
+        operator: conditionalSettings.operator,
+        context_bars: String(conditionalSettings.contextBars),
+        gap_tolerance: String(conditionalSettings.gapTolerance)
+    });
+    if (conditionalSettings.rightField) {
+        params.set('right_field', conditionalSettings.rightField);
+    } else {
+        params.set('right_value', String(conditionalSettings.rightValue));
+    }
+    try {
+        const res = await fetch(`/api/runs/${selectedRunId}/conditional-segments?${params}`);
+        const data = await res.json();
+        conditionalSegments = data.segments || [];
+        sortColumn = 'symbol';
+        sortAsc = true;
+        filterData();
+    } catch (e) {
+        container.innerHTML = '<div class="empty-content"><p>Error loading conditional segments</p></div>';
+    }
+}
+
+function renderConditionalTable() {
+    const container = document.getElementById('charts-content');
+    if (conditionalSegments.length === 0) {
+        container.innerHTML = '<div class="empty-table"><p>No conditional segments found</p></div>';
+        return;
+    }
+    const columns = [
+        {key: 'symbol', label: 'Symbol'},
+        {key: 'segment_num', label: 'Region #'},
+        {key: 'condition_start_ts', label: 'Condition Start'},
+        {key: 'condition_end_ts', label: 'Condition End'},
+        {key: 'condition_bar_count', label: 'Condition Bars'},
+        {key: 'bar_count', label: 'Total Bars'},
+    ];
+    const headerHtml = columns.map(c => {
+        const isSorted = sortColumn === c.key;
+        const arrow = isSorted ? (sortAsc ? '▲' : '▼') : '▲';
+        return `<th class="${isSorted ? 'sorted' : ''}" onclick="sortBy('${c.key}')">${c.label}<span class="sort-icon">${arrow}</span></th>`;
+    }).join('');
+    const rowsHtml = filteredConditionalSegments.map((seg, idx) => {
+        return `<tr class="data-row" onclick="toggleChart(${idx})">
+            <td class="symbol">${seg.symbol}</td>
+            <td class="number">${seg.segment_num}</td>
+            <td>${formatTimestamp(seg.condition_start_ts)}</td>
+            <td>${formatTimestamp(seg.condition_end_ts)}</td>
+            <td class="number">${seg.condition_bar_count}</td>
+            <td class="number">${seg.bar_count}</td>
+        </tr>
+        <tr class="chart-row" id="chart-row-${idx}">
+            <td colspan="6">
+                <div class="chart-container" id="chart-container-${idx}">
+                    <div class="chart-loading">Loading chart...</div>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+    container.innerHTML = `
+        <div class="segments-table-container">
+            <table class="segments-table">
+                <thead><tr>${headerHtml}</tr></thead>
+                <tbody>${rowsHtml}</tbody>
+            </table>
         </div>
     `;
 }

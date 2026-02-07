@@ -771,6 +771,8 @@ def generate_segment_chart_image(
     period_end_ns: int | None = None,
     chart_type: str = "c_bars",
     chart_settings: dict | None = None,
+    highlight_start_ns: int | None = None,
+    highlight_end_ns: int | None = None,
 ) -> bytes:
     """
     Generate a PNG chart image for a bar segment.
@@ -1072,6 +1074,26 @@ def generate_segment_chart_image(
                 color=fb["color"],
                 alpha=fb["alpha"],
             )
+
+    if highlight_start_ns is not None and highlight_end_ns is not None:
+        hl_start_time = pd.to_datetime(highlight_start_ns, unit="ns")
+        hl_end_time = pd.to_datetime(highlight_end_ns, unit="ns")
+        hl_start_idx = data[data["ts_event"] >= hl_start_time].index
+        hl_end_idx = data[data["ts_event"] <= hl_end_time].index
+        if len(hl_start_idx) > 0 and len(hl_end_idx) > 0:
+            hl_si = hl_start_idx[0]
+            hl_ei = hl_end_idx[-1]
+            half = bar_width / 2
+            for ax in all_axes:
+                y_min, y_max = ax.get_ylim()
+                rect = Rectangle(
+                    (x_values[hl_si] - half, y_min),
+                    (x_values[hl_ei] + half) - (x_values[hl_si] - half),
+                    y_max - y_min,
+                    facecolor="grey",
+                    alpha=0.2,
+                )
+                ax.add_patch(rect)
 
     if use_time_axis:
         import matplotlib.dates as mdates
