@@ -5,30 +5,6 @@
          <lastmod>2026-02-07</lastmod>
     </url>
     <url>
-         <loc>https://www.onesecondtrader.com/explanation/broker_and_datafeed/</loc>
-         <lastmod>2026-02-07</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/explanation/event_driven_architecture/</loc>
-         <lastmod>2026-02-07</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/explanation/indicator_model/</loc>
-         <lastmod>2026-02-07</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/explanation/orchestration_and_recording/</loc>
-         <lastmod>2026-02-07</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/explanation/overview/</loc>
-         <lastmod>2026-02-07</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/explanation/strategy_lifecycle/</loc>
-         <lastmod>2026-02-07</lastmod>
-    </url>
-    <url>
          <loc>https://www.onesecondtrader.com/reference/overview/</loc>
          <lastmod>2026-02-07</lastmod>
     </url>
@@ -46,6 +22,10 @@
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/dashboard/backtest/</loc>
+         <lastmod>2026-02-07</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/dashboard/chart_settings/</loc>
          <lastmod>2026-02-07</lastmod>
     </url>
     <url>
@@ -254,18 +234,6 @@
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/models/order_types/</loc>
-         <lastmod>2026-02-07</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/reference/models/plot_color/</loc>
-         <lastmod>2026-02-07</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/reference/models/plot_style/</loc>
-         <lastmod>2026-02-07</lastmod>
-    </url>
-    <url>
-         <loc>https://www.onesecondtrader.com/reference/models/plot_width/</loc>
          <lastmod>2026-02-07</lastmod>
     </url>
     <url>
