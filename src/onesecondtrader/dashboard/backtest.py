@@ -11,6 +11,7 @@ import enum
 import sqlite3
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 import pandas as pd
@@ -18,6 +19,8 @@ from pydantic import BaseModel
 
 from .db import get_runs_db_path, get_secmaster_path
 from . import registry
+
+_executor = ThreadPoolExecutor(max_workers=1)
 
 
 class BacktestRequest(BaseModel):
@@ -101,6 +104,44 @@ def _ensure_db_status(db_run_id: str | None, status: str) -> None:
         pass
 
 
+def enqueue_backtest(request: BacktestRequest, run_id: str) -> None:
+    """Submit a backtest to the bounded thread pool.
+
+    If all workers are busy the executor queues the task automatically.
+    """
+    with _jobs_lock:
+        running_jobs[run_id] = "queued"
+        _running_metadata[run_id] = {
+            "strategy": request.strategy,
+            "symbols": request.symbols,
+            "start_date": request.start_date,
+            "end_date": request.end_date,
+        }
+    _executor.submit(run_backtest, request, run_id)
+
+
+def cancel_backtest(run_id: str) -> bool:
+    """Cancel a running or queued backtest.
+
+    Returns True if the backtest was found and cancellation was initiated.
+    """
+    with _jobs_lock:
+        status = running_jobs.get(run_id)
+        if status == "queued":
+            running_jobs[run_id] = "error: cancelled"
+            _running_metadata.pop(run_id, None)
+            return True
+        orch = _orchestrator_refs.get(run_id)
+    if orch is not None:
+        datafeed = getattr(orch, "_datafeed", None)
+        if datafeed is not None:
+            stop_event = getattr(datafeed, "_stop_event", None)
+            if stop_event is not None:
+                stop_event.set()
+                return True
+    return False
+
+
 def run_backtest(request: BacktestRequest, run_id: str) -> None:
     """
     Execute a backtest in a background task.
@@ -123,13 +164,10 @@ def run_backtest(request: BacktestRequest, run_id: str) -> None:
 
     try:
         with _jobs_lock:
+            # Skip if already cancelled while queued
+            if running_jobs.get(run_id, "").startswith("error"):
+                return
             running_jobs[run_id] = "running"
-            _running_metadata[run_id] = {
-                "strategy": request.strategy,
-                "symbols": request.symbols,
-                "start_date": request.start_date,
-                "end_date": request.end_date,
-            }
 
         strategy_cls = registry.get_strategies().get(request.strategy)
         if not strategy_cls:

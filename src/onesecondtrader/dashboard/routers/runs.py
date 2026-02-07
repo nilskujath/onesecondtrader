@@ -6,13 +6,21 @@ Provides endpoints for listing, deleting, and querying runs and their round-trip
 
 from __future__ import annotations
 
+import asyncio
+import logging
 import os
 import sqlite3
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
 from pydantic import BaseModel
 
+from ..backtest import (
+    cancel_backtest,
+    running_jobs,
+    _orchestrator_refs,
+    _jobs_lock,
+)
 from ..db import get_runs_db_path, get_runs, CHILD_TABLES
 from ..roundtrips import get_roundtrips
 from ..charting import (
@@ -21,6 +29,8 @@ from ..charting import (
     generate_trade_journey_chart,
     generate_pnl_summary_chart,
 )
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api", tags=["runs"])
 
@@ -46,21 +56,71 @@ class DeleteRunsRequest(BaseModel):
 
 @router.delete("/runs")
 async def api_delete_runs(request: DeleteRunsRequest) -> dict:
-    """Delete specified runs and their associated data."""
+    """Delete specified runs and their associated data.
+
+    Cancels any running/queued backtests for the requested run IDs first,
+    then deletes the data with a generous busy-timeout.
+    """
     db_path = get_runs_db_path()
     if not os.path.exists(db_path):
         return {"deleted": 0}
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    deleted = 0
-    for run_id in request.run_ids:
+    if not request.run_ids:
+        return {"deleted": 0}
+
+    # Cancel running/queued backtests that match the requested run IDs.
+    # The job dict is keyed by the UUID run_id, but the DB run_id is on
+    # the orchestrator (orch.run_id).  We need to check both.
+    # Collect IDs to cancel first, then cancel outside the lock to avoid
+    # deadlock (cancel_backtest acquires _jobs_lock internally).
+    request_id_set = set(request.run_ids)
+    to_cancel: list[str] = []
+    with _jobs_lock:
+        for job_id, status in list(running_jobs.items()):
+            if status not in ("running", "queued"):
+                continue
+            if job_id in request_id_set:
+                to_cancel.append(job_id)
+                continue
+            orch = _orchestrator_refs.get(job_id)
+            if orch is not None and getattr(orch, "run_id", None) in request_id_set:
+                to_cancel.append(job_id)
+
+    cancelled = False
+    for job_id in to_cancel:
+        cancelled = cancel_backtest(job_id) or cancelled
+
+    if cancelled:
+        await asyncio.sleep(1)
+
+    try:
+        conn = sqlite3.connect(db_path, timeout=10)
+        cursor = conn.cursor()
+        placeholders = ",".join("?" for _ in request.run_ids)
         for table in CHILD_TABLES:
-            cursor.execute(f"DELETE FROM {table} WHERE run_id = ?", (run_id,))
-        cursor.execute("DELETE FROM runs WHERE run_id = ?", (run_id,))
-        deleted += cursor.rowcount
-    conn.commit()
-    conn.close()
-    return {"deleted": deleted}
+            cursor.execute(
+                f"DELETE FROM {table} WHERE run_id IN ({placeholders})",
+                request.run_ids,
+            )
+        cursor.execute(
+            f"DELETE FROM runs WHERE run_id IN ({placeholders})",
+            request.run_ids,
+        )
+        deleted = cursor.rowcount
+        conn.commit()
+        conn.close()
+        return {"deleted": deleted}
+    except sqlite3.OperationalError as exc:
+        logger.warning("delete runs failed: %s", exc)
+        raise HTTPException(
+            status_code=503,
+            detail=f"Database is busy, please try again shortly: {exc}",
+        )
+    except Exception as exc:
+        logger.exception("unexpected error deleting runs")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to delete runs: {exc}",
+        )
 
 
 @router.get("/runs/{run_id}/roundtrips")

@@ -182,6 +182,7 @@
     .run-id { color: #8b949e; font-size: 11px; margin-left: 6px; }
     .run-status { font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 10px; }
     .run-status.running { background: #9e6a03; color: #fff; }
+    .run-status.queued { background: #6e7681; color: #fff; }
     .run-status.completed { background: #238636; color: #fff; }
     .run-status.failed { background: #da3633; color: #fff; }
     .run-status.cancelled { background: #30363d; color: #8b949e; }
@@ -678,13 +679,18 @@
             selectedRunIds.clear();
             await loadDbRuns();
         } else {
-            alert('Failed to delete runs');
+            try {
+                const data = await res.json();
+                alert(data.detail || 'Failed to delete runs');
+            } catch {
+                alert('Failed to delete runs');
+            }
         }
     }
     
     function renderRuns() {
         const container = document.getElementById('runs-list');
-        const activeRunIds = Object.keys(activeRuns).filter(id => activeRuns[id].status === 'running');
+        const activeRunIds = Object.keys(activeRuns).filter(id => activeRuns[id].status === 'running' || activeRuns[id].status === 'queued').reverse();
         const allDbRunIds = dbRuns.map(r => r.run_id);
         const allSelected = allDbRunIds.length > 0 && selectedRunIds.size === allDbRunIds.length;
     
@@ -704,19 +710,20 @@
         activeRunIds.forEach(id => {
             const run = activeRuns[id];
             const progress = run.progress;
+            const isQueued = run.status === 'queued';
             html += `<div class="run-item">
                 <div class="run-content">
                     <div class="run-header">
                         <span class="run-name">${run.strategy}</span>
-                        <span class="run-status running">running</span>
+                        <span class="run-status ${isQueued ? 'queued' : 'running'}">${isQueued ? 'queued' : 'running'}</span>
                     </div>
-                    <div class="run-meta with-progress">${run.symbols.length} symbol${run.symbols.length !== 1 ? 's' : ''} · ${run.startDate || 'all'} to ${run.endDate || 'all'}</div>
-                    <div class="progress-bar"><div class="progress-fill" style="width: ${progress}%"></div></div>
+                    <div class="run-meta ${isQueued ? '' : 'with-progress'}">${run.symbols.length} symbol${run.symbols.length !== 1 ? 's' : ''} · ${run.startDate || 'all'} to ${run.endDate || 'all'}</div>
+                    ${isQueued ? '' : `<div class="progress-bar"><div class="progress-fill" style="width: ${progress}%"></div></div>`}
                 </div>
             </div>`;
         });
     
-        dbRuns.forEach(r => {
+        dbRuns.filter(r => r.status !== 'running').forEach(r => {
             const config = r.config || {};
             const strategies = config.strategies ? config.strategies.join(', ') : r.name;
             const symbols = config.symbols || [];
@@ -762,6 +769,7 @@
                 return;
             }
             if (activeRuns[runId]) {
+                activeRuns[runId].status = d.status === 'queued' ? 'queued' : 'running';
                 activeRuns[runId].progress = d.progress || 0;
                 renderRuns();
             }
@@ -817,7 +825,7 @@
                 barPeriod: barPeriod,
                 startDate: startDate,
                 endDate: endDate,
-                status: 'running',
+                status: 'queued',
                 progress: 0
             };
             renderRuns();
@@ -843,7 +851,7 @@
                 symbols: r.symbols || [],
                 startDate: r.start_date || null,
                 endDate: r.end_date || null,
-                status: 'running',
+                status: r.status || 'running',
                 progress: r.progress || 0
             };
             pollBacktestStatus(r.run_id);

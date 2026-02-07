@@ -45,6 +45,7 @@ class ParabolicSAR(indicators.IndicatorBase):
         plot_at: int = 0,
         plot_as: models.PlotStyle = models.PlotStyle.DOTS,
         plot_color: models.PlotColor = models.PlotColor.BLACK,
+        plot_width: models.PlotWidth = models.PlotWidth.NORMAL,
     ) -> None:
         """
         Parameters:
@@ -62,12 +63,15 @@ class ParabolicSAR(indicators.IndicatorBase):
                 Visual style used to render the indicator.
             plot_color:
                 Color used to render the indicator.
+            plot_width:
+                Width/thickness used to render the indicator.
         """
         super().__init__(
             max_history=max_history,
             plot_at=plot_at,
             plot_as=plot_as,
             plot_color=plot_color,
+            plot_width=plot_width,
         )
 
         self.af_start: float = af_start

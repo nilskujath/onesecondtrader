@@ -521,9 +521,15 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
             models.PlotColor.WHITE: "W",
             models.PlotColor.TEAL: "T",
         }
+        width_codes = {
+            models.PlotWidth.THIN: "1",
+            models.PlotWidth.NORMAL: "2",
+            models.PlotWidth.THICK: "3",
+            models.PlotWidth.EXTRA_THICK: "4",
+        }
 
         indicator_values = {
-            f"{ind.plot_at:02d}{style_codes[ind.plot_as]}{color_codes[ind.plot_color]}_{ind.name}": ind.latest(
+            f"{ind.plot_at:02d}{style_codes[ind.plot_as]}{color_codes[ind.plot_color]}{width_codes[ind.plot_width]}_{ind.name}": ind.latest(
                 event.symbol
             )
             for ind in self._indicators
@@ -531,8 +537,8 @@ class StrategyBase(messaging.Subscriber, abc.ABC):
         }
 
         for upper_ind, lower_ind, fb_color, fb_alpha in self._fill_betweens:
-            upper_key = f"{upper_ind.plot_at:02d}{style_codes[upper_ind.plot_as]}{color_codes[upper_ind.plot_color]}_{upper_ind.name}"
-            lower_key = f"{lower_ind.plot_at:02d}{style_codes[lower_ind.plot_as]}{color_codes[lower_ind.plot_color]}_{lower_ind.name}"
+            upper_key = f"{upper_ind.plot_at:02d}{style_codes[upper_ind.plot_as]}{color_codes[upper_ind.plot_color]}{width_codes[upper_ind.plot_width]}_{upper_ind.name}"
+            lower_key = f"{lower_ind.plot_at:02d}{style_codes[lower_ind.plot_as]}{color_codes[lower_ind.plot_color]}{width_codes[lower_ind.plot_width]}_{lower_ind.name}"
             fb_color_code = color_codes.get(fb_color, "B")
             indicator_values[
                 f"FB:{upper_key}:{lower_key}:{fb_color_code}:{fb_alpha}"

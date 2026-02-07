@@ -26,6 +26,7 @@ class PeriodExtreme(indicators.IndicatorBase):
         plot_at: int = 0,
         plot_as: models.PlotStyle = models.PlotStyle.LINE,
         plot_color: models.PlotColor = models.PlotColor.BLACK,
+        plot_width: models.PlotWidth = models.PlotWidth.NORMAL,
         **source_kwargs: Any,
     ) -> None:
         """
@@ -44,6 +45,8 @@ class PeriodExtreme(indicators.IndicatorBase):
                 Visual style used to render the indicator.
             plot_color:
                 Color used to render the indicator.
+            plot_width:
+                Width/thickness used to render the indicator.
             **source_kwargs:
                 Keyword arguments passed to the source indicator constructor.
         """
@@ -52,6 +55,7 @@ class PeriodExtreme(indicators.IndicatorBase):
             plot_at=plot_at,
             plot_as=plot_as,
             plot_color=plot_color,
+            plot_width=plot_width,
         )
 
         self._source = source(max_history=period, **source_kwargs)

@@ -102,6 +102,7 @@ nav:
     - Order Types: reference/models/order_types.md
     - Plot Color: reference/models/plot_color.md
     - Plot Style: reference/models/plot_style.md
+    - Plot Width: reference/models/plot_width.md
     - Rejection Reasons: reference/models/rejection_reasons.md
     - Trade Sides: reference/models/trade_sides.md
   - Orchestrator:

@@ -104,6 +104,7 @@ class IndicatorBase(abc.ABC):
         plot_at: int = 99,
         plot_as: models.PlotStyle = models.PlotStyle.LINE,
         plot_color: models.PlotColor = models.PlotColor.BLACK,
+        plot_width: models.PlotWidth = models.PlotWidth.NORMAL,
     ) -> None:
         """
         Parameters:
@@ -116,6 +117,8 @@ class IndicatorBase(abc.ABC):
                 Visual style used to render the indicator.
             plot_color:
                 Color used to render the indicator.
+            plot_width:
+                Width/thickness used to render the indicator.
         """
         self._lock = threading.Lock()
         self._max_history = max(1, int(max_history))
@@ -123,6 +126,7 @@ class IndicatorBase(abc.ABC):
         self._plot_at = plot_at
         self._plot_as = plot_as
         self._plot_color = plot_color
+        self._plot_width = plot_width
 
     @property
     @abc.abstractmethod
@@ -241,3 +245,13 @@ class IndicatorBase(abc.ABC):
             Color used to render the indicator.
         """
         return self._plot_color
+
+    @property
+    def plot_width(self) -> models.PlotWidth:
+        """
+        Plotting width.
+
+        Returns:
+            Width/thickness used to render the indicator.
+        """
+        return self._plot_width

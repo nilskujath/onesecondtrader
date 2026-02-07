@@ -9,6 +9,7 @@ from .chart_type import ChartType
 from .order_types import OrderType
 from .plot_color import PlotColor
 from .plot_style import PlotStyle
+from .plot_width import PlotWidth
 from .rejection_reasons import (
     OrderRejectionReason,
     CancellationRejectionReason,
@@ -25,6 +26,7 @@ __all__ = [
     "OrderType",
     "PlotColor",
     "PlotStyle",
+    "PlotWidth",
     "TradeSide",
     "OrderRejectionReason",
     "CancellationRejectionReason",

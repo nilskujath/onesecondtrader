@@ -30,6 +30,14 @@ _dash_patterns = {
     "3": (10, 6),  # long/sparse dashes
 }
 
+# Width code -> (linewidth, dot_s, hist_alpha)
+_width_params: dict[str, tuple[float, int, float]] = {
+    "1": (0.6, 4, 0.4),
+    "2": (1.2, 10, 0.6),
+    "3": (2.4, 25, 0.8),
+    "4": (4.0, 50, 1.0),
+}
+
 
 def _render_background_shading(
     all_axes: list[Axes],
@@ -284,6 +292,7 @@ def generate_chart_image(
     indicator_tags: dict[str, int] = {}
     indicator_styles: dict[str, str] = {}
     indicator_colors: dict[str, str] = {}
+    indicator_widths: dict[str, str] = {}
     fill_between_specs: list[dict] = []
     _fb_seen: set[str] = set()
     for idx in range(len(data)):
@@ -316,6 +325,8 @@ def generate_chart_image(
                     else "K"
                 )
                 indicator_colors[name] = color_code_to_matplotlib[color_code]
+                # Width code at position 4: new format has "1"-"4", old format has "_"
+                indicator_widths[name] = name[4] if len(name) > 4 else "2"
             indicator_series[name][idx] = value if value == value else math.nan
 
     overlay_indicators = {
@@ -447,9 +458,10 @@ def generate_chart_image(
     _draw_ohlc_bars(ax_main, data, x_values, chart_type, bar_width)
 
     for idx, (name, values) in enumerate(overlay_indicators.items()):
-        display_name = name[5:] if len(name) > 5 else name
+        display_name = name[6:] if len(name) > 6 else name
         color = indicator_colors.get(name, "black")
         style = indicator_styles.get(name, "L")
+        lw, dot_s, hist_alpha = _width_params[indicator_widths.get(name, "2")]
         if style in ("A", "E"):
             continue
         if style == "H":
@@ -457,7 +469,7 @@ def generate_chart_image(
                 x_values,
                 values,
                 label=display_name,
-                alpha=0.6,
+                alpha=hist_alpha,
                 color=color,
                 width=bar_width,
             )
@@ -468,14 +480,14 @@ def generate_chart_image(
                 label=display_name,
                 alpha=0.8,
                 color=color,
-                s=10,
+                s=dot_s,
             )
         elif style in _dash_patterns:
             ax_main.plot(
                 x_values,
                 values,
                 label=display_name,
-                linewidth=1.2,
+                linewidth=lw,
                 alpha=0.8,
                 color=color,
                 linestyle="--",
@@ -486,7 +498,7 @@ def generate_chart_image(
                 x_values,
                 values,
                 label=display_name,
-                linewidth=1.2,
+                linewidth=lw,
                 alpha=0.8,
                 color=color,
             )
@@ -497,9 +509,10 @@ def generate_chart_image(
         ax = ax_indicators[ax_idx]
         tag_indicators = subplot_indicators[tag]
         for idx, (name, values) in enumerate(tag_indicators.items()):
-            display_name = name[5:] if len(name) > 5 else name
+            display_name = name[6:] if len(name) > 6 else name
             color = indicator_colors.get(name, "black")
             style = indicator_styles.get(name, "L")
+            lw, dot_s, hist_alpha = _width_params[indicator_widths.get(name, "2")]
             if style in ("A", "E"):
                 continue
             if style == "H":
@@ -507,7 +520,7 @@ def generate_chart_image(
                     x_values,
                     values,
                     label=display_name,
-                    alpha=0.6,
+                    alpha=hist_alpha,
                     color=color,
                     width=bar_width,
                 )
@@ -518,14 +531,14 @@ def generate_chart_image(
                     label=display_name,
                     alpha=0.8,
                     color=color,
-                    s=10,
+                    s=dot_s,
                 )
             elif style in _dash_patterns:
                 ax.plot(
                     x_values,
                     values,
                     label=display_name,
-                    linewidth=1.2,
+                    linewidth=lw,
                     alpha=0.8,
                     color=color,
                     linestyle="--",
@@ -536,7 +549,7 @@ def generate_chart_image(
                     x_values,
                     values,
                     label=display_name,
-                    linewidth=1.2,
+                    linewidth=lw,
                     alpha=0.8,
                     color=color,
                 )
@@ -763,6 +776,7 @@ def generate_segment_chart_image(
     indicator_tags: dict[str, int] = {}
     indicator_styles: dict[str, str] = {}
     indicator_colors: dict[str, str] = {}
+    indicator_widths: dict[str, str] = {}
     fill_between_specs: list[dict] = []
     _fb_seen: set[str] = set()
     for idx in range(len(data)):
@@ -795,6 +809,8 @@ def generate_segment_chart_image(
                     else "K"
                 )
                 indicator_colors[name] = color_code_to_matplotlib[color_code]
+                # Width code at position 4: new format has "1"-"4", old format has "_"
+                indicator_widths[name] = name[4] if len(name) > 4 else "2"
             indicator_series[name][idx] = value if value == value else math.nan
 
     overlay_indicators = {
@@ -840,9 +856,10 @@ def generate_segment_chart_image(
     _draw_ohlc_bars(ax_main, data, x_values, chart_type, bar_width)
 
     for idx, (name, values) in enumerate(overlay_indicators.items()):
-        display_name = name[5:] if len(name) > 5 else name
+        display_name = name[6:] if len(name) > 6 else name
         color = indicator_colors.get(name, "black")
         style = indicator_styles.get(name, "L")
+        lw, dot_s, hist_alpha = _width_params[indicator_widths.get(name, "2")]
         if style in ("A", "E"):
             continue
         if style == "H":
@@ -850,7 +867,7 @@ def generate_segment_chart_image(
                 x_values,
                 values,
                 label=display_name,
-                alpha=0.6,
+                alpha=hist_alpha,
                 color=color,
                 width=bar_width,
             )
@@ -861,14 +878,14 @@ def generate_segment_chart_image(
                 label=display_name,
                 alpha=0.8,
                 color=color,
-                s=10,
+                s=dot_s,
             )
         elif style in _dash_patterns:
             ax_main.plot(
                 x_values,
                 values,
                 label=display_name,
-                linewidth=1.2,
+                linewidth=lw,
                 alpha=0.8,
                 color=color,
                 linestyle="--",
@@ -879,7 +896,7 @@ def generate_segment_chart_image(
                 x_values,
                 values,
                 label=display_name,
-                linewidth=1.2,
+                linewidth=lw,
                 alpha=0.8,
                 color=color,
             )
@@ -890,9 +907,10 @@ def generate_segment_chart_image(
         ax = ax_indicators[ax_idx]
         tag_indicators = subplot_indicators[tag]
         for idx, (name, values) in enumerate(tag_indicators.items()):
-            display_name = name[5:] if len(name) > 5 else name
+            display_name = name[6:] if len(name) > 6 else name
             color = indicator_colors.get(name, "black")
             style = indicator_styles.get(name, "L")
+            lw, dot_s, hist_alpha = _width_params[indicator_widths.get(name, "2")]
             if style in ("A", "E"):
                 continue
             if style == "H":
@@ -900,7 +918,7 @@ def generate_segment_chart_image(
                     x_values,
                     values,
                     label=display_name,
-                    alpha=0.6,
+                    alpha=hist_alpha,
                     color=color,
                     width=bar_width,
                 )
@@ -911,14 +929,14 @@ def generate_segment_chart_image(
                     label=display_name,
                     alpha=0.8,
                     color=color,
-                    s=10,
+                    s=dot_s,
                 )
             elif style in _dash_patterns:
                 ax.plot(
                     x_values,
                     values,
                     label=display_name,
-                    linewidth=1.2,
+                    linewidth=lw,
                     alpha=0.8,
                     color=color,
                     linestyle="--",
@@ -929,7 +947,7 @@ def generate_segment_chart_image(
                     x_values,
                     values,
                     label=display_name,
-                    linewidth=1.2,
+                    linewidth=lw,
                     alpha=0.8,
                     color=color,
                 )

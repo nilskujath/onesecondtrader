@@ -38,6 +38,7 @@ class PlusDI(indicators.IndicatorBase):
         plot_at: int = 1,
         plot_as: models.PlotStyle = models.PlotStyle.LINE,
         plot_color: models.PlotColor = models.PlotColor.GREEN,
+        plot_width: models.PlotWidth = models.PlotWidth.NORMAL,
     ) -> None:
         """
         Parameters:
@@ -51,12 +52,15 @@ class PlusDI(indicators.IndicatorBase):
                 Visual style used to render the indicator.
             plot_color:
                 Color used to render the indicator.
+            plot_width:
+                Width/thickness used to render the indicator.
         """
         super().__init__(
             max_history=max_history,
             plot_at=plot_at,
             plot_as=plot_as,
             plot_color=plot_color,
+            plot_width=plot_width,
         )
 
         self.period: int = max(1, int(period))
