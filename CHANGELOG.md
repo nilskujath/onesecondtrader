@@ -1,3 +1,8 @@
+## v0.66.0
+- feat: Added backtest queueing to dashboard
+- fix: persist symbol presets across dashboard restarts
+- fix: make parallel backtests thread-safe
+
 ## v0.65.1
 - fix: restore progress bar on tab switch by querying running jobs on page load
 
