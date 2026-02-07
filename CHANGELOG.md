@@ -1,3 +1,6 @@
+## v0.67.0
+- feat: moved indicator plotting logic to dashboard
+
 ## v0.66.0
 - feat: Added backtest queueing to dashboard
 - fix: persist symbol presets across dashboard restarts
