@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from onesecondtrader import events, indicators, models
+from onesecondtrader import events, indicators
 
 
 def _true_range(high: float, low: float, prev_close: float) -> float:
@@ -35,10 +35,6 @@ class ADX(indicators.IndicatorBase):
         self,
         period: int = 14,
         max_history: int = 100,
-        plot_at: int = 1,
-        plot_as: models.PlotStyle = models.PlotStyle.LINE,
-        plot_color: models.PlotColor = models.PlotColor.BLACK,
-        plot_width: models.PlotWidth = models.PlotWidth.NORMAL,
     ) -> None:
         """
         Parameters:
@@ -46,22 +42,8 @@ class ADX(indicators.IndicatorBase):
                 Lookback period for the ADX calculation.
             max_history:
                 Maximum number of computed indicator values retained per symbol.
-            plot_at:
-                Opaque plotting identifier forwarded to the charting backend.
-            plot_as:
-                Visual style used to render the indicator.
-            plot_color:
-                Color used to render the indicator.
-            plot_width:
-                Width/thickness used to render the indicator.
         """
-        super().__init__(
-            max_history=max_history,
-            plot_at=plot_at,
-            plot_as=plot_as,
-            plot_color=plot_color,
-            plot_width=plot_width,
-        )
+        super().__init__(max_history=max_history)
 
         self.period: int = max(1, int(period))
 

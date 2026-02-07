@@ -129,10 +129,3 @@ def test_history_access() -> None:
 def test_missing_symbol_returns_nan() -> None:
     atr = ATR()
     assert is_nan(atr.latest("UNKNOWN"))
-
-
-def test_plot_defaults() -> None:
-    atr = ATR()
-    assert atr.plot_at == 1
-    assert atr.plot_as == models.PlotStyle.LINE
-    assert atr.plot_color == models.PlotColor.BLACK

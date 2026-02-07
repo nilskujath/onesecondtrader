@@ -5,7 +5,7 @@ import dataclasses
 
 import numpy as np
 
-from onesecondtrader import events, indicators, models
+from onesecondtrader import events, indicators
 
 
 @dataclasses.dataclass
@@ -42,10 +42,6 @@ class ParabolicSAR(indicators.IndicatorBase):
         af_step: float = 0.02,
         af_max: float = 0.20,
         max_history: int = 100,
-        plot_at: int = 0,
-        plot_as: models.PlotStyle = models.PlotStyle.DOTS,
-        plot_color: models.PlotColor = models.PlotColor.BLACK,
-        plot_width: models.PlotWidth = models.PlotWidth.NORMAL,
     ) -> None:
         """
         Parameters:
@@ -57,22 +53,8 @@ class ParabolicSAR(indicators.IndicatorBase):
                 Maximum acceleration factor.
             max_history:
                 Maximum number of computed indicator values retained per symbol.
-            plot_at:
-                Opaque plotting identifier forwarded to the charting backend.
-            plot_as:
-                Visual style used to render the indicator.
-            plot_color:
-                Color used to render the indicator.
-            plot_width:
-                Width/thickness used to render the indicator.
         """
-        super().__init__(
-            max_history=max_history,
-            plot_at=plot_at,
-            plot_as=plot_as,
-            plot_color=plot_color,
-            plot_width=plot_width,
-        )
+        super().__init__(max_history=max_history)
 
         self.af_start: float = af_start
         self.af_step: float = af_step

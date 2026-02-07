@@ -23,10 +23,6 @@ class BollingerLower(indicators.IndicatorBase):
         num_std: float = 2.0,
         max_history: int = 100,
         bar_field: models.BarField = models.BarField.CLOSE,
-        plot_at: int = 0,
-        plot_as: models.PlotStyle = models.PlotStyle.LINE,
-        plot_color: models.PlotColor = models.PlotColor.BLACK,
-        plot_width: models.PlotWidth = models.PlotWidth.NORMAL,
     ) -> None:
         """
         Parameters:
@@ -38,22 +34,8 @@ class BollingerLower(indicators.IndicatorBase):
                 Maximum number of computed indicator values retained per symbol.
             bar_field:
                 Bar field used as the input series.
-            plot_at:
-                Opaque plotting identifier forwarded to the charting backend.
-            plot_as:
-                Visual style used to render the indicator.
-            plot_color:
-                Color used to render the indicator.
-            plot_width:
-                Width/thickness used to render the indicator.
         """
-        super().__init__(
-            max_history=max_history,
-            plot_at=plot_at,
-            plot_as=plot_as,
-            plot_color=plot_color,
-            plot_width=plot_width,
-        )
+        super().__init__(max_history=max_history)
 
         self.period: int = max(1, int(period))
         self.num_std: float = float(num_std)

@@ -119,13 +119,6 @@ def test_plus_di_value_range() -> None:
         assert 0.0 <= val <= 100.0
 
 
-def test_plus_di_plot_defaults() -> None:
-    di = PlusDI()
-    assert di.plot_at == 1
-    assert di.plot_as == models.PlotStyle.LINE
-    assert di.plot_color == models.PlotColor.GREEN
-
-
 def test_plus_di_period_clamped() -> None:
     di = PlusDI(period=0)
     assert di.period == 1
@@ -175,13 +168,6 @@ def test_minus_di_warmup() -> None:
     assert is_nan(di.latest("AAPL"))
     di.update(make_bar("AAPL", high=46.0, low=42.0, close=43.0))
     assert not is_nan(di.latest("AAPL"))
-
-
-def test_minus_di_plot_defaults() -> None:
-    di = MinusDI()
-    assert di.plot_at == 1
-    assert di.plot_as == models.PlotStyle.LINE
-    assert di.plot_color == models.PlotColor.RED
 
 
 def test_minus_di_period_clamped() -> None:
@@ -284,13 +270,6 @@ def test_adx_value_range() -> None:
     val = adx.latest("AAPL")
     if not is_nan(val):
         assert 0.0 <= val <= 100.0
-
-
-def test_adx_plot_defaults() -> None:
-    adx = ADX()
-    assert adx.plot_at == 1
-    assert adx.plot_as == models.PlotStyle.LINE
-    assert adx.plot_color == models.PlotColor.BLACK
 
 
 def test_adx_strong_trend() -> None:

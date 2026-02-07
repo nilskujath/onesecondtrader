@@ -1135,6 +1135,29 @@
     .trades-table tr.chart-row { display: none; }
     .trades-table tr.chart-row.expanded { display: table-row; }
     .trades-table tr.chart-row td { padding: 16px; background: #0d1117; }
+    .indicator-settings-panel { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; margin-bottom: 16px; }
+    .indicator-settings-header { display: flex; align-items: center; gap: 8px; padding: 12px 16px; cursor: pointer; user-select: none; color: #8b949e; font-size: 13px; font-weight: 500; }
+    .indicator-settings-header:hover { color: #e6edf3; }
+    .indicator-settings-header .toggle-icon { transition: transform 0.2s; font-size: 10px; }
+    .indicator-settings-header .toggle-icon.expanded { transform: rotate(90deg); }
+    .indicator-settings-body { display: none; padding: 0 16px 16px; }
+    .indicator-settings-body.expanded { display: block; }
+    .indicator-settings-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .indicator-settings-table th { padding: 8px 10px; text-align: left; color: #8b949e; font-weight: 500; border-bottom: 1px solid #30363d; }
+    .indicator-settings-table td { padding: 6px 10px; border-bottom: 1px solid #21262d; color: #e6edf3; }
+    .indicator-settings-table select { padding: 4px 8px; background: #161b22; border: 1px solid #30363d; border-radius: 4px; color: #e6edf3; font-size: 12px; cursor: pointer; }
+    .indicator-settings-table select:focus { outline: none; border-color: #58a6ff; }
+    .indicator-settings-table input[type="checkbox"] { cursor: pointer; }
+    .indicator-settings-table input[type="number"] { width: 50px; padding: 4px 6px; background: #161b22; border: 1px solid #30363d; border-radius: 4px; color: #e6edf3; font-size: 12px; }
+    .indicator-settings-table .ind-name { font-family: monospace; font-size: 12px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .color-option { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
+    .fill-between-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .fill-between-row select, .fill-between-row input { padding: 4px 8px; background: #161b22; border: 1px solid #30363d; border-radius: 4px; color: #e6edf3; font-size: 12px; }
+    .fill-between-row .btn-sm { padding: 4px 10px; background: #21262d; border: 1px solid #30363d; border-radius: 4px; color: #e6edf3; font-size: 12px; cursor: pointer; }
+    .fill-between-row .btn-sm:hover { background: #30363d; }
+    .fill-between-row .btn-sm.btn-danger { color: #f85149; }
+    .fill-between-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #21262d; }
+    .fill-between-section label { font-size: 13px; color: #8b949e; font-weight: 500; }
     """
     
     CHART_JS = """
@@ -1155,6 +1178,16 @@
         timePeriod: 'day',
         chartType: 'c_bars'
     };
+    
+    let indicatorNames = [];
+    let chartSettingsData = {};
+    let indPanelExpanded = true;
+    let _settingsVersion = 0;
+    
+    const VALID_STYLES = ['line', 'histogram', 'dots', 'dash1', 'dash2', 'dash3', 'background1', 'background2'];
+    const VALID_COLORS = ['black', 'red', 'blue', 'green', 'orange', 'purple', 'cyan', 'magenta', 'yellow', 'teal'];
+    const VALID_WIDTHS = ['thin', 'normal', 'thick', 'extra_thick'];
+    const DEFAULT_COLOR_CYCLE = ['blue', 'red', 'green', 'orange', 'purple', 'cyan', 'magenta', 'teal', 'black', 'yellow'];
     
     const CHART_TYPE_OPTIONS = [
         {value: 'candlestick', label: 'Candlestick'},
@@ -1220,6 +1253,7 @@
         if (select && select.value !== runId) {
             select.value = runId;
         }
+        loadIndicatorSettings(runId);
         loadData(runId);
     }
     
@@ -1558,7 +1592,7 @@
         let url, cacheKey;
         if (settings.mode === 'trades') {
             const rt = filteredRoundtrips[idx];
-            cacheKey = `${selectedRunId}_trade_${rt.symbol}_${rt.entry_ts}_${rt.exit_ts}_${settings.chartType}`;
+            cacheKey = `${selectedRunId}_trade_${rt.symbol}_${rt.entry_ts}_${rt.exit_ts}_${settings.chartType}_v${_settingsVersion}`;
             if (chartCache[cacheKey]) {
                 container.innerHTML = `<img src="${chartCache[cacheKey]}" alt="Chart">`;
                 return;
@@ -1567,7 +1601,7 @@
             url = `/api/runs/${selectedRunId}/chart.png?symbol=${encodeURIComponent(rt.symbol)}&start_ns=${rt.entry_ts}&end_ns=${rt.exit_ts}&direction=${rt.direction}&pnl=${rt.pnl_after_commission}&chart_type=${settings.chartType}`;
         } else {
             const seg = filteredSegments[idx];
-            cacheKey = `${selectedRunId}_${seg.symbol}_${seg.start_ts}_${seg.end_ts}_${settings.chartType}`;
+            cacheKey = `${selectedRunId}_${seg.symbol}_${seg.start_ts}_${seg.end_ts}_${settings.chartType}_v${_settingsVersion}`;
             if (chartCache[cacheKey]) {
                 container.innerHTML = `<img src="${chartCache[cacheKey]}" alt="Chart">`;
                 return;
@@ -1578,6 +1612,7 @@
                 url += `&period_start_ns=${seg.period_start_ns}&period_end_ns=${seg.period_end_ns}`;
             }
         }
+        url += `&_v=${_settingsVersion}`;
         const img = new Image();
         img.onload = () => {
             chartCache[cacheKey] = url;
@@ -1589,6 +1624,212 @@
         };
         img.src = url;
         img.alt = 'Chart';
+    }
+    
+    function getDefaultPanel(name, assignedPanels) {
+        const upper = name.toUpperCase();
+        // Overlay indicators (panel 0)
+        if (/^SMA_/.test(upper) || /^BB_UPPER_/.test(upper) || /^BB_LOWER_/.test(upper) ||
+            /^PSAR_/.test(upper) || /PERIOD HIGH/.test(upper) || /PERIOD LOW/.test(upper)) {
+            return 0;
+        }
+        // Grouped: ADX, PLUS_DI, MINUS_DI share a panel
+        const adxGroup = ['ADX_', 'PLUS_DI_', 'MINUS_DI_'];
+        if (adxGroup.some(prefix => upper.startsWith(prefix))) {
+            for (const [existingName, panel] of Object.entries(assignedPanels)) {
+                if (adxGroup.some(prefix => existingName.toUpperCase().startsWith(prefix))) {
+                    return panel;
+                }
+            }
+        }
+        // Individual oscillators each get their own panel
+        const maxPanel = Math.max(0, ...Object.values(assignedPanels));
+        return maxPanel + 1;
+    }
+    
+    async function loadIndicatorSettings(runId) {
+        try {
+            const [indRes, settingsRes] = await Promise.all([
+                fetch(`/api/runs/${runId}/indicators`),
+                fetch(`/api/runs/${runId}/chart-settings`)
+            ]);
+            const indData = await indRes.json();
+            const settingsJson = await settingsRes.json();
+            indicatorNames = indData.indicators || [];
+            chartSettingsData = settingsJson || {};
+            if (!chartSettingsData.indicators) chartSettingsData.indicators = {};
+            if (!chartSettingsData.fill_between) chartSettingsData.fill_between = [];
+            const assignedPanels = {};
+            indicatorNames.forEach((name, idx) => {
+                if (!chartSettingsData.indicators[name]) {
+                    const panel = getDefaultPanel(name, assignedPanels);
+                    chartSettingsData.indicators[name] = {
+                        panel: panel,
+                        below_price: true,
+                        style: 'line',
+                        color: 'black',
+                        width: 'normal',
+                        visible: true
+                    };
+                    assignedPanels[name] = panel;
+                } else {
+                    const cfg = chartSettingsData.indicators[name];
+                    if (cfg.panel < 0 && cfg.below_price === undefined) {
+                        cfg.panel = Math.abs(cfg.panel);
+                        cfg.below_price = false;
+                    }
+                    if (cfg.below_price === undefined) {
+                        cfg.below_price = true;
+                    }
+                    assignedPanels[name] = cfg.panel;
+                }
+            });
+            renderIndicatorSettings();
+        } catch (e) {
+            console.error('Failed to load indicator settings', e);
+        }
+    }
+    
+    async function saveIndicatorSettings() {
+        if (!selectedRunId) return;
+        try {
+            await fetch(`/api/runs/${selectedRunId}/chart-settings`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(chartSettingsData)
+            });
+            _settingsVersion++;
+            Object.keys(chartCache).forEach(k => delete chartCache[k]);
+            document.querySelectorAll('.chart-row.expanded').forEach(row => {
+                const idx = parseInt(row.id.replace('chart-row-', ''));
+                row.classList.remove('expanded');
+                toggleChart(idx);
+            });
+        } catch (e) {
+            console.error('Failed to save indicator settings', e);
+        }
+    }
+    
+    function toggleIndicatorPanel() {
+        indPanelExpanded = !indPanelExpanded;
+        const body = document.getElementById('ind-settings-body');
+        const icon = document.getElementById('ind-toggle-icon');
+        if (body) body.classList.toggle('expanded', indPanelExpanded);
+        if (icon) icon.classList.toggle('expanded', indPanelExpanded);
+    }
+    
+    function onIndSettingChange(name, field, value) {
+        if (!chartSettingsData.indicators) chartSettingsData.indicators = {};
+        if (!chartSettingsData.indicators[name]) chartSettingsData.indicators[name] = {};
+        if (field === 'panel') {
+            value = Math.max(0, parseInt(value) || 0);
+            if (value === 0) {
+                chartSettingsData.indicators[name].below_price = true;
+            }
+        }
+        if (field === 'below_price') value = value === true || value === 'true';
+        if (field === 'visible') value = value === true || value === 'true';
+        chartSettingsData.indicators[name][field] = value;
+        saveIndicatorSettings();
+        if (field === 'panel') renderIndicatorSettings();
+    }
+    
+    function onFillBetweenChange(idx, field, value) {
+        if (!chartSettingsData.fill_between) return;
+        if (field === 'alpha') value = parseFloat(value) || 0.15;
+        chartSettingsData.fill_between[idx][field] = value;
+        saveIndicatorSettings();
+    }
+    
+    function addFillBetween() {
+        if (!chartSettingsData.fill_between) chartSettingsData.fill_between = [];
+        const names = indicatorNames.length >= 2 ? indicatorNames : ['', ''];
+        chartSettingsData.fill_between.push({
+            upper: names[0] || '',
+            lower: names[1] || '',
+            color: 'blue',
+            alpha: 0.15
+        });
+        renderIndicatorSettings();
+    }
+    
+    function removeFillBetween(idx) {
+        if (!chartSettingsData.fill_between) return;
+        chartSettingsData.fill_between.splice(idx, 1);
+        saveIndicatorSettings();
+        renderIndicatorSettings();
+    }
+    
+    function renderIndicatorSettings() {
+        const container = document.getElementById('ind-settings-container');
+        if (!container) return;
+        if (indicatorNames.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        const styleOptions = VALID_STYLES.map(s =>
+            `<option value="${s}">${s}</option>`
+        ).join('');
+        const colorOptions = VALID_COLORS.map(c =>
+            `<option value="${c}">${c}</option>`
+        ).join('');
+        const widthOptions = VALID_WIDTHS.map(w =>
+            `<option value="${w}">${w.replace('_', ' ')}</option>`
+        ).join('');
+        const indCfg = chartSettingsData.indicators || {};
+        const rows = indicatorNames.map(name => {
+            const cfg = indCfg[name] || {panel: 0, below_price: true, style: 'line', color: 'black', width: 'normal', visible: true};
+            const panelVal = cfg.panel || 0;
+            const belowChecked = cfg.below_price !== false ? 'checked' : '';
+            const belowDisabled = panelVal === 0 ? 'disabled' : '';
+            const selStyle = styleOptions.replace(`value="${cfg.style}"`, `value="${cfg.style}" selected`);
+            const selColor = colorOptions.replace(`value="${cfg.color}"`, `value="${cfg.color}" selected`);
+            const selWidth = widthOptions.replace(`value="${cfg.width}"`, `value="${cfg.width}" selected`);
+            const checked = cfg.visible !== false ? 'checked' : '';
+            return `<tr>
+                <td class="ind-name" title="${name}">${name}</td>
+                <td><input type="number" min="0" value="${panelVal}" style="width:50px" onchange="onIndSettingChange('${name}','panel',this.value)"></td>
+                <td><input type="checkbox" ${belowChecked} ${belowDisabled} onchange="onIndSettingChange('${name}','below_price',this.checked)"></td>
+                <td><select onchange="onIndSettingChange('${name}','style',this.value)">${selStyle}</select></td>
+                <td><select onchange="onIndSettingChange('${name}','color',this.value)">${selColor}</select></td>
+                <td><select onchange="onIndSettingChange('${name}','width',this.value)">${selWidth}</select></td>
+                <td><input type="checkbox" ${checked} onchange="onIndSettingChange('${name}','visible',this.checked)"></td>
+            </tr>`;
+        }).join('');
+        const indNameOptions = indicatorNames.map(n => `<option value="${n}">${n}</option>`).join('');
+        const fbRows = (chartSettingsData.fill_between || []).map((fb, idx) => {
+            const upperOpts = indNameOptions.replace(`value="${fb.upper}"`, `value="${fb.upper}" selected`);
+            const lowerOpts = indNameOptions.replace(`value="${fb.lower}"`, `value="${fb.lower}" selected`);
+            const fbColorOpts = colorOptions.replace(`value="${fb.color}"`, `value="${fb.color}" selected`);
+            return `<div class="fill-between-row">
+                <label>Upper:</label><select onchange="onFillBetweenChange(${idx},'upper',this.value)">${upperOpts}</select>
+                <label>Lower:</label><select onchange="onFillBetweenChange(${idx},'lower',this.value)">${lowerOpts}</select>
+                <label>Color:</label><select onchange="onFillBetweenChange(${idx},'color',this.value)">${fbColorOpts}</select>
+                <label>Alpha:</label><input type="number" step="0.05" min="0" max="1" value="${fb.alpha}" onchange="onFillBetweenChange(${idx},'alpha',this.value)">
+                <button class="btn-sm btn-danger" onclick="removeFillBetween(${idx})">Remove</button>
+            </div>`;
+        }).join('');
+        const bodyClass = indPanelExpanded ? 'expanded' : '';
+        const iconClass = indPanelExpanded ? 'expanded' : '';
+        container.innerHTML = `
+            <div class="indicator-settings-panel">
+                <div class="indicator-settings-header" onclick="toggleIndicatorPanel()">
+                    <span id="ind-toggle-icon" class="toggle-icon ${iconClass}">&#9654;</span>
+                    Indicator Settings (${indicatorNames.length} indicators)
+                </div>
+                <div id="ind-settings-body" class="indicator-settings-body ${bodyClass}">
+                    <table class="indicator-settings-table">
+                        <thead><tr><th>Indicator</th><th>Panel</th><th>Below</th><th>Style</th><th>Color</th><th>Width</th><th>Visible</th></tr></thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                    <div class="fill-between-section">
+                        <label>Fill Between</label>
+                        ${fbRows}
+                        <div style="margin-top:8px"><button class="btn-sm" onclick="addFillBetween()">+ Add Fill Between</button></div>
+                    </div>
+                </div>
+            </div>
+        `;
     }
     
     document.addEventListener('DOMContentLoaded', () => {

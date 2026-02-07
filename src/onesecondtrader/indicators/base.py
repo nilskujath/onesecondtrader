@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-from onesecondtrader import events, models
+from onesecondtrader import events
 
 
 _indicator_registry: dict[str, type[IndicatorBase]] = {}
@@ -87,9 +87,6 @@ class IndicatorBase(abc.ABC):
     Indicator values are stored per symbol in bounded FIFO buffers.
     Missing data and out-of-bounds access yield `numpy.nan`.
 
-    The `plot_at` attribute is an opaque identifier forwarded to the charting backend and has no intrinsic meaning within the indicator subsystem.
-    The `plot_as` attribute specifies the visual style used to render the indicator.
-
     Subclasses are automatically registered for discovery when defined.
     """
 
@@ -101,32 +98,16 @@ class IndicatorBase(abc.ABC):
     def __init__(
         self,
         max_history: int = 100,
-        plot_at: int = 99,
-        plot_as: models.PlotStyle = models.PlotStyle.LINE,
-        plot_color: models.PlotColor = models.PlotColor.BLACK,
-        plot_width: models.PlotWidth = models.PlotWidth.NORMAL,
     ) -> None:
         """
         Parameters:
             max_history:
                 Maximum number of indicator values retained per symbol.
                 Cannot be less than 1.
-            plot_at:
-                Opaque plotting identifier forwarded to the charting backend.
-            plot_as:
-                Visual style used to render the indicator.
-            plot_color:
-                Color used to render the indicator.
-            plot_width:
-                Width/thickness used to render the indicator.
         """
         self._lock = threading.Lock()
         self._max_history = max(1, int(max_history))
         self._history_data: dict[str, collections.deque[float]] = {}
-        self._plot_at = plot_at
-        self._plot_as = plot_as
-        self._plot_color = plot_color
-        self._plot_width = plot_width
 
     @property
     @abc.abstractmethod
@@ -215,43 +196,3 @@ class IndicatorBase(abc.ABC):
                 return history[index]
             except IndexError:
                 return np.nan
-
-    @property
-    def plot_at(self) -> int:
-        """
-        Plotting identifier.
-
-        Returns:
-            Opaque identifier consumed by the charting backend.
-        """
-        return self._plot_at
-
-    @property
-    def plot_as(self) -> models.PlotStyle:
-        """
-        Plotting style.
-
-        Returns:
-            Visual style used to render the indicator.
-        """
-        return self._plot_as
-
-    @property
-    def plot_color(self) -> models.PlotColor:
-        """
-        Plotting color.
-
-        Returns:
-            Color used to render the indicator.
-        """
-        return self._plot_color
-
-    @property
-    def plot_width(self) -> models.PlotWidth:
-        """
-        Plotting width.
-
-        Returns:
-            Width/thickness used to render the indicator.
-        """
-        return self._plot_width

@@ -135,10 +135,3 @@ def test_per_symbol_isolation() -> None:
     # Both in uptrend
     assert sar.latest("AAPL") == 48.0
     assert sar.latest("MSFT") == 195.0
-
-
-def test_plot_defaults() -> None:
-    sar = ParabolicSAR()
-    assert sar.plot_at == 0
-    assert sar.plot_as == models.PlotStyle.DOTS
-    assert sar.plot_color == models.PlotColor.BLACK

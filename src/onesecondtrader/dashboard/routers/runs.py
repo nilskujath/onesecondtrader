@@ -23,6 +23,7 @@ from ..backtest import (
 )
 from ..db import get_runs_db_path, get_runs, CHILD_TABLES
 from ..roundtrips import get_roundtrips
+from ..chart_settings import load_chart_settings, save_chart_settings
 from ..charting import (
     generate_chart_image,
     generate_segment_chart_image,
@@ -141,8 +142,16 @@ async def api_run_chart_image(
     chart_type: str = "c_bars",
 ) -> Response:
     """Return a PNG chart image for a round-trip trade."""
+    chart_settings = load_chart_settings(run_id) or None
     image_bytes = generate_chart_image(
-        run_id, symbol, start_ns, end_ns, direction, pnl, chart_type
+        run_id,
+        symbol,
+        start_ns,
+        end_ns,
+        direction,
+        pnl,
+        chart_type,
+        chart_settings=chart_settings,
     )
     return Response(content=image_bytes, media_type="image/png")
 
@@ -361,8 +370,16 @@ async def api_segment_chart_image(
     chart_type: str = "c_bars",
 ) -> Response:
     """Return a PNG chart image for a bar segment."""
+    chart_settings = load_chart_settings(run_id) or None
     image_bytes = generate_segment_chart_image(
-        run_id, symbol, start_ns, end_ns, period_start_ns, period_end_ns, chart_type
+        run_id,
+        symbol,
+        start_ns,
+        end_ns,
+        period_start_ns,
+        period_end_ns,
+        chart_type,
+        chart_settings=chart_settings,
     )
     return Response(content=image_bytes, media_type="image/png")
 
@@ -384,6 +401,59 @@ async def api_run_symbols(run_id: str) -> dict:
     symbols = [row[0] for row in cursor.fetchall()]
     conn.close()
     return {"symbols": symbols}
+
+
+@router.get("/runs/{run_id}/indicators")
+async def api_run_indicators(run_id: str) -> dict:
+    """Return list of indicator names present in a run."""
+    import json as json_module
+
+    db_path = get_runs_db_path()
+    if not os.path.exists(db_path):
+        return {"indicators": []}
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT indicators FROM bars_processed
+        WHERE run_id = ?
+        LIMIT 10
+        """,
+        (run_id,),
+    )
+    rows = cursor.fetchall()
+    conn.close()
+    names: set[str] = set()
+    for (indicators_json,) in rows:
+        if indicators_json:
+            indicators = json_module.loads(indicators_json)
+            names.update(indicators.keys())
+    return {"indicators": sorted(names)}
+
+
+@router.get("/runs/{run_id}/chart-settings")
+async def api_get_chart_settings(run_id: str) -> dict:
+    """Return saved chart settings for a run."""
+    return load_chart_settings(run_id)
+
+
+class ChartSettingsRequest(BaseModel):
+    """Request model for saving chart settings."""
+
+    indicators: dict | None = None
+    fill_between: list | None = None
+
+
+@router.put("/runs/{run_id}/chart-settings")
+async def api_put_chart_settings(run_id: str, request: ChartSettingsRequest) -> dict:
+    """Save chart settings for a run."""
+    settings: dict = {}
+    if request.indicators is not None:
+        settings["indicators"] = request.indicators
+    if request.fill_between is not None:
+        settings["fill_between"] = request.fill_between
+    save_chart_settings(run_id, settings)
+    return {"status": "ok"}
 
 
 @router.get("/runs/{run_id}/bar-timestamps")
@@ -412,6 +482,9 @@ async def api_run_bars(run_id: str, symbol: str) -> dict:
     """Return bar data for a run and symbol in lightweight-charts format with indicators."""
     import json as json_module
 
+    from ..chart_settings import load_chart_settings
+    from ..charting import _get_indicator_setting
+
     db_path = get_runs_db_path()
     if not os.path.exists(db_path):
         return {"bars": [], "indicators": {}}
@@ -428,9 +501,13 @@ async def api_run_bars(run_id: str, symbol: str) -> dict:
     )
     rows = cursor.fetchall()
     conn.close()
+
+    chart_settings = load_chart_settings(run_id) or None
+
     bars = []
     indicator_series: dict[str, list[dict]] = {}
     indicator_meta: dict[str, dict] = {}
+    _color_idx = 0
     for row in rows:
         ts_seconds = row[0] // 1_000_000_000
         bars.append(
@@ -447,21 +524,20 @@ async def api_run_bars(run_id: str, symbol: str) -> dict:
         for name, value in indicators.items():
             if name not in indicator_series:
                 indicator_series[name] = []
-                tag = int(name[:2]) if len(name) >= 2 and name[:2].isdigit() else 99
-                style = name[2] if len(name) > 2 and name[2] in "LHD" else "L"
-                color_code = name[3] if len(name) > 3 else "K"
-                display_name = name[5:] if len(name) > 5 else name
+                cfg = _get_indicator_setting(chart_settings, name, _color_idx)
+                _color_idx += 1
                 indicator_meta[name] = {
-                    "tag": tag,
-                    "style": style,
-                    "color": color_code,
-                    "display_name": display_name,
+                    "panel": cfg.get("panel", 0),
+                    "style": cfg.get("style", "line"),
+                    "color": cfg.get("color", "black"),
+                    "display_name": name,
+                    "visible": cfg.get("visible", True),
                 }
             if value is not None and value == value:
                 indicator_series[name].append({"time": ts_seconds, "value": value})
     indicators_out = {
         name: {"data": data, "meta": indicator_meta[name]}
         for name, data in indicator_series.items()
-        if indicator_meta[name]["tag"] != 99
+        if indicator_meta[name].get("visible", True)
     }
     return {"bars": bars, "indicators": indicators_out}

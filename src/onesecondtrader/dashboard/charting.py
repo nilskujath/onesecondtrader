@@ -11,6 +11,7 @@ import io
 import json
 import math
 import os
+import re
 import sqlite3
 from typing import Any
 
@@ -25,18 +26,89 @@ import pandas as pd
 from .db import get_runs_db_path
 
 _dash_patterns = {
-    "1": (2, 2),  # short/dense dashes
-    "2": (6, 4),  # medium dashes
-    "3": (10, 6),  # long/sparse dashes
+    "dash1": (2, 2),  # short/dense dashes
+    "dash2": (6, 4),  # medium dashes
+    "dash3": (10, 6),  # long/sparse dashes
 }
 
-# Width code -> (linewidth, dot_s, hist_alpha)
+# Width name -> (linewidth, dot_s, hist_alpha)
 _width_params: dict[str, tuple[float, int, float]] = {
-    "1": (0.6, 4, 0.4),
-    "2": (1.2, 10, 0.6),
-    "3": (2.4, 25, 0.8),
-    "4": (4.0, 50, 1.0),
+    "thin": (0.6, 4, 0.4),
+    "normal": (1.2, 10, 0.6),
+    "thick": (2.4, 25, 0.8),
+    "extra_thick": (4.0, 50, 1.0),
 }
+
+_color_name_to_matplotlib: dict[str, str] = {
+    "black": "black",
+    "red": "red",
+    "blue": "blue",
+    "green": "green",
+    "orange": "orange",
+    "purple": "purple",
+    "cyan": "cyan",
+    "magenta": "magenta",
+    "yellow": "yellow",
+    "teal": "teal",
+}
+
+
+_OVERLAY_PATTERNS = [
+    re.compile(r"^SMA_", re.IGNORECASE),
+    re.compile(r"^BB_UPPER_", re.IGNORECASE),
+    re.compile(r"^BB_LOWER_", re.IGNORECASE),
+    re.compile(r"^PSAR_", re.IGNORECASE),
+    re.compile(r"PERIOD HIGH", re.IGNORECASE),
+    re.compile(r"PERIOD LOW", re.IGNORECASE),
+]
+_ADX_GROUP_PREFIXES = ("ADX_", "PLUS_DI_", "MINUS_DI_")
+
+
+def _default_panel(name: str, assigned: dict[str, int]) -> int:
+    upper = name.upper()
+    if any(p.search(name) for p in _OVERLAY_PATTERNS):
+        return 0
+    if any(upper.startswith(prefix) for prefix in _ADX_GROUP_PREFIXES):
+        for existing_name, panel in assigned.items():
+            if any(
+                existing_name.upper().startswith(prefix)
+                for prefix in _ADX_GROUP_PREFIXES
+            ):
+                return panel
+    max_panel = max(assigned.values(), default=0)
+    return max_panel + 1
+
+
+def _get_indicator_setting(
+    chart_settings: dict | None,
+    name: str,
+    color_index: int,
+    assigned: dict[str, int] | None = None,
+) -> dict:
+    """
+    Look up display settings for an indicator.
+
+    Falls back to sensible defaults when no settings are saved.
+    """
+    if chart_settings:
+        indicators_cfg = chart_settings.get("indicators", {})
+        if name in indicators_cfg:
+            cfg = indicators_cfg[name]
+            if cfg.get("panel", 0) < 0 and "below_price" not in cfg:
+                cfg["panel"] = abs(cfg["panel"])
+                cfg["below_price"] = False
+            if "below_price" not in cfg:
+                cfg["below_price"] = True
+            return cfg
+    panel = _default_panel(name, assigned or {})
+    return {
+        "panel": panel,
+        "below_price": True,
+        "style": "line",
+        "color": "black",
+        "width": "normal",
+        "visible": True,
+    }
 
 
 def _render_background_shading(
@@ -68,14 +140,14 @@ def _render_background_shading(
     half = bar_width / 2 if not isinstance(bar_width, pd.Timedelta) else bar_width / 2
 
     for name, values in indicator_series.items():
-        style = indicator_styles.get(name, "L")
-        if style not in ("A", "E"):
+        style = indicator_styles.get(name, "line")
+        if style not in ("background1", "background2"):
             continue
 
         color = indicator_colors.get(name, "green")
         tag = indicator_tags.get(name, 0)
 
-        if style == "A":
+        if style == "background1":
             target_axes = [tag_to_ax[tag]] if tag in tag_to_ax else []
         else:
             target_axes = all_axes
@@ -170,6 +242,7 @@ def generate_chart_image(
     direction: str,
     pnl: float,
     chart_type: str = "c_bars",
+    chart_settings: dict | None = None,
 ) -> bytes:
     """
     Generate a PNG chart image for a round-trip trade.
@@ -274,65 +347,62 @@ def generate_chart_image(
     )
     data["ts_event"] = pd.to_datetime(data["ts_event"], unit="ns")
 
-    color_code_to_matplotlib = {
-        "K": "black",
-        "R": "red",
-        "B": "blue",
-        "G": "green",
-        "O": "orange",
-        "P": "purple",
-        "C": "cyan",
-        "M": "magenta",
-        "Y": "yellow",
-        "W": "white",
-        "T": "teal",
-    }
-
     indicator_series: dict[str, list[float]] = {}
     indicator_tags: dict[str, int] = {}
     indicator_styles: dict[str, str] = {}
     indicator_colors: dict[str, str] = {}
     indicator_widths: dict[str, str] = {}
     fill_between_specs: list[dict] = []
-    _fb_seen: set[str] = set()
+    _color_idx = 0
+    _assigned_panels: dict[str, int] = {}
     for idx in range(len(data)):
         row = data.iloc[idx]
         indicators = json.loads(row["indicators"]) if row["indicators"] else {}
         for name, value in indicators.items():
-            if name.startswith("FB:"):
-                if name not in _fb_seen:
-                    _fb_seen.add(name)
-                    parts = name.split(":")
-                    if len(parts) >= 5:
-                        fill_between_specs.append(
-                            {
-                                "upper": parts[1],
-                                "lower": parts[2],
-                                "color": color_code_to_matplotlib.get(parts[3], "blue"),
-                                "alpha": float(parts[4]),
-                            }
-                        )
-                continue
             if name not in indicator_series:
                 indicator_series[name] = [math.nan] * len(data)
-                tag = int(name[:2]) if name[:2].isdigit() else 99
-                indicator_tags[name] = tag
-                style = name[2] if len(name) > 2 and name[2] in "LHD123AE" else "L"
-                indicator_styles[name] = style
-                color_code = (
-                    name[3]
-                    if len(name) > 3 and name[3] in color_code_to_matplotlib
-                    else "K"
+                cfg = _get_indicator_setting(
+                    chart_settings, name, _color_idx, _assigned_panels
                 )
-                indicator_colors[name] = color_code_to_matplotlib[color_code]
-                # Width code at position 4: new format has "1"-"4", old format has "_"
-                indicator_widths[name] = name[4] if len(name) > 4 else "2"
+                _color_idx += 1
+                if not cfg.get("visible", True):
+                    indicator_tags[name] = 99
+                else:
+                    raw_panel = cfg.get("panel", 0)
+                    below_price = cfg.get("below_price", True)
+                    _assigned_panels[name] = raw_panel
+                    if raw_panel == 0:
+                        indicator_tags[name] = 0
+                    elif below_price:
+                        indicator_tags[name] = raw_panel
+                    else:
+                        indicator_tags[name] = -raw_panel
+                indicator_styles[name] = cfg.get("style", "line")
+                indicator_colors[name] = _color_name_to_matplotlib.get(
+                    cfg.get("color", "black"), "black"
+                )
+                indicator_widths[name] = cfg.get("width", "normal")
             indicator_series[name][idx] = value if value == value else math.nan
+
+    if chart_settings:
+        for fb in chart_settings.get("fill_between", []):
+            fill_between_specs.append(
+                {
+                    "upper": fb["upper"],
+                    "lower": fb["lower"],
+                    "color": _color_name_to_matplotlib.get(
+                        fb.get("color", "blue"), "blue"
+                    ),
+                    "alpha": fb.get("alpha", 0.15),
+                }
+            )
 
     overlay_indicators = {
         k: v for k, v in indicator_series.items() if indicator_tags.get(k, 99) == 0
     }
-    subplot_tags = sorted(set(t for t in indicator_tags.values() if 1 <= t <= 98))
+    above_tags = sorted(set(t for t in indicator_tags.values() if -98 <= t <= -1))
+    below_tags = sorted(set(t for t in indicator_tags.values() if 1 <= t <= 98))
+    subplot_tags = above_tags + below_tags
     subplot_indicators = {
         tag: {k: v for k, v in indicator_series.items() if indicator_tags.get(k) == tag}
         for tag in subplot_tags
@@ -363,9 +433,10 @@ def generate_chart_image(
         else len(data) - 1
     )
 
-    num_subplots = 2 + len(subplot_tags)
-    height_ratios = [1, 3] + [1] * len(subplot_tags)
-    fig_height = 8 + 2 * len(subplot_tags)
+    # Layout: [PnL] [above panels...] [Price] [below panels...]
+    num_subplots = 2 + len(above_tags) + len(below_tags)
+    height_ratios = [1] + [1] * len(above_tags) + [3] + [1] * len(below_tags)
+    fig_height = 8 + 2 * (len(above_tags) + len(below_tags))
     fig = Figure(figsize=(14, fig_height))
     axes = fig.subplots(
         num_subplots,
@@ -373,11 +444,15 @@ def generate_chart_image(
         sharex=True,
         gridspec_kw={"height_ratios": height_ratios},
     )
-    if num_subplots == 2:
+    if num_subplots == 1:
+        axes = [axes]
+    elif num_subplots == 2:
         axes = [axes[0], axes[1]]
     ax_pnl = axes[0]
-    ax_main = axes[1]
-    ax_indicators = list(axes[2:]) if len(axes) > 2 else []
+    ax_above = list(axes[1 : 1 + len(above_tags)])
+    ax_main = axes[1 + len(above_tags)]
+    ax_below = list(axes[2 + len(above_tags) :])
+    ax_indicators = ax_above + ax_below
 
     use_time_axis = bar_period in ("HOUR", "MINUTE", "SECOND")
     if use_time_axis:
@@ -458,26 +533,27 @@ def generate_chart_image(
     _draw_ohlc_bars(ax_main, data, x_values, chart_type, bar_width)
 
     for idx, (name, values) in enumerate(overlay_indicators.items()):
-        display_name = name[6:] if len(name) > 6 else name
         color = indicator_colors.get(name, "black")
-        style = indicator_styles.get(name, "L")
-        lw, dot_s, hist_alpha = _width_params[indicator_widths.get(name, "2")]
-        if style in ("A", "E"):
+        style = indicator_styles.get(name, "line")
+        lw, dot_s, hist_alpha = _width_params.get(
+            indicator_widths.get(name, "normal"), (1.2, 10, 0.6)
+        )
+        if style in ("background1", "background2"):
             continue
-        if style == "H":
+        if style == "histogram":
             ax_main.bar(
                 x_values,
                 values,
-                label=display_name,
+                label=name,
                 alpha=hist_alpha,
                 color=color,
                 width=bar_width,
             )
-        elif style == "D":
+        elif style == "dots":
             ax_main.scatter(
                 x_values,
                 values,
-                label=display_name,
+                label=name,
                 alpha=0.8,
                 color=color,
                 s=dot_s,
@@ -486,7 +562,7 @@ def generate_chart_image(
             ax_main.plot(
                 x_values,
                 values,
-                label=display_name,
+                label=name,
                 linewidth=lw,
                 alpha=0.8,
                 color=color,
@@ -497,7 +573,7 @@ def generate_chart_image(
             ax_main.plot(
                 x_values,
                 values,
-                label=display_name,
+                label=name,
                 linewidth=lw,
                 alpha=0.8,
                 color=color,
@@ -509,26 +585,27 @@ def generate_chart_image(
         ax = ax_indicators[ax_idx]
         tag_indicators = subplot_indicators[tag]
         for idx, (name, values) in enumerate(tag_indicators.items()):
-            display_name = name[6:] if len(name) > 6 else name
             color = indicator_colors.get(name, "black")
-            style = indicator_styles.get(name, "L")
-            lw, dot_s, hist_alpha = _width_params[indicator_widths.get(name, "2")]
-            if style in ("A", "E"):
+            style = indicator_styles.get(name, "line")
+            lw, dot_s, hist_alpha = _width_params.get(
+                indicator_widths.get(name, "normal"), (1.2, 10, 0.6)
+            )
+            if style in ("background1", "background2"):
                 continue
-            if style == "H":
+            if style == "histogram":
                 ax.bar(
                     x_values,
                     values,
-                    label=display_name,
+                    label=name,
                     alpha=hist_alpha,
                     color=color,
                     width=bar_width,
                 )
-            elif style == "D":
+            elif style == "dots":
                 ax.scatter(
                     x_values,
                     values,
-                    label=display_name,
+                    label=name,
                     alpha=0.8,
                     color=color,
                     s=dot_s,
@@ -537,7 +614,7 @@ def generate_chart_image(
                 ax.plot(
                     x_values,
                     values,
-                    label=display_name,
+                    label=name,
                     linewidth=lw,
                     alpha=0.8,
                     color=color,
@@ -548,12 +625,12 @@ def generate_chart_image(
                 ax.plot(
                     x_values,
                     values,
-                    label=display_name,
+                    label=name,
                     linewidth=lw,
                     alpha=0.8,
                     color=color,
                 )
-        ax.set_ylabel(f"Tag {tag}", fontsize=10)
+        ax.set_ylabel(f"Panel {tag}", fontsize=10)
         ax.grid(True, alpha=0.3)
         ax.legend(loc="upper left", fontsize=8)
 
@@ -650,7 +727,7 @@ def generate_chart_image(
         duration_str = f"{duration_secs / 3600:.0f}h"
     else:
         duration_str = f"{duration_secs / 86400:.0f}d"
-    ax_pnl.set_title(
+    fig.suptitle(
         f"{symbol} - {direction} - {label} - P&L: ${pnl:.2f} - Duration: {duration_str}",
         fontsize=14,
     )
@@ -676,7 +753,7 @@ def generate_chart_image(
         for label in ax.get_xticklabels():
             label.set_rotation(45)
             label.set_fontsize(9)
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
 
     buf = io.BytesIO()
     fig.savefig(buf, format="png", dpi=500, bbox_inches="tight")
@@ -693,6 +770,7 @@ def generate_segment_chart_image(
     period_start_ns: int | None = None,
     period_end_ns: int | None = None,
     chart_type: str = "c_bars",
+    chart_settings: dict | None = None,
 ) -> bytes:
     """
     Generate a PNG chart image for a bar segment.
@@ -758,73 +836,71 @@ def generate_segment_chart_image(
     )
     data["ts_event"] = pd.to_datetime(data["ts_event"], unit="ns")
 
-    color_code_to_matplotlib = {
-        "K": "black",
-        "R": "red",
-        "B": "blue",
-        "G": "green",
-        "O": "orange",
-        "P": "purple",
-        "C": "cyan",
-        "M": "magenta",
-        "Y": "yellow",
-        "W": "white",
-        "T": "teal",
-    }
-
     indicator_series: dict[str, list[float]] = {}
     indicator_tags: dict[str, int] = {}
     indicator_styles: dict[str, str] = {}
     indicator_colors: dict[str, str] = {}
     indicator_widths: dict[str, str] = {}
     fill_between_specs: list[dict] = []
-    _fb_seen: set[str] = set()
+    _color_idx = 0
+    _assigned_panels: dict[str, int] = {}
     for idx in range(len(data)):
         row = data.iloc[idx]
         indicators = json.loads(row["indicators"]) if row["indicators"] else {}
         for name, value in indicators.items():
-            if name.startswith("FB:"):
-                if name not in _fb_seen:
-                    _fb_seen.add(name)
-                    parts = name.split(":")
-                    if len(parts) >= 5:
-                        fill_between_specs.append(
-                            {
-                                "upper": parts[1],
-                                "lower": parts[2],
-                                "color": color_code_to_matplotlib.get(parts[3], "blue"),
-                                "alpha": float(parts[4]),
-                            }
-                        )
-                continue
             if name not in indicator_series:
                 indicator_series[name] = [math.nan] * len(data)
-                tag = int(name[:2]) if name[:2].isdigit() else 99
-                indicator_tags[name] = tag
-                style = name[2] if len(name) > 2 and name[2] in "LHD123AE" else "L"
-                indicator_styles[name] = style
-                color_code = (
-                    name[3]
-                    if len(name) > 3 and name[3] in color_code_to_matplotlib
-                    else "K"
+                cfg = _get_indicator_setting(
+                    chart_settings, name, _color_idx, _assigned_panels
                 )
-                indicator_colors[name] = color_code_to_matplotlib[color_code]
-                # Width code at position 4: new format has "1"-"4", old format has "_"
-                indicator_widths[name] = name[4] if len(name) > 4 else "2"
+                _color_idx += 1
+                if not cfg.get("visible", True):
+                    indicator_tags[name] = 99
+                else:
+                    raw_panel = cfg.get("panel", 0)
+                    below_price = cfg.get("below_price", True)
+                    _assigned_panels[name] = raw_panel
+                    if raw_panel == 0:
+                        indicator_tags[name] = 0
+                    elif below_price:
+                        indicator_tags[name] = raw_panel
+                    else:
+                        indicator_tags[name] = -raw_panel
+                indicator_styles[name] = cfg.get("style", "line")
+                indicator_colors[name] = _color_name_to_matplotlib.get(
+                    cfg.get("color", "black"), "black"
+                )
+                indicator_widths[name] = cfg.get("width", "normal")
             indicator_series[name][idx] = value if value == value else math.nan
+
+    if chart_settings:
+        for fb in chart_settings.get("fill_between", []):
+            fill_between_specs.append(
+                {
+                    "upper": fb["upper"],
+                    "lower": fb["lower"],
+                    "color": _color_name_to_matplotlib.get(
+                        fb.get("color", "blue"), "blue"
+                    ),
+                    "alpha": fb.get("alpha", 0.15),
+                }
+            )
 
     overlay_indicators = {
         k: v for k, v in indicator_series.items() if indicator_tags.get(k, 99) == 0
     }
-    subplot_tags = sorted(set(t for t in indicator_tags.values() if 1 <= t <= 98))
+    above_tags = sorted(set(t for t in indicator_tags.values() if -98 <= t <= -1))
+    below_tags = sorted(set(t for t in indicator_tags.values() if 1 <= t <= 98))
+    subplot_tags = above_tags + below_tags
     subplot_indicators = {
         tag: {k: v for k, v in indicator_series.items() if indicator_tags.get(k) == tag}
         for tag in subplot_tags
     }
 
-    num_subplots = 1 + len(subplot_tags)
-    height_ratios = [3] + [1] * len(subplot_tags)
-    fig_height = 6 + 2 * len(subplot_tags)
+    # Layout: [above panels...] [Price] [below panels...]
+    num_subplots = 1 + len(above_tags) + len(below_tags)
+    height_ratios = [1] * len(above_tags) + [3] + [1] * len(below_tags)
+    fig_height = 6 + 2 * (len(above_tags) + len(below_tags))
     fig = Figure(figsize=(14, fig_height))
     axes = fig.subplots(
         num_subplots,
@@ -834,8 +910,10 @@ def generate_segment_chart_image(
     )
     if num_subplots == 1:
         axes = [axes]
-    ax_main = axes[0]
-    ax_indicators = list(axes[1:]) if len(axes) > 1 else []
+    ax_above = list(axes[0 : len(above_tags)])
+    ax_main = axes[len(above_tags)]
+    ax_below = list(axes[len(above_tags) + 1 :])
+    ax_indicators = ax_above + ax_below
 
     use_time_axis = bar_period in ("HOUR", "MINUTE", "SECOND")
     if use_time_axis:
@@ -856,26 +934,27 @@ def generate_segment_chart_image(
     _draw_ohlc_bars(ax_main, data, x_values, chart_type, bar_width)
 
     for idx, (name, values) in enumerate(overlay_indicators.items()):
-        display_name = name[6:] if len(name) > 6 else name
         color = indicator_colors.get(name, "black")
-        style = indicator_styles.get(name, "L")
-        lw, dot_s, hist_alpha = _width_params[indicator_widths.get(name, "2")]
-        if style in ("A", "E"):
+        style = indicator_styles.get(name, "line")
+        lw, dot_s, hist_alpha = _width_params.get(
+            indicator_widths.get(name, "normal"), (1.2, 10, 0.6)
+        )
+        if style in ("background1", "background2"):
             continue
-        if style == "H":
+        if style == "histogram":
             ax_main.bar(
                 x_values,
                 values,
-                label=display_name,
+                label=name,
                 alpha=hist_alpha,
                 color=color,
                 width=bar_width,
             )
-        elif style == "D":
+        elif style == "dots":
             ax_main.scatter(
                 x_values,
                 values,
-                label=display_name,
+                label=name,
                 alpha=0.8,
                 color=color,
                 s=dot_s,
@@ -884,7 +963,7 @@ def generate_segment_chart_image(
             ax_main.plot(
                 x_values,
                 values,
-                label=display_name,
+                label=name,
                 linewidth=lw,
                 alpha=0.8,
                 color=color,
@@ -895,7 +974,7 @@ def generate_segment_chart_image(
             ax_main.plot(
                 x_values,
                 values,
-                label=display_name,
+                label=name,
                 linewidth=lw,
                 alpha=0.8,
                 color=color,
@@ -907,26 +986,27 @@ def generate_segment_chart_image(
         ax = ax_indicators[ax_idx]
         tag_indicators = subplot_indicators[tag]
         for idx, (name, values) in enumerate(tag_indicators.items()):
-            display_name = name[6:] if len(name) > 6 else name
             color = indicator_colors.get(name, "black")
-            style = indicator_styles.get(name, "L")
-            lw, dot_s, hist_alpha = _width_params[indicator_widths.get(name, "2")]
-            if style in ("A", "E"):
+            style = indicator_styles.get(name, "line")
+            lw, dot_s, hist_alpha = _width_params.get(
+                indicator_widths.get(name, "normal"), (1.2, 10, 0.6)
+            )
+            if style in ("background1", "background2"):
                 continue
-            if style == "H":
+            if style == "histogram":
                 ax.bar(
                     x_values,
                     values,
-                    label=display_name,
+                    label=name,
                     alpha=hist_alpha,
                     color=color,
                     width=bar_width,
                 )
-            elif style == "D":
+            elif style == "dots":
                 ax.scatter(
                     x_values,
                     values,
-                    label=display_name,
+                    label=name,
                     alpha=0.8,
                     color=color,
                     s=dot_s,
@@ -935,7 +1015,7 @@ def generate_segment_chart_image(
                 ax.plot(
                     x_values,
                     values,
-                    label=display_name,
+                    label=name,
                     linewidth=lw,
                     alpha=0.8,
                     color=color,
@@ -946,12 +1026,12 @@ def generate_segment_chart_image(
                 ax.plot(
                     x_values,
                     values,
-                    label=display_name,
+                    label=name,
                     linewidth=lw,
                     alpha=0.8,
                     color=color,
                 )
-        ax.set_ylabel(f"Tag {tag}", fontsize=10)
+        ax.set_ylabel(f"Panel {tag}", fontsize=10)
         ax.grid(True, alpha=0.3)
         ax.legend(loc="upper left", fontsize=8)
 
@@ -960,7 +1040,7 @@ def generate_segment_chart_image(
 
     start_time = data["ts_event"].iloc[0]
     end_time = data["ts_event"].iloc[-1]
-    ax_main.set_title(
+    fig.suptitle(
         f"{symbol} - {start_time.strftime('%Y-%m-%d %H:%M')} to {end_time.strftime('%Y-%m-%d %H:%M')} ({len(data)} bars)",
         fontsize=14,
     )
@@ -1023,7 +1103,7 @@ def generate_segment_chart_image(
         for label in ax.get_xticklabels():
             label.set_rotation(45)
             label.set_fontsize(9)
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
 
     buf = io.BytesIO()
     fig.savefig(buf, format="png", dpi=500, bbox_inches="tight")

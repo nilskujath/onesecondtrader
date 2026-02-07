@@ -19,13 +19,6 @@ nav:
 - Home: index.md
 - Tutorials:
   - Getting Started: tutorials/getting_started.md
-- Explanation:
-  - Overview: explanation/overview.md
-  - Event-Driven Architecture: explanation/event_driven_architecture.md
-  - Indicator Model: explanation/indicator_model.md
-  - Strategy Lifecycle: explanation/strategy_lifecycle.md
-  - Broker and Datafeed: explanation/broker_and_datafeed.md
-  - Orchestration and Recording: explanation/orchestration_and_recording.md
 - Reference:
   - Overview: reference/overview.md
   - Brokers:
@@ -34,6 +27,7 @@ nav:
   - Dashboard:
     - App: reference/dashboard/app.md
     - Backtest: reference/dashboard/backtest.md
+    - Chart Settings: reference/dashboard/chart_settings.md
     - Charting: reference/dashboard/charting.md
     - Cli: reference/dashboard/cli.md
     - Db: reference/dashboard/db.md
@@ -100,9 +94,6 @@ nav:
     - Chart Type: reference/models/chart_type.md
     - Extreme Type: reference/models/extreme_type.md
     - Order Types: reference/models/order_types.md
-    - Plot Color: reference/models/plot_color.md
-    - Plot Style: reference/models/plot_style.md
-    - Plot Width: reference/models/plot_width.md
     - Rejection Reasons: reference/models/rejection_reasons.md
     - Trade Sides: reference/models/trade_sides.md
   - Orchestrator:

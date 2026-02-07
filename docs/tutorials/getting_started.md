@@ -293,7 +293,7 @@ class MySimpleStrategy(strategies.StrategyBase):
 
     def setup(self) -> None:
         self.close_price = self.add_indicator(
-            ClosePriceIndicator(plot_at=1, plot_as=models.PlotStyle.LINE)
+            ClosePriceIndicator()
         )
 
     def on_bar(self, event: events.market.BarReceived) -> None:

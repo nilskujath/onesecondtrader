@@ -1,6 +1,6 @@
-# Plot Color
+# Chart Settings
 
-::: onesecondtrader.models.plot_color
+::: onesecondtrader.dashboard.chart_settings
     options:
       show_root_heading: False
       show_source: true

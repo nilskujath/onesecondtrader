@@ -13,13 +13,10 @@ class SMACrossover(StrategyBase):
 
     def setup(self) -> None:
         self.fast_sma = self.add_indicator(
-            indicators.SimpleMovingAverage(period=self.fast_period, plot_at=0)  # type: ignore[attr-defined]
+            indicators.SimpleMovingAverage(period=self.fast_period)  # type: ignore[attr-defined]
         )
         self.slow_sma = self.add_indicator(
-            indicators.SimpleMovingAverage(period=self.slow_period, plot_at=0)  # type: ignore[attr-defined]
-        )
-        self.add_indicator(
-            indicators.Volume(plot_at=1, plot_as=models.PlotStyle.HISTOGRAM)
+            indicators.SimpleMovingAverage(period=self.slow_period)  # type: ignore[attr-defined]
         )
 
     def on_bar(self, event: events.market.BarReceived) -> None:

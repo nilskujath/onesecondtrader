@@ -31,4 +31,5 @@ runs.db-wal
 # Proprietary code
 /strategies/
 /indicators/
+/research/
 .claude/
