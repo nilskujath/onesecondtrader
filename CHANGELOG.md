@@ -1,3 +1,6 @@
+## v0.70.0
+- feat: consolidated dashboard tabs
+
 ## v0.69.0
 - feat: modified messaging to prevent race condition
 - feat: Added Explorer Tab with Conditional Filter
