@@ -105,7 +105,6 @@ def explorer_page() -> str:
             <button class="mode-tab" onclick="setChartMode('time')">By Time</button>
             <button class="mode-tab" onclick="setChartMode('condition')">By Condition</button>
         </div>
-        <div id="chart-mode-controls"></div>
         <div class="form-group" id="cond-preset-row" style="display:none;">
             <label>Preset</label>
             <div class="preset-row">
@@ -115,6 +114,7 @@ def explorer_page() -> str:
                 <button id="cond-preset-delete-btn" class="btn btn-sm btn-danger" onclick="deleteCondPreset()">Delete</button>
             </div>
         </div>
+        <div id="chart-mode-controls"></div>
         <div id="charts-content">
             <div class="empty-content"><p>Configure chart display settings above</p></div>
         </div>

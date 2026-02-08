@@ -976,7 +976,7 @@ function renderConditionControls() {
         '<div class="settings-group"><label>Operator:</label><select onchange="onBuilderChange(\'operator\', this.value)">' + opOptions + '</select></div>' +
         '<div class="settings-group"><label>Right:</label><select onchange="onBuilderChange(\'rightField\', this.value)">' + rightOptions + '</select></div>' +
         '<div class="settings-group" style="' + valueInputStyle + '"><label>Value:</label><input type="number" step="any" value="' + conditionBuilder.rightValue + '" onchange="onBuilderChange(\'rightValue\', parseFloat(this.value))"></div>' +
-        '<div class="settings-group"><button class="btn-add" onclick="addCondition()">+ Add</button></div>' +
+        '<div class="settings-group"><button class="btn-add active" onclick="addCondition()">+ Add</button></div>' +
         '</div>';
 
     if (selectedConditions.length > 0) {
