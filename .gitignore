@@ -26,6 +26,9 @@ secmaster.db-wal
 runs.db
 runs.db-shm
 runs.db-wal
+presets.db
+presets.db-shm
+presets.db-wal
 
 
 # Proprietary code

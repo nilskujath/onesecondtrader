@@ -74,6 +74,34 @@ def connect_secmaster(
         conn.close()
 
 
+def get_presets_db_path() -> str:
+    """
+    Return the path to the presets database from environment or default.
+
+    Returns:
+        Path to the presets SQLite database file.
+    """
+    return os.environ.get("PRESETS_DB_PATH", "presets.db")
+
+
+@contextlib.contextmanager
+def connect_presets(
+    *,
+    timeout: float = 5.0,
+) -> Generator[sqlite3.Connection, None, None]:
+    """Context manager for connecting to the presets database.
+
+    Yields a connection that is automatically closed on exit (even on exceptions).
+    The database file is created automatically if it does not exist.
+    """
+    db_path = get_presets_db_path()
+    conn = sqlite3.connect(db_path, timeout=timeout)
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+
 def get_runs(limit: int = 50) -> list[dict]:
     """
     Fetch recent runs from the runs database.

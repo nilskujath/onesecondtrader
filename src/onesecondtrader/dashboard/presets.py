@@ -14,7 +14,7 @@ from collections.abc import Callable
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from .db import connect_secmaster
+from .db import connect_presets
 
 
 class _PresetRequest(BaseModel):
@@ -37,11 +37,7 @@ def create_preset_routes(
     router = APIRouter(prefix=prefix, tags=[tag])
 
     def ensure_table() -> None:
-        try:
-            conn_ctx = connect_secmaster()
-        except FileNotFoundError:
-            return
-        with conn_ctx as conn:
+        with connect_presets() as conn:
             conn.execute(
                 f"CREATE TABLE IF NOT EXISTS {table_name} "
                 "(name TEXT PRIMARY KEY, config TEXT NOT NULL)"
@@ -50,11 +46,7 @@ def create_preset_routes(
 
     @router.get("")
     async def list_presets() -> dict:
-        try:
-            conn_ctx = connect_secmaster()
-        except FileNotFoundError:
-            return {"presets": []}
-        with conn_ctx as conn:
+        with connect_presets() as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             cursor.execute(f"SELECT name, config FROM {table_name} ORDER BY name")
@@ -68,7 +60,7 @@ def create_preset_routes(
 
     @router.post("")
     async def create_preset(request: _PresetRequest) -> dict:
-        with connect_secmaster() as conn:
+        with connect_presets() as conn:
             conn.execute(
                 f"INSERT INTO {table_name} (name, config) VALUES (?, ?)",
                 (request.name, json.dumps(request.config)),
@@ -78,7 +70,7 @@ def create_preset_routes(
 
     @router.put("/{name}")
     async def update_preset(name: str, request: _PresetRequest) -> dict:
-        with connect_secmaster() as conn:
+        with connect_presets() as conn:
             conn.execute(
                 f"UPDATE {table_name} SET config = ? WHERE name = ?",
                 (json.dumps(request.config), name),
@@ -88,7 +80,7 @@ def create_preset_routes(
 
     @router.delete("/{name}")
     async def delete_preset(name: str) -> dict:
-        with connect_secmaster() as conn:
+        with connect_presets() as conn:
             conn.execute(f"DELETE FROM {table_name} WHERE name = ?", (name,))
             conn.commit()
         return {"status": "deleted", "name": name}

@@ -12,18 +12,14 @@ import sqlite3
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from ..db import connect_secmaster
+from ..db import connect_presets
 
 router = APIRouter(prefix="/api/presets", tags=["presets"])
 
 
 def ensure_presets_table() -> None:
     """Create the symbol_presets table if it does not already exist."""
-    try:
-        conn_ctx = connect_secmaster()
-    except FileNotFoundError:
-        return
-    with conn_ctx as conn:
+    with connect_presets() as conn:
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS symbol_presets (
@@ -41,11 +37,7 @@ def ensure_presets_table() -> None:
 @router.get("")
 async def list_presets() -> dict:
     """Return list of all preset objects."""
-    try:
-        conn_ctx = connect_secmaster()
-    except FileNotFoundError:
-        return {"presets": []}
-    with conn_ctx as conn:
+    with connect_presets() as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute(
@@ -69,11 +61,7 @@ async def list_presets() -> dict:
 @router.get("/{name}")
 async def get_preset(name: str) -> dict:
     """Return all fields for a specific preset."""
-    try:
-        conn_ctx = connect_secmaster()
-    except FileNotFoundError:
-        return {"error": "Preset not found"}
-    with conn_ctx as conn:
+    with connect_presets() as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute(
@@ -120,7 +108,7 @@ class PresetRequest(BaseModel):
 @router.post("")
 async def create_preset(request: PresetRequest) -> dict:
     """Create a new symbol preset."""
-    with connect_secmaster() as conn:
+    with connect_presets() as conn:
         conn.execute(
             "INSERT INTO symbol_presets (name, rtype, publisher_name, publisher_id, symbols) "
             "VALUES (?, ?, ?, ?, ?)",
@@ -139,7 +127,7 @@ async def create_preset(request: PresetRequest) -> dict:
 @router.put("/{name}")
 async def update_preset(name: str, request: PresetRequest) -> dict:
     """Update an existing symbol preset."""
-    with connect_secmaster() as conn:
+    with connect_presets() as conn:
         conn.execute(
             "UPDATE symbol_presets SET rtype = ?, publisher_name = ?, publisher_id = ?, "
             "symbols = ? WHERE name = ?",
@@ -158,7 +146,7 @@ async def update_preset(name: str, request: PresetRequest) -> dict:
 @router.delete("/{name}")
 async def delete_preset(name: str) -> dict:
     """Delete a symbol preset."""
-    with connect_secmaster() as conn:
+    with connect_presets() as conn:
         conn.execute("DELETE FROM symbol_presets WHERE name = ?", (name,))
         conn.commit()
     return {"status": "deleted", "name": name}
