@@ -1,3 +1,7 @@
+## v0.74.0
+- feat: add continuous contract symbology and integrate into dashboard
+- feat: group Explorer indicator dropdown by package
+
 ## v0.73.0
 - feat: make Bar Fields (OHLCV) selectable in the Explorer
 
