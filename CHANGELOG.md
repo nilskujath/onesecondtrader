@@ -1,3 +1,6 @@
+## v0.71.2
+- fix: prevent BarField enum mutation breaking JSON serialization in explorer
+
 ## v0.71.1
 - fix: five dashboard UI fixes for explorer and backtest pages
 - refactor: move indicator discovery utilities to dashboard package
