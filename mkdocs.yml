@@ -113,6 +113,7 @@ nav:
   - Secmaster:
     - Schema Versions:
       - Secmaster Schema V1: reference/secmaster/schema_versions/secmaster_schema_v1.md
+    - Continuous: reference/secmaster/continuous.md
     - Utils: reference/secmaster/utils.md
   - Strategies:
     - Base: reference/strategies/base.md

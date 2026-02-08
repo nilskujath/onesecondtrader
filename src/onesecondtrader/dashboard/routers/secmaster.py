@@ -6,9 +6,12 @@ Provides endpoints for querying publishers, datasets, and symbol coverage inform
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+import pathlib
 
-from ..db import connect_secmaster
+from fastapi import APIRouter
+from pydantic import BaseModel
+
+from ..db import connect_secmaster, get_secmaster_path
 
 router = APIRouter(prefix="/api/secmaster", tags=["secmaster"])
 
@@ -64,45 +67,92 @@ async def api_secmaster_datasets(name: str, rtype: int | None = None) -> dict:
 
 @router.get("/symbols_coverage")
 async def api_secmaster_symbols_coverage(
-    publisher_id: int | None = None, rtype: int | None = None
+    publisher_id: int | None = None,
+    rtype: int | None = None,
+    symbol_type: str | None = None,
 ) -> dict:
-    """Return symbol coverage data, optionally filtered by publisher_id and rtype."""
+    """Return symbol coverage data, optionally filtered by publisher_id, rtype, and symbol_type."""
     try:
         conn_ctx = connect_secmaster()
     except FileNotFoundError:
         return {"symbols": []}
+
+    # Check if symbol_type column exists (handles pre-migration DBs)
     with conn_ctx as conn:
+        cols = {
+            row[1]
+            for row in conn.execute("PRAGMA table_info(symbol_coverage)").fetchall()
+        }
+        has_symbol_type = "symbol_type" in cols
+
+        select_cols = "publisher_id, symbol, rtype, min_ts, max_ts"
+        if has_symbol_type:
+            select_cols = "publisher_id, symbol, symbol_type, rtype, min_ts, max_ts"
+
+        conditions = []
+        params: list = []
+        if publisher_id is not None:
+            conditions.append("publisher_id = ?")
+            params.append(publisher_id)
+        if rtype is not None:
+            conditions.append("rtype = ?")
+            params.append(rtype)
+        if symbol_type is not None and has_symbol_type:
+            conditions.append("symbol_type = ?")
+            params.append(symbol_type)
+
+        where = (" WHERE " + " AND ".join(conditions)) if conditions else ""
+        query = (
+            f"SELECT {select_cols} FROM symbol_coverage{where} ORDER BY symbol, rtype"
+        )
+
         cursor = conn.cursor()
-        if publisher_id is not None and rtype is not None:
-            cursor.execute(
-                "SELECT publisher_id, symbol, rtype, min_ts, max_ts FROM symbol_coverage "
-                "WHERE publisher_id = ? AND rtype = ? ORDER BY symbol",
-                (publisher_id, rtype),
-            )
-        elif publisher_id is not None:
-            cursor.execute(
-                "SELECT publisher_id, symbol, rtype, min_ts, max_ts FROM symbol_coverage "
-                "WHERE publisher_id = ? ORDER BY symbol, rtype",
-                (publisher_id,),
-            )
-        elif rtype is not None:
-            cursor.execute(
-                "SELECT publisher_id, symbol, rtype, min_ts, max_ts FROM symbol_coverage "
-                "WHERE rtype = ? ORDER BY symbol",
-                (rtype,),
-            )
+        cursor.execute(query, params)
+        if has_symbol_type:
+            symbols = [
+                {
+                    "publisher_id": row[0],
+                    "symbol": row[1],
+                    "symbol_type": row[2],
+                    "rtype": row[3],
+                    "min_ts": row[4],
+                    "max_ts": row[5],
+                }
+                for row in cursor.fetchall()
+            ]
         else:
-            cursor.execute(
-                "SELECT publisher_id, symbol, rtype, min_ts, max_ts FROM symbol_coverage ORDER BY symbol, rtype"
-            )
-        symbols = [
-            {
-                "publisher_id": row[0],
-                "symbol": row[1],
-                "rtype": row[2],
-                "min_ts": row[3],
-                "max_ts": row[4],
-            }
-            for row in cursor.fetchall()
-        ]
+            symbols = [
+                {
+                    "publisher_id": row[0],
+                    "symbol": row[1],
+                    "symbol_type": "raw_symbol",
+                    "rtype": row[2],
+                    "min_ts": row[3],
+                    "max_ts": row[4],
+                }
+                for row in cursor.fetchall()
+            ]
     return {"symbols": symbols}
+
+
+class BuildContinuousRequest(BaseModel):
+    publisher_id: int
+    root_symbol: str
+    roll_rule: str = "c"
+    roll_offset_days: int = 0
+
+
+@router.post("/build-continuous")
+async def api_build_continuous(request: BuildContinuousRequest) -> dict:
+    """Build continuous contract symbology from individual contract data."""
+    from onesecondtrader.secmaster.continuous import build_continuous_symbology
+
+    db_path = pathlib.Path(get_secmaster_path())
+    count = build_continuous_symbology(
+        db_path=db_path,
+        publisher_id=request.publisher_id,
+        root_symbol=request.root_symbol,
+        roll_rule=request.roll_rule,
+        roll_offset_days=request.roll_offset_days,
+    )
+    return {"status": "ok", "entries_created": count}

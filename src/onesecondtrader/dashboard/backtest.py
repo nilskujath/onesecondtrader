@@ -50,6 +50,7 @@ class BacktestRequest(BaseModel):
     publisher_id: int
     start_date: str | None = None
     end_date: str | None = None
+    symbol_type: str = "raw_symbol"
 
 
 running_jobs: dict[str, str] = {}
@@ -218,7 +219,7 @@ def run_backtest(request: BacktestRequest, run_id: str) -> None:
         datafeed_attrs: dict[str, str | int] = {
             "publisher_name": publisher_name,
             "dataset": dataset,
-            "symbol_type": "raw_symbol",
+            "symbol_type": request.symbol_type,
             "db_path": db_path,
         }
         if request.start_date:

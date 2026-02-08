@@ -79,7 +79,7 @@ hide:
 
     Provides a schema for creating and utilities to populate the security master database.
 
-    [:material-link-variant: View `secmaster` package API](secmaster/utils.md)
+    [:material-link-variant: View `secmaster` package API](secmaster/continuous.md)
 
 -   __Strategies__&nbsp;&nbsp;
 

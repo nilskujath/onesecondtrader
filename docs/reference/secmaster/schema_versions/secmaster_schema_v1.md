@@ -211,10 +211,11 @@ CREATE INDEX idx_symbology_symbol ON symbology(symbol);
 CREATE TABLE symbol_coverage (
     publisher_id INTEGER NOT NULL,
     symbol TEXT NOT NULL,
+    symbol_type TEXT NOT NULL DEFAULT 'raw_symbol',
     rtype INTEGER NOT NULL,
     min_ts INTEGER NOT NULL,
     max_ts INTEGER NOT NULL,
     FOREIGN KEY (publisher_id) REFERENCES publishers(publisher_id),
-    PRIMARY KEY (publisher_id, symbol, rtype)
+    PRIMARY KEY (publisher_id, symbol, symbol_type, rtype)
 );
 ```

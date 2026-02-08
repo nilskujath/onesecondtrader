@@ -35,6 +35,7 @@ class ExplorerRequest(BaseModel):
     start_date: str | None = None
     end_date: str | None = None
     indicators: list[IndicatorConfig]
+    symbol_type: str = "raw_symbol"
 
 
 explorer_jobs: dict[str, str] = {}
@@ -237,7 +238,7 @@ def run_explorer(request: ExplorerRequest, run_id: str) -> None:
         datafeed_attrs: dict[str, str | int] = {
             "publisher_name": publisher_name,
             "dataset": dataset,
-            "symbol_type": "raw_symbol",
+            "symbol_type": request.symbol_type,
             "db_path": db_path,
         }
         if request.start_date:

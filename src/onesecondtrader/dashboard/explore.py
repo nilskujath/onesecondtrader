@@ -39,6 +39,7 @@ class ExploreRequest(BaseModel):
     start_date: str | None = None
     end_date: str | None = None
     indicators: list[IndicatorConfig]
+    symbol_type: str = "raw_symbol"
 
 
 explore_jobs: dict[str, str] = {}
@@ -169,7 +170,7 @@ def run_exploration(request: ExploreRequest, run_id: str) -> None:
 
         # Build SQL query for raw bars
         symbols = request.symbols
-        params_list: list = [request.publisher_id, "raw_symbol"]
+        params_list: list = [request.publisher_id, request.symbol_type]
         params_list.extend(symbols)
         params_list.append(request.rtype)
 

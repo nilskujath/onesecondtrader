@@ -27,10 +27,20 @@ def ensure_presets_table() -> None:
                 rtype INTEGER NOT NULL,
                 publisher_name TEXT NOT NULL,
                 publisher_id INTEGER NOT NULL,
-                symbols TEXT NOT NULL
+                symbols TEXT NOT NULL,
+                symbol_type TEXT NOT NULL DEFAULT 'raw_symbol'
             )
             """
         )
+        # Migrate existing tables that lack the symbol_type column
+        cols = {
+            row[1]
+            for row in conn.execute("PRAGMA table_info(symbol_presets)").fetchall()
+        }
+        if "symbol_type" not in cols:
+            conn.execute(
+                "ALTER TABLE symbol_presets ADD COLUMN symbol_type TEXT NOT NULL DEFAULT 'raw_symbol'"
+            )
         conn.commit()
 
 
@@ -41,7 +51,7 @@ async def list_presets() -> dict:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT name, rtype, publisher_name, publisher_id, symbols "
+            "SELECT name, rtype, publisher_name, publisher_id, symbols, symbol_type "
             "FROM symbol_presets ORDER BY name"
         )
         rows = cursor.fetchall()
@@ -52,6 +62,7 @@ async def list_presets() -> dict:
             "publisher_name": row["publisher_name"],
             "publisher_id": row["publisher_id"],
             "symbols": json.loads(row["symbols"]),
+            "symbol_type": row["symbol_type"],
         }
         for row in rows
     ]
@@ -65,7 +76,7 @@ async def get_preset(name: str) -> dict:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT name, rtype, publisher_name, publisher_id, symbols "
+            "SELECT name, rtype, publisher_name, publisher_id, symbols, symbol_type "
             "FROM symbol_presets WHERE name = ?",
             (name,),
         )
@@ -78,6 +89,7 @@ async def get_preset(name: str) -> dict:
         "publisher_name": row["publisher_name"],
         "publisher_id": row["publisher_id"],
         "symbols": json.loads(row["symbols"]),
+        "symbol_type": row["symbol_type"],
     }
 
 
@@ -103,6 +115,7 @@ class PresetRequest(BaseModel):
     publisher_name: str
     publisher_id: int
     symbols: list[str]
+    symbol_type: str = "raw_symbol"
 
 
 @router.post("")
@@ -110,14 +123,15 @@ async def create_preset(request: PresetRequest) -> dict:
     """Create a new symbol preset."""
     with connect_presets() as conn:
         conn.execute(
-            "INSERT INTO symbol_presets (name, rtype, publisher_name, publisher_id, symbols) "
-            "VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO symbol_presets (name, rtype, publisher_name, publisher_id, symbols, symbol_type) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
             (
                 request.name,
                 request.rtype,
                 request.publisher_name,
                 request.publisher_id,
                 json.dumps(request.symbols),
+                request.symbol_type,
             ),
         )
         conn.commit()
@@ -130,12 +144,13 @@ async def update_preset(name: str, request: PresetRequest) -> dict:
     with connect_presets() as conn:
         conn.execute(
             "UPDATE symbol_presets SET rtype = ?, publisher_name = ?, publisher_id = ?, "
-            "symbols = ? WHERE name = ?",
+            "symbols = ?, symbol_type = ? WHERE name = ?",
             (
                 request.rtype,
                 request.publisher_name,
                 request.publisher_id,
                 json.dumps(request.symbols),
+                request.symbol_type,
                 name,
             ),
         )

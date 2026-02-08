@@ -106,6 +106,9 @@ def rebuild_symbol_coverage(db_path: pathlib.Path) -> int:
         con.execute("PRAGMA foreign_keys = ON;")
         _assert_secmaster_db(con)
 
+        # Migrate symbol_coverage if it lacks the symbol_type column
+        _migrate_symbol_coverage(con)
+
         logger.info("Step 1: Aggregating OHLCV coverage per instrument and rtype")
         con.execute("DROP TABLE IF EXISTS _tmp_instrument_coverage")
         con.execute(
@@ -128,6 +131,7 @@ def rebuild_symbol_coverage(db_path: pathlib.Path) -> int:
             SELECT
                 s.publisher_ref AS publisher_id,
                 s.symbol,
+                s.symbol_type,
                 i.instrument_id,
                 CAST(strftime('%s', s.start_date) AS INTEGER) * 1000000000 AS start_ts,
                 CAST(strftime('%s', s.end_date) AS INTEGER) * 1000000000 AS end_ts
@@ -143,17 +147,18 @@ def rebuild_symbol_coverage(db_path: pathlib.Path) -> int:
         con.execute("DELETE FROM symbol_coverage")
         con.execute(
             """
-            INSERT INTO symbol_coverage (publisher_id, symbol, rtype, min_ts, max_ts)
+            INSERT INTO symbol_coverage (publisher_id, symbol, symbol_type, rtype, min_ts, max_ts)
             SELECT
                 si.publisher_id,
                 si.symbol,
+                si.symbol_type,
                 ic.rtype,
                 MIN(MAX(ic.min_ts, si.start_ts)),
                 MAX(MIN(ic.max_ts, si.end_ts))
             FROM _tmp_symbol_instrument si
             JOIN _tmp_instrument_coverage ic ON si.instrument_id = ic.instrument_id
             WHERE ic.min_ts < si.end_ts AND ic.max_ts >= si.start_ts
-            GROUP BY si.publisher_id, si.symbol, ic.rtype
+            GROUP BY si.publisher_id, si.symbol, si.symbol_type, ic.rtype
         """
         )
 
@@ -209,6 +214,7 @@ def ingest_databento_zip(
     """
     ohlcv_count = 0
     symbology_count = 0
+    publisher_id = None
 
     logger.info("Opening Databento archive: %s", zip_path)
 
@@ -294,6 +300,12 @@ def ingest_databento_zip(
         ohlcv_count,
         symbology_count,
     )
+
+    # Build continuous contracts for any futures root symbols
+    if publisher_id is not None:
+        from .continuous import build_all_continuous
+
+        build_all_continuous(db_path, publisher_id, rebuild_coverage=False)
 
     rebuild_symbol_coverage(db_path)
 
@@ -693,6 +705,31 @@ def _validate_no_overlapping_symbology(
             f"Overlapping symbology detected for symbol={symbol!r}: "
             f"segment [{start}, {end}) overlaps with next segment starting {next_start}"
         )
+
+
+def _migrate_symbol_coverage(con: sqlite3.Connection) -> None:
+    """Add symbol_type column to symbol_coverage if it is missing (pre-existing DBs)."""
+    cols = {
+        row[1] for row in con.execute("PRAGMA table_info(symbol_coverage)").fetchall()
+    }
+    if "symbol_type" not in cols:
+        logger.info("Migrating symbol_coverage: adding symbol_type column")
+        con.execute("DROP TABLE IF EXISTS symbol_coverage")
+        con.execute(
+            """
+            CREATE TABLE symbol_coverage (
+                publisher_id INTEGER NOT NULL,
+                symbol TEXT NOT NULL,
+                symbol_type TEXT NOT NULL DEFAULT 'raw_symbol',
+                rtype INTEGER NOT NULL,
+                min_ts INTEGER NOT NULL,
+                max_ts INTEGER NOT NULL,
+                FOREIGN KEY (publisher_id) REFERENCES publishers(publisher_id),
+                PRIMARY KEY (publisher_id, symbol, symbol_type, rtype)
+            )
+            """
+        )
+        con.commit()
 
 
 def _enable_bulk_loading(con: sqlite3.Connection) -> None:

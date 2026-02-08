@@ -46,6 +46,14 @@ def explorer_page() -> str:
                     </select>
                 </div>
                 <div id="symbol-selection" style="display: none;">
+                    <div id="contract-type-section" style="display: none; margin-bottom: 8px;">
+                        <label style="font-size: 13px; color: #8b949e;">Contract Type</label>
+                        <div style="display: flex; gap: 12px; margin-top: 4px;">
+                            <label style="font-size: 13px;"><input type="radio" name="contract-type" value="outrights" checked onchange="onContractTypeChange()"> Outrights</label>
+                            <label style="font-size: 13px;"><input type="radio" name="contract-type" value="spreads" onchange="onContractTypeChange()"> Spreads</label>
+                            <label style="font-size: 13px;"><input type="radio" name="contract-type" value="continuous" onchange="onContractTypeChange()"> Continuous</label>
+                        </div>
+                    </div>
                     <div class="search-row">
                         <input type="text" id="symbol-search" placeholder="Search symbols..." oninput="searchSymbols()">
                     </div>
@@ -178,6 +186,14 @@ def backtest_page() -> str:
                                 </select>
                             </div>
                             <div id="symbol-selection" style="display: none;">
+                                <div id="contract-type-section" style="display: none; margin-bottom: 8px;">
+                                    <label style="font-size: 13px; color: #8b949e;">Contract Type</label>
+                                    <div style="display: flex; gap: 12px; margin-top: 4px;">
+                                        <label style="font-size: 13px;"><input type="radio" name="contract-type" value="outrights" checked onchange="onContractTypeChange()"> Outrights</label>
+                                        <label style="font-size: 13px;"><input type="radio" name="contract-type" value="spreads" onchange="onContractTypeChange()"> Spreads</label>
+                                        <label style="font-size: 13px;"><input type="radio" name="contract-type" value="continuous" onchange="onContractTypeChange()"> Continuous</label>
+                                    </div>
+                                </div>
                                 <div class="search-row">
                                     <input type="text" id="symbol-search" placeholder="Search symbols..." oninput="searchSymbols()">
                                 </div>

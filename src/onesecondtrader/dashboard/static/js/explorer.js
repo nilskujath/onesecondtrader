@@ -9,6 +9,9 @@ let globalMaxDate = null;
 let publishers = [];
 let datasets = [];
 let selectedPublisherId = null;
+let selectedContractType = 'outrights';
+let hasContinuousSymbols = false;
+let allCoverageData = [];
 
 let availableIndicators = [];
 let selectedIndicators = [];
@@ -176,10 +179,34 @@ async function loadCoverageForPublisher(publisherId) {
     const url = '/api/secmaster/symbols_coverage?publisher_id=' + publisherId + '&rtype=' + rtype;
     const res = await fetch(url);
     const data = await res.json();
-    const cov = data.symbols || [];
+    allCoverageData = data.symbols || [];
+
+    // Detect if continuous symbols exist
+    hasContinuousSymbols = allCoverageData.some(function(row) { return row.symbol_type === 'continuous'; });
+    var section = document.getElementById('contract-type-section');
+    if (section) {
+        section.style.display = hasContinuousSymbols ? '' : 'none';
+        if (!hasContinuousSymbols) {
+            selectedContractType = 'outrights';
+            var radio = document.querySelector('input[name="contract-type"][value="outrights"]');
+            if (radio) radio.checked = true;
+        }
+    }
+
+    applyCoverageFilter();
+}
+
+function applyCoverageFilter() {
+    coverageData = allCoverageData.filter(function(row) {
+        if (!hasContinuousSymbols) return true;
+        if (selectedContractType === 'continuous') return row.symbol_type === 'continuous';
+        if (selectedContractType === 'spreads') return row.symbol_type === 'raw_symbol' && row.symbol.includes('-');
+        // outrights
+        return row.symbol_type === 'raw_symbol' && !row.symbol.includes('-');
+    });
     symbolsForRtype = {};
     symbolCoverageForRtype = {};
-    cov.forEach(function(row) {
+    coverageData.forEach(function(row) {
         if (!symbolsForRtype[row.rtype]) {
             symbolsForRtype[row.rtype] = [];
             symbolCoverageForRtype[row.rtype] = {};
@@ -189,13 +216,25 @@ async function loadCoverageForPublisher(publisherId) {
     });
 }
 
+function onContractTypeChange() {
+    var radio = document.querySelector('input[name="contract-type"]:checked');
+    selectedContractType = radio ? radio.value : 'outrights';
+    applyCoverageFilter();
+    selectedSymbols = [];
+    renderSelectedSymbols();
+    updateDateRange();
+    document.getElementById('symbol-search').value = '';
+    document.getElementById('search-results').innerHTML = '';
+    updateButtonStates();
+}
+
 function searchSymbols() {
     const query = document.getElementById('symbol-search').value.toLowerCase();
     const container = document.getElementById('search-results');
     const rtype = getSelectedRtype();
     if (!query || !rtype) { container.innerHTML = ''; return; }
     const symbols = symbolsForRtype[rtype] || [];
-    const matches = symbols.filter(function(s) { return s.toLowerCase().includes(query) && !selectedSymbols.includes(s); }).slice(0, 20);
+    const matches = symbols.filter(function(s) { return s.toLowerCase().includes(query) && !selectedSymbols.includes(s); }).slice(0, 100);
     container.innerHTML = matches.map(function(s) {
         return '<div class="search-result" onclick="addSymbol(\'' + s + '\')"><span class="symbol">' + s + '</span></div>';
     }).join('');
@@ -318,6 +357,17 @@ async function applyDsPreset(preset) {
         datasetSel.value = String(preset.publisher_id);
         selectedPublisherId = preset.publisher_id;
         await loadCoverageForPublisher(selectedPublisherId);
+        // Restore contract type from preset
+        if (preset.symbol_type === 'continuous' && hasContinuousSymbols) {
+            selectedContractType = 'continuous';
+            var ctRadio = document.querySelector('input[name="contract-type"][value="continuous"]');
+            if (ctRadio) ctRadio.checked = true;
+        } else {
+            selectedContractType = 'outrights';
+            var ctRadio2 = document.querySelector('input[name="contract-type"][value="outrights"]');
+            if (ctRadio2) ctRadio2.checked = true;
+        }
+        applyCoverageFilter();
         document.getElementById('symbol-selection').style.display = 'block';
         document.getElementById('symbol-search').value = '';
         document.getElementById('search-results').innerHTML = '';
@@ -342,6 +392,7 @@ async function saveDsPreset() {
     const exists = dsPresets.some(function(p) { return p.name === name; });
     const method = exists ? 'PUT' : 'POST';
     const apiUrl = exists ? '/api/presets/' + encodeURIComponent(name) : '/api/presets';
+    var symbolType = (hasContinuousSymbols && selectedContractType === 'continuous') ? 'continuous' : 'raw_symbol';
     await fetch(apiUrl, {
         method: method,
         headers: {'Content-Type': 'application/json'},
@@ -350,7 +401,8 @@ async function saveDsPreset() {
             rtype: rtype,
             publisher_name: publisherName,
             publisher_id: selectedPublisherId,
-            symbols: selectedSymbols
+            symbols: selectedSymbols,
+            symbol_type: symbolType
         })
     });
     nameInput.value = '';
@@ -673,13 +725,15 @@ async function onCalculate() {
         return {class_name: ind.class_name, params: ind.params};
     });
 
+    const symbolType = (hasContinuousSymbols && selectedContractType === 'continuous') ? 'continuous' : 'raw_symbol';
     const payload = {
         symbols: selectedSymbols,
         rtype: rtype,
         publisher_id: selectedPublisherId,
         start_date: document.getElementById('start-date').value || null,
         end_date: document.getElementById('end-date').value || null,
-        indicators: indicatorsPayload
+        indicators: indicatorsPayload,
+        symbol_type: symbolType
     };
 
     try {

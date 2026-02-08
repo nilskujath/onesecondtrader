@@ -19,6 +19,9 @@ let publishers = [];
 let datasets = [];
 let selectedPublisherId = null;
 let isLoadingPreset = false;
+let selectedContractType = 'outrights';
+let hasContinuousSymbols = false;
+let allCoverageData = [];
 
 const RTYPE_LABELS = {32: 'Second', 33: 'Minute', 34: 'Hour', 35: 'Day'};
 
@@ -83,7 +86,31 @@ async function loadCoverageForPublisher(publisherId) {
     const url = `/api/secmaster/symbols_coverage?publisher_id=${publisherId}&rtype=${rtype}`;
     const res = await fetch(url);
     const data = await res.json();
-    coverageData = data.symbols || [];
+    allCoverageData = data.symbols || [];
+
+    // Detect if continuous symbols exist
+    hasContinuousSymbols = allCoverageData.some(row => row.symbol_type === 'continuous');
+    const section = document.getElementById('contract-type-section');
+    if (section) {
+        section.style.display = hasContinuousSymbols ? '' : 'none';
+        if (!hasContinuousSymbols) {
+            selectedContractType = 'outrights';
+            const radio = document.querySelector('input[name="contract-type"][value="outrights"]');
+            if (radio) radio.checked = true;
+        }
+    }
+
+    applyCoverageFilter();
+}
+
+function applyCoverageFilter() {
+    coverageData = allCoverageData.filter(row => {
+        if (!hasContinuousSymbols) return true;
+        if (selectedContractType === 'continuous') return row.symbol_type === 'continuous';
+        if (selectedContractType === 'spreads') return row.symbol_type === 'raw_symbol' && row.symbol.includes('-');
+        // outrights
+        return row.symbol_type === 'raw_symbol' && !row.symbol.includes('-');
+    });
     symbolsForRtype = {};
     symbolCoverageForRtype = {};
     coverageData.forEach(row => {
@@ -94,6 +121,17 @@ async function loadCoverageForPublisher(publisherId) {
         symbolsForRtype[row.rtype].push(row.symbol);
         symbolCoverageForRtype[row.rtype][row.symbol] = {min_ts: row.min_ts, max_ts: row.max_ts};
     });
+}
+
+function onContractTypeChange() {
+    const radio = document.querySelector('input[name="contract-type"]:checked');
+    selectedContractType = radio ? radio.value : 'outrights';
+    applyCoverageFilter();
+    selectedSymbols = [];
+    renderSelectedSymbols();
+    updateDateRange();
+    document.getElementById('symbol-search').value = '';
+    document.getElementById('search-results').innerHTML = '';
 }
 
 async function loadPresets() {
@@ -142,6 +180,17 @@ async function applyPreset(preset) {
         datasetSel.value = String(preset.publisher_id);
         selectedPublisherId = preset.publisher_id;
         await loadCoverageForPublisher(selectedPublisherId);
+        // Restore contract type from preset
+        if (preset.symbol_type === 'continuous' && hasContinuousSymbols) {
+            selectedContractType = 'continuous';
+            const radio = document.querySelector('input[name="contract-type"][value="continuous"]');
+            if (radio) radio.checked = true;
+        } else {
+            selectedContractType = 'outrights';
+            const radio = document.querySelector('input[name="contract-type"][value="outrights"]');
+            if (radio) radio.checked = true;
+        }
+        applyCoverageFilter();
         document.getElementById('symbol-selection').style.display = 'block';
         document.getElementById('symbol-search').value = '';
         document.getElementById('search-results').innerHTML = '';
@@ -166,6 +215,7 @@ async function savePreset() {
     const exists = presets.some(p => p.name === name);
     const method = exists ? 'PUT' : 'POST';
     const apiUrl = exists ? `/api/presets/${encodeURIComponent(name)}` : '/api/presets';
+    const symbolType = (hasContinuousSymbols && selectedContractType === 'continuous') ? 'continuous' : 'raw_symbol';
     await fetch(apiUrl, {
         method, headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -173,7 +223,8 @@ async function savePreset() {
             rtype,
             publisher_name: publisherName,
             publisher_id: selectedPublisherId,
-            symbols: selectedSymbols
+            symbols: selectedSymbols,
+            symbol_type: symbolType
         })
     });
     nameInput.value = '';
@@ -331,7 +382,7 @@ function searchSymbols() {
         return;
     }
     const symbols = symbolsForRtype[rtype] || [];
-    const matches = symbols.filter(s => s.toLowerCase().includes(query) && !selectedSymbols.includes(s)).slice(0, 20);
+    const matches = symbols.filter(s => s.toLowerCase().includes(query) && !selectedSymbols.includes(s)).slice(0, 100);
     container.innerHTML = matches.map(s =>
         `<div class="search-result" onclick="addSymbol('${s}')"><span class="symbol">${s}</span></div>`
     ).join('');
@@ -589,6 +640,7 @@ async function runBacktest() {
     const endDate = document.getElementById('end-date').value || null;
     const barPeriod = RTYPE_LABELS[rtype] || 'Unknown';
 
+    const symbolType = (hasContinuousSymbols && selectedContractType === 'continuous') ? 'continuous' : 'raw_symbol';
     const payload = {
         strategy: strategy,
         strategy_params: collectParams(),
@@ -596,7 +648,8 @@ async function runBacktest() {
         rtype: rtype,
         publisher_id: selectedPublisherId,
         start_date: startDate,
-        end_date: endDate
+        end_date: endDate,
+        symbol_type: symbolType
     };
 
     try {
