@@ -36,8 +36,8 @@
 .preset-row .btn-secondary.active { background: #238636; cursor: pointer; }
 .preset-row .btn-secondary.active:hover { background: #2ea043; }
 .preset-row .btn-danger { background: #30363d; }
-.preset-row .btn-danger.active { background: #da3633; cursor: pointer; }
-.preset-row .btn-danger.active:hover { background: #f85149; }
+.preset-row .btn-danger.active { background: #30363d; color: #f85149; cursor: pointer; }
+.preset-row .btn-danger.active:hover { background: #30363d; color: #ff7b72; }
 .search-row { display: flex; gap: 8px; margin-bottom: 8px; }
 .search-row input { flex: 1; }
 .search-results { max-height: 150px; overflow-y: auto; border: 1px solid #30363d; border-radius: 4px; margin-bottom: 12px; }

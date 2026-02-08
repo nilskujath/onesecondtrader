@@ -16,8 +16,8 @@
 .preset-row .btn-secondary.active { background: #238636; cursor: pointer; }
 .preset-row .btn-secondary.active:hover { background: #2ea043; }
 .preset-row .btn-danger { background: #30363d; }
-.preset-row .btn-danger.active { background: #da3633; cursor: pointer; }
-.preset-row .btn-danger.active:hover { background: #f85149; }
+.preset-row .btn-danger.active { background: #30363d; color: #f85149; cursor: pointer; }
+.preset-row .btn-danger.active:hover { background: #30363d; color: #ff7b72; }
 .symbol-section { background: #0d1117; border-radius: 6px; padding: 12px; }
 .search-row { display: flex; gap: 8px; margin-bottom: 8px; }
 .search-row input { flex: 1; }
@@ -44,14 +44,15 @@
 .indicator-add-row select { flex: 1; padding: 8px 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #e6edf3; font-size: 14px; }
 .btn-add {
     padding: 8px 16px;
-    background: #238636;
+    background: #30363d;
     border: none;
     border-radius: 6px;
     color: #fff;
     font-size: 13px;
-    cursor: pointer;
+    cursor: not-allowed;
 }
-.btn-add:hover { background: #2ea043; }
+.btn-add.active { background: #238636; cursor: pointer; }
+.btn-add.active:hover { background: #2ea043; }
 .indicator-add-row .btn-add { width: auto; }
 .indicator-params { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
 .indicator-params .param-input { display: flex; align-items: center; gap: 4px; }
@@ -204,4 +205,13 @@
     font-size: 13px;
     color: #8b949e;
     white-space: nowrap;
+}
+[id^="source-subparams-"] {
+    display: grid;
+    grid-template-columns: max-content auto;
+    gap: 4px 8px;
+    align-items: center;
+}
+[id^="source-subparams-"] .param-input {
+    display: contents;
 }

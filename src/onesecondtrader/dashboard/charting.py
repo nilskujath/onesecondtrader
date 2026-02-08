@@ -204,7 +204,14 @@ def _draw_ohlc_bars(
                 rect_width = bar_width * 0.8  # type: ignore[assignment]
             else:
                 rect_width = bar_width * 0.8
-            ax.plot([x, x], [low, h], color="black", linewidth=0.8, alpha=0.7)
+            ax.plot([x, x], [low, body_bottom], color="black", linewidth=0.8, alpha=0.7)
+            ax.plot(
+                [x, x],
+                [body_bottom + body_height, h],
+                color="black",
+                linewidth=0.8,
+                alpha=0.7,
+            )
             rect = Rectangle(
                 (x - rect_width / 2, body_bottom),
                 rect_width,  # type: ignore[arg-type]

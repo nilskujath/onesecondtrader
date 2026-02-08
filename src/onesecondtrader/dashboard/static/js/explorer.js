@@ -515,6 +515,9 @@ function onIndicatorClassChange() {
         return '<div class="param-input"><label>' + humanizeParam(p.name) + ':</label><input type="' + inputType + '" id="ip_' + p.name + '" value="' + val + '" step="' + step + '"></div>';
     }).join('');
     indicatorClassParams.forEach(function(pName) { onSourceIndicatorChange(pName); });
+    var addBtn = document.querySelector('.indicator-add-row .btn-add');
+    if (className) addBtn.classList.add('active');
+    else addBtn.classList.remove('active');
 }
 
 function onSourceIndicatorChange(paramName) {
@@ -1101,6 +1104,10 @@ async function loadChartData() {
             const data = await res.json();
             conditionalSegments = data.segments || [];
         } else if (chartMode === 'condition') {
+            if (selectedConditions.length === 0) {
+                container.innerHTML = '<div class="empty-content"><p>Select one or more conditions to show filtered charts.</p></div>';
+                return;
+            }
             var conditions = selectedConditions.map(function(c) {
                 var spec = { left_field: c.leftField, operator: c.operator };
                 if (c.rightField) spec.right_field = c.rightField;
