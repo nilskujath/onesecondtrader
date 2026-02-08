@@ -923,24 +923,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#onesecondtrader.dashboard.pages.performance_page" class="md-nav__link">
-    <span class="md-ellipsis">
-      performance_page
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#onesecondtrader.dashboard.pages.chart_page" class="md-nav__link">
-    <span class="md-ellipsis">
-      chart_page
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -3340,24 +3322,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#onesecondtrader.dashboard.pages.performance_page" class="md-nav__link">
-    <span class="md-ellipsis">
-      performance_page
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#onesecondtrader.dashboard.pages.chart_page" class="md-nav__link">
-    <span class="md-ellipsis">
-      chart_page
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -3692,16 +3656,11 @@ wrapped in the standard layout by <code>render_page</code>.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Generate the backtest configuration page.</p>
-<p>The page provides a form for configuring and running backtests with:</p>
-<ul>
-<li>Strategy selection and parameter configuration</li>
-<li>Bar period selection (Second, Minute, Hour, Day)</li>
-<li>Publisher and dataset selection for data source filtering</li>
-<li>Symbol search and selection with preset management</li>
-<li>Date range selection constrained by available data</li>
-<li>Run history display with selection and deletion</li>
-</ul>
+        <p>Generate the backtest page with 4 vertically stacked boxes.</p>
+<p>Box 1: Backtest config (strategy/dataset selection + runs list)
+Box 2: Run selection dropdown + performance metrics placeholder
+Box 3: Per-symbol PnL Summary + Trade Journey charts
+Box 4: Trades table + chart rendering + chart settings</p>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -3817,141 +3776,10 @@ wrapped in the standard layout by <code>render_page</code>.</p>
 <span class="normal"><a href="#__codelineno-0-212">212</a></span>
 <span class="normal"><a href="#__codelineno-0-213">213</a></span>
 <span class="normal"><a href="#__codelineno-0-214">214</a></span>
-<span class="normal"><a href="#__codelineno-0-215">215</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-127"><a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="k">def</span><span class="w"> </span><span class="nf">backtest_page</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="__span-0-128"><a id="__codelineno-0-128" name="__codelineno-0-128"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-129"><a id="__codelineno-0-129" name="__codelineno-0-129"></a><span class="sd">    Generate the backtest configuration page.</span>
-</span><span id="__span-0-130"><a id="__codelineno-0-130" name="__codelineno-0-130"></a>
-</span><span id="__span-0-131"><a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="sd">    The page provides a form for configuring and running backtests with:</span>
-</span><span id="__span-0-132"><a id="__codelineno-0-132" name="__codelineno-0-132"></a>
-</span><span id="__span-0-133"><a id="__codelineno-0-133" name="__codelineno-0-133"></a><span class="sd">    - Strategy selection and parameter configuration</span>
-</span><span id="__span-0-134"><a id="__codelineno-0-134" name="__codelineno-0-134"></a><span class="sd">    - Bar period selection (Second, Minute, Hour, Day)</span>
-</span><span id="__span-0-135"><a id="__codelineno-0-135" name="__codelineno-0-135"></a><span class="sd">    - Publisher and dataset selection for data source filtering</span>
-</span><span id="__span-0-136"><a id="__codelineno-0-136" name="__codelineno-0-136"></a><span class="sd">    - Symbol search and selection with preset management</span>
-</span><span id="__span-0-137"><a id="__codelineno-0-137" name="__codelineno-0-137"></a><span class="sd">    - Date range selection constrained by available data</span>
-</span><span id="__span-0-138"><a id="__codelineno-0-138" name="__codelineno-0-138"></a><span class="sd">    - Run history display with selection and deletion</span>
-</span><span id="__span-0-139"><a id="__codelineno-0-139" name="__codelineno-0-139"></a>
-</span><span id="__span-0-140"><a id="__codelineno-0-140" name="__codelineno-0-140"></a><span class="sd">    Returns:</span>
-</span><span id="__span-0-141"><a id="__codelineno-0-141" name="__codelineno-0-141"></a><span class="sd">        HTML string for the backtest page content.</span>
-</span><span id="__span-0-142"><a id="__codelineno-0-142" name="__codelineno-0-142"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-143"><a id="__codelineno-0-143" name="__codelineno-0-143"></a>    <span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-</span><span id="__span-0-144"><a id="__codelineno-0-144" name="__codelineno-0-144"></a><span class="s2">    &lt;link rel=&quot;stylesheet&quot; href=&quot;/static/css/backtest.css&quot;&gt;</span>
-</span><span id="__span-0-145"><a id="__codelineno-0-145" name="__codelineno-0-145"></a><span class="s2">    &lt;div class=&quot;backtest-layout&quot;&gt;</span>
-</span><span id="__span-0-146"><a id="__codelineno-0-146" name="__codelineno-0-146"></a><span class="s2">        &lt;div class=&quot;backtest-left&quot;&gt;</span>
-</span><span id="__span-0-147"><a id="__codelineno-0-147" name="__codelineno-0-147"></a><span class="s2">            &lt;div class=&quot;card&quot;&gt;</span>
-</span><span id="__span-0-148"><a id="__codelineno-0-148" name="__codelineno-0-148"></a><span class="s2">                &lt;h2&gt;Settings&lt;/h2&gt;</span>
-</span><span id="__span-0-149"><a id="__codelineno-0-149" name="__codelineno-0-149"></a><span class="s2">                &lt;div class=&quot;form-group&quot;&gt;</span>
-</span><span id="__span-0-150"><a id="__codelineno-0-150" name="__codelineno-0-150"></a><span class="s2">                    &lt;label&gt;Strategy&lt;/label&gt;</span>
-</span><span id="__span-0-151"><a id="__codelineno-0-151" name="__codelineno-0-151"></a><span class="s2">                    &lt;select id=&quot;strategy&quot; onchange=&quot;loadStrategyParams()&quot;&gt;&lt;/select&gt;</span>
-</span><span id="__span-0-152"><a id="__codelineno-0-152" name="__codelineno-0-152"></a><span class="s2">                    &lt;div class=&quot;section-header&quot;&gt;Parameters&lt;/div&gt;</span>
-</span><span id="__span-0-153"><a id="__codelineno-0-153" name="__codelineno-0-153"></a><span class="s2">                    &lt;div id=&quot;strategy-params&quot; class=&quot;params-container&quot;&gt;&lt;/div&gt;</span>
-</span><span id="__span-0-154"><a id="__codelineno-0-154" name="__codelineno-0-154"></a><span class="s2">                &lt;/div&gt;</span>
-</span><span id="__span-0-155"><a id="__codelineno-0-155" name="__codelineno-0-155"></a><span class="s2">                &lt;div class=&quot;form-group&quot;&gt;</span>
-</span><span id="__span-0-156"><a id="__codelineno-0-156" name="__codelineno-0-156"></a><span class="s2">                    &lt;label&gt;Preset&lt;/label&gt;</span>
-</span><span id="__span-0-157"><a id="__codelineno-0-157" name="__codelineno-0-157"></a><span class="s2">                    &lt;div class=&quot;preset-row&quot;&gt;</span>
-</span><span id="__span-0-158"><a id="__codelineno-0-158" name="__codelineno-0-158"></a><span class="s2">                        &lt;select id=&quot;preset-select&quot; onchange=&quot;loadPreset()&quot;&gt;&lt;/select&gt;</span>
-</span><span id="__span-0-159"><a id="__codelineno-0-159" name="__codelineno-0-159"></a><span class="s2">                        &lt;input type=&quot;text&quot; id=&quot;preset-name&quot; placeholder=&quot;New preset name...&quot; oninput=&quot;updateButtonStates()&quot;&gt;</span>
-</span><span id="__span-0-160"><a id="__codelineno-0-160" name="__codelineno-0-160"></a><span class="s2">                        &lt;button id=&quot;preset-save-btn&quot; class=&quot;btn btn-sm btn-secondary&quot; onclick=&quot;savePreset()&quot;&gt;Save&lt;/button&gt;</span>
-</span><span id="__span-0-161"><a id="__codelineno-0-161" name="__codelineno-0-161"></a><span class="s2">                        &lt;button id=&quot;preset-delete-btn&quot; class=&quot;btn btn-sm btn-danger&quot; onclick=&quot;deletePreset()&quot;&gt;Delete&lt;/button&gt;</span>
-</span><span id="__span-0-162"><a id="__codelineno-0-162" name="__codelineno-0-162"></a><span class="s2">                    &lt;/div&gt;</span>
-</span><span id="__span-0-163"><a id="__codelineno-0-163" name="__codelineno-0-163"></a><span class="s2">                &lt;/div&gt;</span>
-</span><span id="__span-0-164"><a id="__codelineno-0-164" name="__codelineno-0-164"></a><span class="s2">                &lt;div class=&quot;form-group&quot;&gt;</span>
-</span><span id="__span-0-165"><a id="__codelineno-0-165" name="__codelineno-0-165"></a><span class="s2">                    &lt;label&gt;Bar Period&lt;/label&gt;</span>
-</span><span id="__span-0-166"><a id="__codelineno-0-166" name="__codelineno-0-166"></a><span class="s2">                    &lt;select id=&quot;bar-period&quot; onchange=&quot;onBarPeriodChange()&quot;&gt;</span>
-</span><span id="__span-0-167"><a id="__codelineno-0-167" name="__codelineno-0-167"></a><span class="s2">                        &lt;option value=&quot;&quot;&gt;-- Select bar period --&lt;/option&gt;</span>
-</span><span id="__span-0-168"><a id="__codelineno-0-168" name="__codelineno-0-168"></a><span class="s2">                    &lt;/select&gt;</span>
-</span><span id="__span-0-169"><a id="__codelineno-0-169" name="__codelineno-0-169"></a><span class="s2">                &lt;/div&gt;</span>
-</span><span id="__span-0-170"><a id="__codelineno-0-170" name="__codelineno-0-170"></a><span class="s2">                &lt;div class=&quot;form-group&quot; id=&quot;symbols-section&quot; style=&quot;display: none;&quot;&gt;</span>
-</span><span id="__span-0-171"><a id="__codelineno-0-171" name="__codelineno-0-171"></a><span class="s2">                    &lt;label&gt;Symbols&lt;/label&gt;</span>
-</span><span id="__span-0-172"><a id="__codelineno-0-172" name="__codelineno-0-172"></a><span class="s2">                    &lt;div class=&quot;symbol-section&quot;&gt;</span>
-</span><span id="__span-0-173"><a id="__codelineno-0-173" name="__codelineno-0-173"></a><span class="s2">                        &lt;div class=&quot;publisher-row&quot;&gt;</span>
-</span><span id="__span-0-174"><a id="__codelineno-0-174" name="__codelineno-0-174"></a><span class="s2">                            &lt;select id=&quot;publisher-name&quot; onchange=&quot;onPublisherChange()&quot;&gt;</span>
-</span><span id="__span-0-175"><a id="__codelineno-0-175" name="__codelineno-0-175"></a><span class="s2">                                &lt;option value=&quot;&quot;&gt;-- Select Publisher --&lt;/option&gt;</span>
-</span><span id="__span-0-176"><a id="__codelineno-0-176" name="__codelineno-0-176"></a><span class="s2">                            &lt;/select&gt;</span>
-</span><span id="__span-0-177"><a id="__codelineno-0-177" name="__codelineno-0-177"></a><span class="s2">                            &lt;select id=&quot;publisher-dataset&quot; onchange=&quot;onDatasetChange()&quot;&gt;</span>
-</span><span id="__span-0-178"><a id="__codelineno-0-178" name="__codelineno-0-178"></a><span class="s2">                                &lt;option value=&quot;&quot;&gt;-- Select Dataset --&lt;/option&gt;</span>
-</span><span id="__span-0-179"><a id="__codelineno-0-179" name="__codelineno-0-179"></a><span class="s2">                            &lt;/select&gt;</span>
-</span><span id="__span-0-180"><a id="__codelineno-0-180" name="__codelineno-0-180"></a><span class="s2">                        &lt;/div&gt;</span>
-</span><span id="__span-0-181"><a id="__codelineno-0-181" name="__codelineno-0-181"></a><span class="s2">                        &lt;div id=&quot;symbol-selection&quot; style=&quot;display: none;&quot;&gt;</span>
-</span><span id="__span-0-182"><a id="__codelineno-0-182" name="__codelineno-0-182"></a><span class="s2">                            &lt;div class=&quot;search-row&quot;&gt;</span>
-</span><span id="__span-0-183"><a id="__codelineno-0-183" name="__codelineno-0-183"></a><span class="s2">                                &lt;input type=&quot;text&quot; id=&quot;symbol-search&quot; placeholder=&quot;Search symbols...&quot; oninput=&quot;searchSymbols()&quot;&gt;</span>
-</span><span id="__span-0-184"><a id="__codelineno-0-184" name="__codelineno-0-184"></a><span class="s2">                            &lt;/div&gt;</span>
-</span><span id="__span-0-185"><a id="__codelineno-0-185" name="__codelineno-0-185"></a><span class="s2">                            &lt;div id=&quot;search-results&quot; class=&quot;search-results&quot;&gt;&lt;/div&gt;</span>
-</span><span id="__span-0-186"><a id="__codelineno-0-186" name="__codelineno-0-186"></a><span class="s2">                            &lt;div id=&quot;selected-label&quot; class=&quot;selected-label&quot;&gt;Selected (0):&lt;/div&gt;</span>
-</span><span id="__span-0-187"><a id="__codelineno-0-187" name="__codelineno-0-187"></a><span class="s2">                            &lt;div id=&quot;selected-symbols&quot; class=&quot;selected-symbols&quot;&gt;&lt;/div&gt;</span>
-</span><span id="__span-0-188"><a id="__codelineno-0-188" name="__codelineno-0-188"></a><span class="s2">                        &lt;/div&gt;</span>
-</span><span id="__span-0-189"><a id="__codelineno-0-189" name="__codelineno-0-189"></a><span class="s2">                    &lt;/div&gt;</span>
-</span><span id="__span-0-190"><a id="__codelineno-0-190" name="__codelineno-0-190"></a><span class="s2">                &lt;/div&gt;</span>
-</span><span id="__span-0-191"><a id="__codelineno-0-191" name="__codelineno-0-191"></a><span class="s2">                &lt;div class=&quot;date-row&quot;&gt;</span>
-</span><span id="__span-0-192"><a id="__codelineno-0-192" name="__codelineno-0-192"></a><span class="s2">                    &lt;div class=&quot;form-group&quot;&gt;</span>
-</span><span id="__span-0-193"><a id="__codelineno-0-193" name="__codelineno-0-193"></a><span class="s2">                        &lt;label&gt;Start Date&lt;/label&gt;</span>
-</span><span id="__span-0-194"><a id="__codelineno-0-194" name="__codelineno-0-194"></a><span class="s2">                        &lt;input type=&quot;date&quot; id=&quot;start-date&quot; onchange=&quot;clampDate(&#39;start-date&#39;)&quot;&gt;</span>
-</span><span id="__span-0-195"><a id="__codelineno-0-195" name="__codelineno-0-195"></a><span class="s2">                    &lt;/div&gt;</span>
-</span><span id="__span-0-196"><a id="__codelineno-0-196" name="__codelineno-0-196"></a><span class="s2">                    &lt;div class=&quot;form-group&quot;&gt;</span>
-</span><span id="__span-0-197"><a id="__codelineno-0-197" name="__codelineno-0-197"></a><span class="s2">                        &lt;label&gt;End Date&lt;/label&gt;</span>
-</span><span id="__span-0-198"><a id="__codelineno-0-198" name="__codelineno-0-198"></a><span class="s2">                        &lt;input type=&quot;date&quot; id=&quot;end-date&quot; onchange=&quot;clampDate(&#39;end-date&#39;)&quot;&gt;</span>
-</span><span id="__span-0-199"><a id="__codelineno-0-199" name="__codelineno-0-199"></a><span class="s2">                    &lt;/div&gt;</span>
-</span><span id="__span-0-200"><a id="__codelineno-0-200" name="__codelineno-0-200"></a><span class="s2">                &lt;/div&gt;</span>
-</span><span id="__span-0-201"><a id="__codelineno-0-201" name="__codelineno-0-201"></a><span class="s2">                &lt;div class=&quot;form-group&quot; style=&quot;margin-top: 16px;&quot;&gt;</span>
-</span><span id="__span-0-202"><a id="__codelineno-0-202" name="__codelineno-0-202"></a><span class="s2">                    &lt;button id=&quot;run-btn&quot; class=&quot;btn&quot; onclick=&quot;runBacktest()&quot; disabled&gt;Run Backtest&lt;/button&gt;</span>
-</span><span id="__span-0-203"><a id="__codelineno-0-203" name="__codelineno-0-203"></a><span class="s2">                &lt;/div&gt;</span>
-</span><span id="__span-0-204"><a id="__codelineno-0-204" name="__codelineno-0-204"></a><span class="s2">            &lt;/div&gt;</span>
-</span><span id="__span-0-205"><a id="__codelineno-0-205" name="__codelineno-0-205"></a><span class="s2">        &lt;/div&gt;</span>
-</span><span id="__span-0-206"><a id="__codelineno-0-206" name="__codelineno-0-206"></a><span class="s2">        &lt;div class=&quot;backtest-right&quot;&gt;</span>
-</span><span id="__span-0-207"><a id="__codelineno-0-207" name="__codelineno-0-207"></a><span class="s2">            &lt;div class=&quot;card&quot;&gt;</span>
-</span><span id="__span-0-208"><a id="__codelineno-0-208" name="__codelineno-0-208"></a><span class="s2">                &lt;h2&gt;Runs&lt;/h2&gt;</span>
-</span><span id="__span-0-209"><a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="s2">                &lt;div id=&quot;runs-list&quot; class=&quot;runs-list&quot;&gt;&lt;/div&gt;</span>
-</span><span id="__span-0-210"><a id="__codelineno-0-210" name="__codelineno-0-210"></a><span class="s2">            &lt;/div&gt;</span>
-</span><span id="__span-0-211"><a id="__codelineno-0-211" name="__codelineno-0-211"></a><span class="s2">        &lt;/div&gt;</span>
-</span><span id="__span-0-212"><a id="__codelineno-0-212" name="__codelineno-0-212"></a><span class="s2">    &lt;/div&gt;</span>
-</span><span id="__span-0-213"><a id="__codelineno-0-213" name="__codelineno-0-213"></a><span class="s2">    &lt;script src=&quot;/static/js/backtest.js&quot;&gt;&lt;/script&gt;</span>
-</span><span id="__span-0-214"><a id="__codelineno-0-214" name="__codelineno-0-214"></a><span class="s2">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-215"><a id="__codelineno-0-215" name="__codelineno-0-215"></a>    <span class="k">return</span> <span class="n">render_page</span><span class="p">(</span><span class="s2">&quot;Backtest&quot;</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">&quot;backtest&quot;</span><span class="p">)</span>
-</span></code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="onesecondtrader.dashboard.pages.performance_page" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">performance_page</span><span class="p">()</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Generate the performance analysis page.</p>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>HTML string for the performance page content.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-            <details class="quote">
-              <summary>Source code in <code>src/onesecondtrader/dashboard/pages.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-218">218</a></span>
+<span class="normal"><a href="#__codelineno-0-215">215</a></span>
+<span class="normal"><a href="#__codelineno-0-216">216</a></span>
+<span class="normal"><a href="#__codelineno-0-217">217</a></span>
+<span class="normal"><a href="#__codelineno-0-218">218</a></span>
 <span class="normal"><a href="#__codelineno-0-219">219</a></span>
 <span class="normal"><a href="#__codelineno-0-220">220</a></span>
 <span class="normal"><a href="#__codelineno-0-221">221</a></span>
@@ -3966,68 +3794,10 @@ wrapped in the standard layout by <code>render_page</code>.</p>
 <span class="normal"><a href="#__codelineno-0-230">230</a></span>
 <span class="normal"><a href="#__codelineno-0-231">231</a></span>
 <span class="normal"><a href="#__codelineno-0-232">232</a></span>
-<span class="normal"><a href="#__codelineno-0-233">233</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-218"><a id="__codelineno-0-218" name="__codelineno-0-218"></a><span class="k">def</span><span class="w"> </span><span class="nf">performance_page</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="__span-0-219"><a id="__codelineno-0-219" name="__codelineno-0-219"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-220"><a id="__codelineno-0-220" name="__codelineno-0-220"></a><span class="sd">    Generate the performance analysis page.</span>
-</span><span id="__span-0-221"><a id="__codelineno-0-221" name="__codelineno-0-221"></a>
-</span><span id="__span-0-222"><a id="__codelineno-0-222" name="__codelineno-0-222"></a><span class="sd">    Returns:</span>
-</span><span id="__span-0-223"><a id="__codelineno-0-223" name="__codelineno-0-223"></a><span class="sd">        HTML string for the performance page content.</span>
-</span><span id="__span-0-224"><a id="__codelineno-0-224" name="__codelineno-0-224"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-225"><a id="__codelineno-0-225" name="__codelineno-0-225"></a>    <span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-</span><span id="__span-0-226"><a id="__codelineno-0-226" name="__codelineno-0-226"></a><span class="s2">    &lt;link rel=&quot;stylesheet&quot; href=&quot;/static/css/performance.css&quot;&gt;</span>
-</span><span id="__span-0-227"><a id="__codelineno-0-227" name="__codelineno-0-227"></a><span class="s2">    &lt;div class=&quot;performance-layout&quot;&gt;</span>
-</span><span id="__span-0-228"><a id="__codelineno-0-228" name="__codelineno-0-228"></a><span class="s2">        &lt;div class=&quot;settings-card&quot; id=&quot;settings-panel&quot;&gt;&lt;/div&gt;</span>
-</span><span id="__span-0-229"><a id="__codelineno-0-229" name="__codelineno-0-229"></a><span class="s2">        &lt;div class=&quot;charts-row&quot; id=&quot;charts-row&quot;&gt;&lt;/div&gt;</span>
-</span><span id="__span-0-230"><a id="__codelineno-0-230" name="__codelineno-0-230"></a><span class="s2">    &lt;/div&gt;</span>
-</span><span id="__span-0-231"><a id="__codelineno-0-231" name="__codelineno-0-231"></a><span class="s2">    &lt;script src=&quot;/static/js/performance.js&quot;&gt;&lt;/script&gt;</span>
-</span><span id="__span-0-232"><a id="__codelineno-0-232" name="__codelineno-0-232"></a><span class="s2">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-233"><a id="__codelineno-0-233" name="__codelineno-0-233"></a>    <span class="k">return</span> <span class="n">render_page</span><span class="p">(</span><span class="s2">&quot;Performance&quot;</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">&quot;performance&quot;</span><span class="p">)</span>
-</span></code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="onesecondtrader.dashboard.pages.chart_page" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">chart_page</span><span class="p">()</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Generate the chart viewing page.</p>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>HTML string for the chart page content.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-            <details class="quote">
-              <summary>Source code in <code>src/onesecondtrader/dashboard/pages.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-236">236</a></span>
+<span class="normal"><a href="#__codelineno-0-233">233</a></span>
+<span class="normal"><a href="#__codelineno-0-234">234</a></span>
+<span class="normal"><a href="#__codelineno-0-235">235</a></span>
+<span class="normal"><a href="#__codelineno-0-236">236</a></span>
 <span class="normal"><a href="#__codelineno-0-237">237</a></span>
 <span class="normal"><a href="#__codelineno-0-238">238</a></span>
 <span class="normal"><a href="#__codelineno-0-239">239</a></span>
@@ -4049,29 +3819,150 @@ wrapped in the standard layout by <code>render_page</code>.</p>
 <span class="normal"><a href="#__codelineno-0-255">255</a></span>
 <span class="normal"><a href="#__codelineno-0-256">256</a></span>
 <span class="normal"><a href="#__codelineno-0-257">257</a></span>
-<span class="normal"><a href="#__codelineno-0-258">258</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-236"><a id="__codelineno-0-236" name="__codelineno-0-236"></a><span class="k">def</span><span class="w"> </span><span class="nf">chart_page</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="__span-0-237"><a id="__codelineno-0-237" name="__codelineno-0-237"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-238"><a id="__codelineno-0-238" name="__codelineno-0-238"></a><span class="sd">    Generate the chart viewing page.</span>
-</span><span id="__span-0-239"><a id="__codelineno-0-239" name="__codelineno-0-239"></a>
-</span><span id="__span-0-240"><a id="__codelineno-0-240" name="__codelineno-0-240"></a><span class="sd">    Returns:</span>
-</span><span id="__span-0-241"><a id="__codelineno-0-241" name="__codelineno-0-241"></a><span class="sd">        HTML string for the chart page content.</span>
-</span><span id="__span-0-242"><a id="__codelineno-0-242" name="__codelineno-0-242"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-243"><a id="__codelineno-0-243" name="__codelineno-0-243"></a>    <span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-</span><span id="__span-0-244"><a id="__codelineno-0-244" name="__codelineno-0-244"></a><span class="s2">    &lt;link rel=&quot;stylesheet&quot; href=&quot;/static/css/chart.css&quot;&gt;</span>
-</span><span id="__span-0-245"><a id="__codelineno-0-245" name="__codelineno-0-245"></a><span class="s2">    &lt;div class=&quot;chart-layout&quot;&gt;</span>
-</span><span id="__span-0-246"><a id="__codelineno-0-246" name="__codelineno-0-246"></a><span class="s2">        &lt;div class=&quot;card&quot;&gt;</span>
-</span><span id="__span-0-247"><a id="__codelineno-0-247" name="__codelineno-0-247"></a><span class="s2">            &lt;h2&gt;Charts&lt;/h2&gt;</span>
-</span><span id="__span-0-248"><a id="__codelineno-0-248" name="__codelineno-0-248"></a><span class="s2">            &lt;div id=&quot;settings-panel&quot; class=&quot;settings-panel&quot;&gt;&lt;/div&gt;</span>
-</span><span id="__span-0-249"><a id="__codelineno-0-249" name="__codelineno-0-249"></a><span class="s2">            &lt;div id=&quot;conditional-settings-container&quot;&gt;&lt;/div&gt;</span>
-</span><span id="__span-0-250"><a id="__codelineno-0-250" name="__codelineno-0-250"></a><span class="s2">            &lt;div id=&quot;ind-settings-container&quot;&gt;&lt;/div&gt;</span>
-</span><span id="__span-0-251"><a id="__codelineno-0-251" name="__codelineno-0-251"></a><span class="s2">            &lt;div id=&quot;charts-content&quot;&gt;</span>
-</span><span id="__span-0-252"><a id="__codelineno-0-252" name="__codelineno-0-252"></a><span class="s2">                &lt;div class=&quot;empty-content&quot;&gt;&lt;p&gt;Select a run to view charts&lt;/p&gt;&lt;/div&gt;</span>
-</span><span id="__span-0-253"><a id="__codelineno-0-253" name="__codelineno-0-253"></a><span class="s2">            &lt;/div&gt;</span>
-</span><span id="__span-0-254"><a id="__codelineno-0-254" name="__codelineno-0-254"></a><span class="s2">        &lt;/div&gt;</span>
-</span><span id="__span-0-255"><a id="__codelineno-0-255" name="__codelineno-0-255"></a><span class="s2">    &lt;/div&gt;</span>
-</span><span id="__span-0-256"><a id="__codelineno-0-256" name="__codelineno-0-256"></a><span class="s2">    &lt;script src=&quot;/static/js/chart.js&quot;&gt;&lt;/script&gt;</span>
-</span><span id="__span-0-257"><a id="__codelineno-0-257" name="__codelineno-0-257"></a><span class="s2">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-258"><a id="__codelineno-0-258" name="__codelineno-0-258"></a>    <span class="k">return</span> <span class="n">render_page</span><span class="p">(</span><span class="s2">&quot;Chart&quot;</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">&quot;chart&quot;</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-258">258</a></span>
+<span class="normal"><a href="#__codelineno-0-259">259</a></span>
+<span class="normal"><a href="#__codelineno-0-260">260</a></span>
+<span class="normal"><a href="#__codelineno-0-261">261</a></span>
+<span class="normal"><a href="#__codelineno-0-262">262</a></span>
+<span class="normal"><a href="#__codelineno-0-263">263</a></span>
+<span class="normal"><a href="#__codelineno-0-264">264</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-127"><a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="k">def</span><span class="w"> </span><span class="nf">backtest_page</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="__span-0-128"><a id="__codelineno-0-128" name="__codelineno-0-128"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-129"><a id="__codelineno-0-129" name="__codelineno-0-129"></a><span class="sd">    Generate the backtest page with 4 vertically stacked boxes.</span>
+</span><span id="__span-0-130"><a id="__codelineno-0-130" name="__codelineno-0-130"></a>
+</span><span id="__span-0-131"><a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="sd">    Box 1: Backtest config (strategy/dataset selection + runs list)</span>
+</span><span id="__span-0-132"><a id="__codelineno-0-132" name="__codelineno-0-132"></a><span class="sd">    Box 2: Run selection dropdown + performance metrics placeholder</span>
+</span><span id="__span-0-133"><a id="__codelineno-0-133" name="__codelineno-0-133"></a><span class="sd">    Box 3: Per-symbol PnL Summary + Trade Journey charts</span>
+</span><span id="__span-0-134"><a id="__codelineno-0-134" name="__codelineno-0-134"></a><span class="sd">    Box 4: Trades table + chart rendering + chart settings</span>
+</span><span id="__span-0-135"><a id="__codelineno-0-135" name="__codelineno-0-135"></a>
+</span><span id="__span-0-136"><a id="__codelineno-0-136" name="__codelineno-0-136"></a><span class="sd">    Returns:</span>
+</span><span id="__span-0-137"><a id="__codelineno-0-137" name="__codelineno-0-137"></a><span class="sd">        HTML string for the backtest page content.</span>
+</span><span id="__span-0-138"><a id="__codelineno-0-138" name="__codelineno-0-138"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-139"><a id="__codelineno-0-139" name="__codelineno-0-139"></a>    <span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+</span><span id="__span-0-140"><a id="__codelineno-0-140" name="__codelineno-0-140"></a><span class="s2">    &lt;link rel=&quot;stylesheet&quot; href=&quot;/static/css/backtest.css&quot;&gt;</span>
+</span><span id="__span-0-141"><a id="__codelineno-0-141" name="__codelineno-0-141"></a>
+</span><span id="__span-0-142"><a id="__codelineno-0-142" name="__codelineno-0-142"></a><span class="s2">    &lt;!-- Box 1: Backtest Config --&gt;</span>
+</span><span id="__span-0-143"><a id="__codelineno-0-143" name="__codelineno-0-143"></a><span class="s2">    &lt;div id=&quot;box-config&quot; class=&quot;box&quot;&gt;</span>
+</span><span id="__span-0-144"><a id="__codelineno-0-144" name="__codelineno-0-144"></a><span class="s2">        &lt;div class=&quot;backtest-layout&quot;&gt;</span>
+</span><span id="__span-0-145"><a id="__codelineno-0-145" name="__codelineno-0-145"></a><span class="s2">            &lt;div class=&quot;backtest-left&quot;&gt;</span>
+</span><span id="__span-0-146"><a id="__codelineno-0-146" name="__codelineno-0-146"></a><span class="s2">                &lt;div class=&quot;card&quot;&gt;</span>
+</span><span id="__span-0-147"><a id="__codelineno-0-147" name="__codelineno-0-147"></a><span class="s2">                    &lt;h2&gt;Settings&lt;/h2&gt;</span>
+</span><span id="__span-0-148"><a id="__codelineno-0-148" name="__codelineno-0-148"></a><span class="s2">                    &lt;div class=&quot;form-group&quot;&gt;</span>
+</span><span id="__span-0-149"><a id="__codelineno-0-149" name="__codelineno-0-149"></a><span class="s2">                        &lt;label&gt;Strategy&lt;/label&gt;</span>
+</span><span id="__span-0-150"><a id="__codelineno-0-150" name="__codelineno-0-150"></a><span class="s2">                        &lt;select id=&quot;strategy&quot; onchange=&quot;loadStrategyParams()&quot;&gt;&lt;/select&gt;</span>
+</span><span id="__span-0-151"><a id="__codelineno-0-151" name="__codelineno-0-151"></a><span class="s2">                        &lt;div class=&quot;section-header&quot;&gt;Parameters&lt;/div&gt;</span>
+</span><span id="__span-0-152"><a id="__codelineno-0-152" name="__codelineno-0-152"></a><span class="s2">                        &lt;div id=&quot;strategy-params&quot; class=&quot;params-container&quot;&gt;&lt;/div&gt;</span>
+</span><span id="__span-0-153"><a id="__codelineno-0-153" name="__codelineno-0-153"></a><span class="s2">                    &lt;/div&gt;</span>
+</span><span id="__span-0-154"><a id="__codelineno-0-154" name="__codelineno-0-154"></a><span class="s2">                    &lt;div class=&quot;form-group&quot;&gt;</span>
+</span><span id="__span-0-155"><a id="__codelineno-0-155" name="__codelineno-0-155"></a><span class="s2">                        &lt;label&gt;Preset&lt;/label&gt;</span>
+</span><span id="__span-0-156"><a id="__codelineno-0-156" name="__codelineno-0-156"></a><span class="s2">                        &lt;div class=&quot;preset-row&quot;&gt;</span>
+</span><span id="__span-0-157"><a id="__codelineno-0-157" name="__codelineno-0-157"></a><span class="s2">                            &lt;select id=&quot;preset-select&quot; onchange=&quot;loadPreset()&quot;&gt;&lt;/select&gt;</span>
+</span><span id="__span-0-158"><a id="__codelineno-0-158" name="__codelineno-0-158"></a><span class="s2">                            &lt;input type=&quot;text&quot; id=&quot;preset-name&quot; placeholder=&quot;New preset name...&quot; oninput=&quot;updateButtonStates()&quot;&gt;</span>
+</span><span id="__span-0-159"><a id="__codelineno-0-159" name="__codelineno-0-159"></a><span class="s2">                            &lt;button id=&quot;preset-save-btn&quot; class=&quot;btn btn-sm btn-secondary&quot; onclick=&quot;savePreset()&quot;&gt;Save&lt;/button&gt;</span>
+</span><span id="__span-0-160"><a id="__codelineno-0-160" name="__codelineno-0-160"></a><span class="s2">                            &lt;button id=&quot;preset-delete-btn&quot; class=&quot;btn btn-sm btn-danger&quot; onclick=&quot;deletePreset()&quot;&gt;Delete&lt;/button&gt;</span>
+</span><span id="__span-0-161"><a id="__codelineno-0-161" name="__codelineno-0-161"></a><span class="s2">                        &lt;/div&gt;</span>
+</span><span id="__span-0-162"><a id="__codelineno-0-162" name="__codelineno-0-162"></a><span class="s2">                    &lt;/div&gt;</span>
+</span><span id="__span-0-163"><a id="__codelineno-0-163" name="__codelineno-0-163"></a><span class="s2">                    &lt;div class=&quot;form-group&quot;&gt;</span>
+</span><span id="__span-0-164"><a id="__codelineno-0-164" name="__codelineno-0-164"></a><span class="s2">                        &lt;label&gt;Bar Period&lt;/label&gt;</span>
+</span><span id="__span-0-165"><a id="__codelineno-0-165" name="__codelineno-0-165"></a><span class="s2">                        &lt;select id=&quot;bar-period&quot; onchange=&quot;onBarPeriodChange()&quot;&gt;</span>
+</span><span id="__span-0-166"><a id="__codelineno-0-166" name="__codelineno-0-166"></a><span class="s2">                            &lt;option value=&quot;&quot;&gt;-- Select bar period --&lt;/option&gt;</span>
+</span><span id="__span-0-167"><a id="__codelineno-0-167" name="__codelineno-0-167"></a><span class="s2">                        &lt;/select&gt;</span>
+</span><span id="__span-0-168"><a id="__codelineno-0-168" name="__codelineno-0-168"></a><span class="s2">                    &lt;/div&gt;</span>
+</span><span id="__span-0-169"><a id="__codelineno-0-169" name="__codelineno-0-169"></a><span class="s2">                    &lt;div class=&quot;form-group&quot; id=&quot;symbols-section&quot; style=&quot;display: none;&quot;&gt;</span>
+</span><span id="__span-0-170"><a id="__codelineno-0-170" name="__codelineno-0-170"></a><span class="s2">                        &lt;label&gt;Symbols&lt;/label&gt;</span>
+</span><span id="__span-0-171"><a id="__codelineno-0-171" name="__codelineno-0-171"></a><span class="s2">                        &lt;div class=&quot;symbol-section&quot;&gt;</span>
+</span><span id="__span-0-172"><a id="__codelineno-0-172" name="__codelineno-0-172"></a><span class="s2">                            &lt;div class=&quot;publisher-row&quot;&gt;</span>
+</span><span id="__span-0-173"><a id="__codelineno-0-173" name="__codelineno-0-173"></a><span class="s2">                                &lt;select id=&quot;publisher-name&quot; onchange=&quot;onPublisherChange()&quot;&gt;</span>
+</span><span id="__span-0-174"><a id="__codelineno-0-174" name="__codelineno-0-174"></a><span class="s2">                                    &lt;option value=&quot;&quot;&gt;-- Select Publisher --&lt;/option&gt;</span>
+</span><span id="__span-0-175"><a id="__codelineno-0-175" name="__codelineno-0-175"></a><span class="s2">                                &lt;/select&gt;</span>
+</span><span id="__span-0-176"><a id="__codelineno-0-176" name="__codelineno-0-176"></a><span class="s2">                                &lt;select id=&quot;publisher-dataset&quot; onchange=&quot;onDatasetChange()&quot;&gt;</span>
+</span><span id="__span-0-177"><a id="__codelineno-0-177" name="__codelineno-0-177"></a><span class="s2">                                    &lt;option value=&quot;&quot;&gt;-- Select Dataset --&lt;/option&gt;</span>
+</span><span id="__span-0-178"><a id="__codelineno-0-178" name="__codelineno-0-178"></a><span class="s2">                                &lt;/select&gt;</span>
+</span><span id="__span-0-179"><a id="__codelineno-0-179" name="__codelineno-0-179"></a><span class="s2">                            &lt;/div&gt;</span>
+</span><span id="__span-0-180"><a id="__codelineno-0-180" name="__codelineno-0-180"></a><span class="s2">                            &lt;div id=&quot;symbol-selection&quot; style=&quot;display: none;&quot;&gt;</span>
+</span><span id="__span-0-181"><a id="__codelineno-0-181" name="__codelineno-0-181"></a><span class="s2">                                &lt;div class=&quot;search-row&quot;&gt;</span>
+</span><span id="__span-0-182"><a id="__codelineno-0-182" name="__codelineno-0-182"></a><span class="s2">                                    &lt;input type=&quot;text&quot; id=&quot;symbol-search&quot; placeholder=&quot;Search symbols...&quot; oninput=&quot;searchSymbols()&quot;&gt;</span>
+</span><span id="__span-0-183"><a id="__codelineno-0-183" name="__codelineno-0-183"></a><span class="s2">                                &lt;/div&gt;</span>
+</span><span id="__span-0-184"><a id="__codelineno-0-184" name="__codelineno-0-184"></a><span class="s2">                                &lt;div id=&quot;search-results&quot; class=&quot;search-results&quot;&gt;&lt;/div&gt;</span>
+</span><span id="__span-0-185"><a id="__codelineno-0-185" name="__codelineno-0-185"></a><span class="s2">                                &lt;div id=&quot;selected-label&quot; class=&quot;selected-label&quot;&gt;Selected (0):&lt;/div&gt;</span>
+</span><span id="__span-0-186"><a id="__codelineno-0-186" name="__codelineno-0-186"></a><span class="s2">                                &lt;div id=&quot;selected-symbols&quot; class=&quot;selected-symbols&quot;&gt;&lt;/div&gt;</span>
+</span><span id="__span-0-187"><a id="__codelineno-0-187" name="__codelineno-0-187"></a><span class="s2">                            &lt;/div&gt;</span>
+</span><span id="__span-0-188"><a id="__codelineno-0-188" name="__codelineno-0-188"></a><span class="s2">                        &lt;/div&gt;</span>
+</span><span id="__span-0-189"><a id="__codelineno-0-189" name="__codelineno-0-189"></a><span class="s2">                    &lt;/div&gt;</span>
+</span><span id="__span-0-190"><a id="__codelineno-0-190" name="__codelineno-0-190"></a><span class="s2">                    &lt;div class=&quot;date-row&quot;&gt;</span>
+</span><span id="__span-0-191"><a id="__codelineno-0-191" name="__codelineno-0-191"></a><span class="s2">                        &lt;div class=&quot;form-group&quot;&gt;</span>
+</span><span id="__span-0-192"><a id="__codelineno-0-192" name="__codelineno-0-192"></a><span class="s2">                            &lt;label&gt;Start Date&lt;/label&gt;</span>
+</span><span id="__span-0-193"><a id="__codelineno-0-193" name="__codelineno-0-193"></a><span class="s2">                            &lt;input type=&quot;date&quot; id=&quot;start-date&quot; onchange=&quot;clampDate(&#39;start-date&#39;)&quot;&gt;</span>
+</span><span id="__span-0-194"><a id="__codelineno-0-194" name="__codelineno-0-194"></a><span class="s2">                        &lt;/div&gt;</span>
+</span><span id="__span-0-195"><a id="__codelineno-0-195" name="__codelineno-0-195"></a><span class="s2">                        &lt;div class=&quot;form-group&quot;&gt;</span>
+</span><span id="__span-0-196"><a id="__codelineno-0-196" name="__codelineno-0-196"></a><span class="s2">                            &lt;label&gt;End Date&lt;/label&gt;</span>
+</span><span id="__span-0-197"><a id="__codelineno-0-197" name="__codelineno-0-197"></a><span class="s2">                            &lt;input type=&quot;date&quot; id=&quot;end-date&quot; onchange=&quot;clampDate(&#39;end-date&#39;)&quot;&gt;</span>
+</span><span id="__span-0-198"><a id="__codelineno-0-198" name="__codelineno-0-198"></a><span class="s2">                        &lt;/div&gt;</span>
+</span><span id="__span-0-199"><a id="__codelineno-0-199" name="__codelineno-0-199"></a><span class="s2">                    &lt;/div&gt;</span>
+</span><span id="__span-0-200"><a id="__codelineno-0-200" name="__codelineno-0-200"></a><span class="s2">                    &lt;div class=&quot;form-group&quot; style=&quot;margin-top: 16px;&quot;&gt;</span>
+</span><span id="__span-0-201"><a id="__codelineno-0-201" name="__codelineno-0-201"></a><span class="s2">                        &lt;button id=&quot;run-btn&quot; class=&quot;btn&quot; onclick=&quot;runBacktest()&quot; disabled&gt;Run Backtest&lt;/button&gt;</span>
+</span><span id="__span-0-202"><a id="__codelineno-0-202" name="__codelineno-0-202"></a><span class="s2">                    &lt;/div&gt;</span>
+</span><span id="__span-0-203"><a id="__codelineno-0-203" name="__codelineno-0-203"></a><span class="s2">                &lt;/div&gt;</span>
+</span><span id="__span-0-204"><a id="__codelineno-0-204" name="__codelineno-0-204"></a><span class="s2">            &lt;/div&gt;</span>
+</span><span id="__span-0-205"><a id="__codelineno-0-205" name="__codelineno-0-205"></a><span class="s2">            &lt;div class=&quot;backtest-right&quot;&gt;</span>
+</span><span id="__span-0-206"><a id="__codelineno-0-206" name="__codelineno-0-206"></a><span class="s2">                &lt;div class=&quot;card&quot;&gt;</span>
+</span><span id="__span-0-207"><a id="__codelineno-0-207" name="__codelineno-0-207"></a><span class="s2">                    &lt;h2&gt;Runs&lt;/h2&gt;</span>
+</span><span id="__span-0-208"><a id="__codelineno-0-208" name="__codelineno-0-208"></a><span class="s2">                    &lt;div id=&quot;runs-list&quot; class=&quot;runs-list&quot;&gt;&lt;/div&gt;</span>
+</span><span id="__span-0-209"><a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="s2">                &lt;/div&gt;</span>
+</span><span id="__span-0-210"><a id="__codelineno-0-210" name="__codelineno-0-210"></a><span class="s2">            &lt;/div&gt;</span>
+</span><span id="__span-0-211"><a id="__codelineno-0-211" name="__codelineno-0-211"></a><span class="s2">        &lt;/div&gt;</span>
+</span><span id="__span-0-212"><a id="__codelineno-0-212" name="__codelineno-0-212"></a><span class="s2">    &lt;/div&gt;</span>
+</span><span id="__span-0-213"><a id="__codelineno-0-213" name="__codelineno-0-213"></a>
+</span><span id="__span-0-214"><a id="__codelineno-0-214" name="__codelineno-0-214"></a><span class="s2">    &lt;!-- Box 2: Run Selection + Metrics Placeholder --&gt;</span>
+</span><span id="__span-0-215"><a id="__codelineno-0-215" name="__codelineno-0-215"></a><span class="s2">    &lt;div id=&quot;box-run-metrics&quot; class=&quot;box&quot;&gt;</span>
+</span><span id="__span-0-216"><a id="__codelineno-0-216" name="__codelineno-0-216"></a><span class="s2">        &lt;div class=&quot;card&quot;&gt;</span>
+</span><span id="__span-0-217"><a id="__codelineno-0-217" name="__codelineno-0-217"></a><span class="s2">            &lt;h2&gt;Analysis&lt;/h2&gt;</span>
+</span><span id="__span-0-218"><a id="__codelineno-0-218" name="__codelineno-0-218"></a><span class="s2">            &lt;div class=&quot;settings-row&quot;&gt;</span>
+</span><span id="__span-0-219"><a id="__codelineno-0-219" name="__codelineno-0-219"></a><span class="s2">                &lt;div class=&quot;settings-group&quot;&gt;</span>
+</span><span id="__span-0-220"><a id="__codelineno-0-220" name="__codelineno-0-220"></a><span class="s2">                    &lt;label&gt;Run:&lt;/label&gt;</span>
+</span><span id="__span-0-221"><a id="__codelineno-0-221" name="__codelineno-0-221"></a><span class="s2">                    &lt;select id=&quot;run-select&quot; onchange=&quot;onRunSelect()&quot;&gt;</span>
+</span><span id="__span-0-222"><a id="__codelineno-0-222" name="__codelineno-0-222"></a><span class="s2">                        &lt;option value=&quot;&quot;&gt;Select a completed run...&lt;/option&gt;</span>
+</span><span id="__span-0-223"><a id="__codelineno-0-223" name="__codelineno-0-223"></a><span class="s2">                    &lt;/select&gt;</span>
+</span><span id="__span-0-224"><a id="__codelineno-0-224" name="__codelineno-0-224"></a><span class="s2">                &lt;/div&gt;</span>
+</span><span id="__span-0-225"><a id="__codelineno-0-225" name="__codelineno-0-225"></a><span class="s2">            &lt;/div&gt;</span>
+</span><span id="__span-0-226"><a id="__codelineno-0-226" name="__codelineno-0-226"></a><span class="s2">            &lt;div id=&quot;metrics-placeholder&quot;&gt;&lt;/div&gt;</span>
+</span><span id="__span-0-227"><a id="__codelineno-0-227" name="__codelineno-0-227"></a><span class="s2">        &lt;/div&gt;</span>
+</span><span id="__span-0-228"><a id="__codelineno-0-228" name="__codelineno-0-228"></a><span class="s2">    &lt;/div&gt;</span>
+</span><span id="__span-0-229"><a id="__codelineno-0-229" name="__codelineno-0-229"></a>
+</span><span id="__span-0-230"><a id="__codelineno-0-230" name="__codelineno-0-230"></a><span class="s2">    &lt;!-- Box 3: Per-symbol Performance Charts --&gt;</span>
+</span><span id="__span-0-231"><a id="__codelineno-0-231" name="__codelineno-0-231"></a><span class="s2">    &lt;div id=&quot;box-symbol-perf&quot; class=&quot;box&quot;&gt;</span>
+</span><span id="__span-0-232"><a id="__codelineno-0-232" name="__codelineno-0-232"></a><span class="s2">        &lt;div class=&quot;card&quot;&gt;</span>
+</span><span id="__span-0-233"><a id="__codelineno-0-233" name="__codelineno-0-233"></a><span class="s2">            &lt;h2&gt;Symbol Performance&lt;/h2&gt;</span>
+</span><span id="__span-0-234"><a id="__codelineno-0-234" name="__codelineno-0-234"></a><span class="s2">            &lt;div class=&quot;settings-row&quot;&gt;</span>
+</span><span id="__span-0-235"><a id="__codelineno-0-235" name="__codelineno-0-235"></a><span class="s2">                &lt;div class=&quot;settings-group&quot;&gt;</span>
+</span><span id="__span-0-236"><a id="__codelineno-0-236" name="__codelineno-0-236"></a><span class="s2">                    &lt;label&gt;Symbol:&lt;/label&gt;</span>
+</span><span id="__span-0-237"><a id="__codelineno-0-237" name="__codelineno-0-237"></a><span class="s2">                    &lt;div class=&quot;symbol-input-wrapper&quot;&gt;</span>
+</span><span id="__span-0-238"><a id="__codelineno-0-238" name="__codelineno-0-238"></a><span class="s2">                        &lt;input type=&quot;text&quot; id=&quot;perf-symbol-input&quot; placeholder=&quot;Select a run first...&quot; disabled oninput=&quot;onPerfSymbolInput()&quot; onkeydown=&quot;onPerfSymbolKeydown(event)&quot; onfocus=&quot;onPerfSymbolInput()&quot; autocomplete=&quot;off&quot;&gt;</span>
+</span><span id="__span-0-239"><a id="__codelineno-0-239" name="__codelineno-0-239"></a><span class="s2">                        &lt;div id=&quot;perf-symbol-suggestions&quot; class=&quot;symbol-suggestions&quot;&gt;&lt;/div&gt;</span>
+</span><span id="__span-0-240"><a id="__codelineno-0-240" name="__codelineno-0-240"></a><span class="s2">                    &lt;/div&gt;</span>
+</span><span id="__span-0-241"><a id="__codelineno-0-241" name="__codelineno-0-241"></a><span class="s2">                &lt;/div&gt;</span>
+</span><span id="__span-0-242"><a id="__codelineno-0-242" name="__codelineno-0-242"></a><span class="s2">            &lt;/div&gt;</span>
+</span><span id="__span-0-243"><a id="__codelineno-0-243" name="__codelineno-0-243"></a><span class="s2">            &lt;div class=&quot;charts-row&quot; id=&quot;perf-charts-row&quot;&gt;</span>
+</span><span id="__span-0-244"><a id="__codelineno-0-244" name="__codelineno-0-244"></a><span class="s2">                &lt;div class=&quot;chart-card&quot;&gt;&lt;h3&gt;PnL Summary&lt;/h3&gt;&lt;div class=&quot;chart-content&quot; id=&quot;pnl-container&quot;&gt;&lt;div class=&quot;empty-message&quot;&gt;Select a run and symbol&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</span>
+</span><span id="__span-0-245"><a id="__codelineno-0-245" name="__codelineno-0-245"></a><span class="s2">                &lt;div class=&quot;chart-card&quot;&gt;&lt;h3&gt;Trade Journey&lt;/h3&gt;&lt;div class=&quot;chart-content&quot; id=&quot;journey-container&quot;&gt;&lt;div class=&quot;empty-message&quot;&gt;Select a run and symbol&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</span>
+</span><span id="__span-0-246"><a id="__codelineno-0-246" name="__codelineno-0-246"></a><span class="s2">            &lt;/div&gt;</span>
+</span><span id="__span-0-247"><a id="__codelineno-0-247" name="__codelineno-0-247"></a><span class="s2">        &lt;/div&gt;</span>
+</span><span id="__span-0-248"><a id="__codelineno-0-248" name="__codelineno-0-248"></a><span class="s2">    &lt;/div&gt;</span>
+</span><span id="__span-0-249"><a id="__codelineno-0-249" name="__codelineno-0-249"></a>
+</span><span id="__span-0-250"><a id="__codelineno-0-250" name="__codelineno-0-250"></a><span class="s2">    &lt;!-- Box 4: Trades Table + Chart Settings --&gt;</span>
+</span><span id="__span-0-251"><a id="__codelineno-0-251" name="__codelineno-0-251"></a><span class="s2">    &lt;div id=&quot;box-trades&quot; class=&quot;box&quot;&gt;</span>
+</span><span id="__span-0-252"><a id="__codelineno-0-252" name="__codelineno-0-252"></a><span class="s2">        &lt;div class=&quot;card&quot;&gt;</span>
+</span><span id="__span-0-253"><a id="__codelineno-0-253" name="__codelineno-0-253"></a><span class="s2">            &lt;h2&gt;Trades&lt;/h2&gt;</span>
+</span><span id="__span-0-254"><a id="__codelineno-0-254" name="__codelineno-0-254"></a><span class="s2">            &lt;div id=&quot;trades-settings-panel&quot;&gt;&lt;/div&gt;</span>
+</span><span id="__span-0-255"><a id="__codelineno-0-255" name="__codelineno-0-255"></a><span class="s2">            &lt;div id=&quot;trades-ind-settings-container&quot;&gt;&lt;/div&gt;</span>
+</span><span id="__span-0-256"><a id="__codelineno-0-256" name="__codelineno-0-256"></a><span class="s2">            &lt;div id=&quot;trades-content&quot;&gt;</span>
+</span><span id="__span-0-257"><a id="__codelineno-0-257" name="__codelineno-0-257"></a><span class="s2">                &lt;div class=&quot;empty-content&quot;&gt;&lt;p&gt;Select a run to view trades&lt;/p&gt;&lt;/div&gt;</span>
+</span><span id="__span-0-258"><a id="__codelineno-0-258" name="__codelineno-0-258"></a><span class="s2">            &lt;/div&gt;</span>
+</span><span id="__span-0-259"><a id="__codelineno-0-259" name="__codelineno-0-259"></a><span class="s2">        &lt;/div&gt;</span>
+</span><span id="__span-0-260"><a id="__codelineno-0-260" name="__codelineno-0-260"></a><span class="s2">    &lt;/div&gt;</span>
+</span><span id="__span-0-261"><a id="__codelineno-0-261" name="__codelineno-0-261"></a>
+</span><span id="__span-0-262"><a id="__codelineno-0-262" name="__codelineno-0-262"></a><span class="s2">    &lt;script src=&quot;/static/js/backtest.js&quot;&gt;&lt;/script&gt;</span>
+</span><span id="__span-0-263"><a id="__codelineno-0-263" name="__codelineno-0-263"></a><span class="s2">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-264"><a id="__codelineno-0-264" name="__codelineno-0-264"></a>    <span class="k">return</span> <span class="n">render_page</span><span class="p">(</span><span class="s2">&quot;Backtest&quot;</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">&quot;backtest&quot;</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>

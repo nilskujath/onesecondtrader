@@ -3395,8 +3395,7 @@
    (onesecondtrader.events.responses.base.ResponseBase)" href="../base/#onesecondtrader.events.responses.base.ResponseBase">ResponseBase</a></code></p>
 
 
-        <p>Event indicating that the requested modification has been acknowledged by
-the brokers and that the updated order parameters are active at the execution venue.</p>
+        <p>Event indicating that the requested modification has been acknowledged by the broker and that the updated order parameters are active at the execution venue.</p>
 <table>
 <thead>
 <tr>
@@ -3419,7 +3418,7 @@ the brokers and that the updated order parameters are active at the execution ve
 <tr>
 <td><code>ts_broker_ns</code></td>
 <td><code>int</code></td>
-<td>Time reported by the brokers for the modification acceptance, as UTC epoch nanoseconds.</td>
+<td>Time reported by the broker for the modification acceptance, as UTC epoch nanoseconds.</td>
 </tr>
 <tr>
 <td><code>associated_order_id</code></td>
@@ -3457,23 +3456,21 @@ the brokers and that the updated order parameters are active at the execution ve
 <span class="normal"><a href="#__codelineno-0-20">20</a></span>
 <span class="normal"><a href="#__codelineno-0-21">21</a></span>
 <span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-23">23</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="k">class</span><span class="w"> </span><span class="nc">ModificationAccepted</span><span class="p">(</span><span class="n">ResponseBase</span><span class="p">):</span>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">    Event indicating that the requested modification has been acknowledged by</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    the brokers and that the updated order parameters are active at the execution venue.</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    | Field                 | Type            | Semantics                                                                              |</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">    |-----------------------|-----------------|----------------------------------------------------------------------------------------|</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">    | `ts_event_ns`         | `int`           | Time at which the acceptance was observed by the system, as UTC epoch nanoseconds.     |</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    | `ts_created_ns`       | `int`           | Time at which the event object was created, as UTC epoch nanoseconds.                  |</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    | `ts_broker_ns`        | `int`           | Time reported by the brokers for the modification acceptance, as UTC epoch nanoseconds. |</span>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">    | `associated_order_id` | `uuid.UUID`     | Identifier of the modified order.                                                      |</span>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">    | `broker_order_id`     | `str` or `None` | Broker-assigned identifier of the order after modification, if reported.               |</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="n">broker_order_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">    Event indicating that the requested modification has been acknowledged by the broker and that the updated order parameters are active at the execution venue.</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">    | Field                 | Type            | Semantics                                                                              |</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    |-----------------------|-----------------|----------------------------------------------------------------------------------------|</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">    | `ts_event_ns`         | `int`           | Time at which the acceptance was observed by the system, as UTC epoch nanoseconds.     |</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">    | `ts_created_ns`       | `int`           | Time at which the event object was created, as UTC epoch nanoseconds.                  |</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    | `ts_broker_ns`        | `int`           | Time reported by the broker for the modification acceptance, as UTC epoch nanoseconds. |</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    | `associated_order_id` | `uuid.UUID`     | Identifier of the modified order.                                                      |</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">    | `broker_order_id`     | `str` or `None` | Broker-assigned identifier of the order after modification, if reported.               |</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="n">broker_order_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span></code></pre></div></td></tr></table></div>
               </details>
 
@@ -3524,7 +3521,7 @@ the brokers and that the updated order parameters are active at the execution ve
    (onesecondtrader.events.responses.base.ResponseBase)" href="../base/#onesecondtrader.events.responses.base.ResponseBase">ResponseBase</a></code></p>
 
 
-        <p>Event indicating that the requested modification has been rejected by the brokers.</p>
+        <p>Event indicating that the requested modification has been rejected by the broker.</p>
 <table>
 <thead>
 <tr>
@@ -3547,7 +3544,7 @@ the brokers and that the updated order parameters are active at the execution ve
 <tr>
 <td><code>ts_broker_ns</code></td>
 <td><code>int</code></td>
-<td>Time reported by the brokers for the rejection, as UTC epoch nanoseconds.</td>
+<td>Time reported by the broker for the rejection, as UTC epoch nanoseconds.</td>
 </tr>
 <tr>
 <td><code>associated_order_id</code></td>
@@ -3562,7 +3559,7 @@ the brokers and that the updated order parameters are active at the execution ve
 <tr>
 <td><code>rejection_message</code></td>
 <td><code>str</code></td>
-<td>Human-readable explanation provided by the brokers.</td>
+<td>Human-readable explanation provided by the broker.</td>
 </tr>
 </tbody>
 </table>
@@ -3576,7 +3573,8 @@ the brokers and that the updated order parameters are active at the execution ve
 
                   <details class="quote">
                 <summary>Source code in <code>src/onesecondtrader/events/responses/modifications.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-27">27</a></span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-26">26</a></span>
+<span class="normal"><a href="#__codelineno-0-27">27</a></span>
 <span class="normal"><a href="#__codelineno-0-28">28</a></span>
 <span class="normal"><a href="#__codelineno-0-29">29</a></span>
 <span class="normal"><a href="#__codelineno-0-30">30</a></span>
@@ -3591,24 +3589,23 @@ the brokers and that the updated order parameters are active at the execution ve
 <span class="normal"><a href="#__codelineno-0-39">39</a></span>
 <span class="normal"><a href="#__codelineno-0-40">40</a></span>
 <span class="normal"><a href="#__codelineno-0-41">41</a></span>
-<span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="k">class</span><span class="w"> </span><span class="nc">ModificationRejected</span><span class="p">(</span><span class="n">ResponseBase</span><span class="p">):</span>
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">    Event indicating that the requested modification has been rejected by the brokers.</span>
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a>
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">    | Field                 | Type                                 | Semantics                                                                          |</span>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    |-----------------------|--------------------------------------|------------------------------------------------------------------------------------|</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">    | `ts_event_ns`         | `int`                                | Time at which the rejection was observed by the system, as UTC epoch nanoseconds.  |</span>
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">    | `ts_created_ns`       | `int`                                | Time at which the event object was created, as UTC epoch nanoseconds.              |</span>
-</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">    | `ts_broker_ns`        | `int`                                | Time reported by the brokers for the rejection, as UTC epoch nanoseconds.           |</span>
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">    | `associated_order_id` | `uuid.UUID`                          | Identifier of the order associated with the rejected modification.                 |</span>
-</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">    | `rejection_reason`    | `models.ModificationRejectionReason` | Canonical classification of the modification rejection cause.                      |</span>
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">    | `rejection_message`   | `str`                                | Human-readable explanation provided by the brokers.                                 |</span>
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a>
-</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a>    <span class="n">rejection_reason</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">ModificationRejectionReason</span>
-</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a>    <span class="n">rejection_message</span><span class="p">:</span> <span class="nb">str</span>
+<span class="normal"><a href="#__codelineno-0-42">42</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="k">class</span><span class="w"> </span><span class="nc">ModificationRejected</span><span class="p">(</span><span class="n">ResponseBase</span><span class="p">):</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">    Event indicating that the requested modification has been rejected by the broker.</span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    | Field                 | Type                                 | Semantics                                                                          |</span>
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">    |-----------------------|--------------------------------------|------------------------------------------------------------------------------------|</span>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    | `ts_event_ns`         | `int`                                | Time at which the rejection was observed by the system, as UTC epoch nanoseconds.  |</span>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">    | `ts_created_ns`       | `int`                                | Time at which the event object was created, as UTC epoch nanoseconds.              |</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">    | `ts_broker_ns`        | `int`                                | Time reported by the broker for the rejection, as UTC epoch nanoseconds.           |</span>
+</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">    | `associated_order_id` | `uuid.UUID`                          | Identifier of the order associated with the rejected modification.                 |</span>
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">    | `rejection_reason`    | `models.ModificationRejectionReason` | Canonical classification of the modification rejection cause.                      |</span>
+</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">    | `rejection_message`   | `str`                                | Human-readable explanation provided by the broker.                                 |</span>
+</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a>
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a>    <span class="n">rejection_reason</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">ModificationRejectionReason</span>
+</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a>    <span class="n">rejection_message</span><span class="p">:</span> <span class="nb">str</span>
 </span></code></pre></div></td></tr></table></div>
               </details>
 
