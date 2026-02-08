@@ -974,6 +974,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../indicators_util/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Indicators Util
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../layout/" class="md-nav__link">
         
   
@@ -1100,10 +1123,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3_14" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3_15" >
         
           
-          <label class="md-nav__link" for="__nav_3_3_14" id="__nav_3_3_14_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_3_15" id="__nav_3_3_15_label" tabindex="0">
             
   
   
@@ -1116,8 +1139,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_3_14_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_3_14">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_3_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3_15">
             <span class="md-nav__icon md-icon"></span>
             Routers
           </label>
@@ -4135,7 +4158,7 @@ explorations on raw price data without requiring a strategy or backtest.</p>
 <span class="normal"><a href="#__codelineno-0-361">361</a></span>
 <span class="normal"><a href="#__codelineno-0-362">362</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="k">def</span><span class="w"> </span><span class="nf">run_exploration</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">ExploreRequest</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute an exploration in a background thread.&quot;&quot;&quot;</span>
-</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">onesecondtrader.indicators.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_registered_indicators</span>
+</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">onesecondtrader.dashboard.indicators_util</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_registered_indicators</span>
 </span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">onesecondtrader.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">BarPeriod</span>
 </span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">onesecondtrader</span><span class="w"> </span><span class="kn">import</span> <span class="n">events</span>
 </span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a>
@@ -4188,7 +4211,7 @@ explorations on raw price data without requiring a strategy or backtest.</p>
 </span><span id="__span-0-109"><a id="__codelineno-0-109" name="__codelineno-0-109"></a>            <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ind_cfg</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
 </span><span id="__span-0-110"><a id="__codelineno-0-110" name="__codelineno-0-110"></a>            <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 </span><span id="__span-0-111"><a id="__codelineno-0-111" name="__codelineno-0-111"></a>
-</span><span id="__span-0-112"><a id="__codelineno-0-112" name="__codelineno-0-112"></a>            <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="fm">__init__</span><span class="p">)</span>
+</span><span id="__span-0-112"><a id="__codelineno-0-112" name="__codelineno-0-112"></a>            <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
 </span><span id="__span-0-113"><a id="__codelineno-0-113" name="__codelineno-0-113"></a>            <span class="k">for</span> <span class="n">pname</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
 </span><span id="__span-0-114"><a id="__codelineno-0-114" name="__codelineno-0-114"></a>                <span class="k">if</span> <span class="n">pname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
 </span><span id="__span-0-115"><a id="__codelineno-0-115" name="__codelineno-0-115"></a>                    <span class="k">continue</span>

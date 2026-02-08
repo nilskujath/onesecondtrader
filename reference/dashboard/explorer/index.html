@@ -14,7 +14,7 @@
         <link rel="prev" href="../explore/">
       
       
-        <link rel="next" href="../layout/">
+        <link rel="next" href="../indicators_util/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -974,6 +974,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../indicators_util/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Indicators Util
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../layout/" class="md-nav__link">
         
   
@@ -1100,10 +1123,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3_14" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3_15" >
         
           
-          <label class="md-nav__link" for="__nav_3_3_14" id="__nav_3_3_14_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_3_15" id="__nav_3_3_15_label" tabindex="0">
             
   
   
@@ -1116,8 +1139,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_3_14_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_3_14">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_3_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3_15">
             <span class="md-nav__icon md-icon"></span>
             Routers
           </label>
@@ -3944,7 +3967,7 @@ ensuring identical computation behavior with backtesting.</p>
 </span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a>    <span class="n">indicator_configs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IndicatorConfig</span><span class="p">],</span>
 </span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 </span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Instantiate indicator objects from config, resolving classes and enums.&quot;&quot;&quot;</span>
-</span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">onesecondtrader.indicators.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_registered_indicators</span>
+</span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">onesecondtrader.dashboard.indicators_util</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_registered_indicators</span>
 </span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66"></a>
 </span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67"></a>    <span class="n">registry</span> <span class="o">=</span> <span class="n">get_registered_indicators</span><span class="p">()</span>
 </span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68"></a>    <span class="n">instances</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3955,7 +3978,7 @@ ensuring identical computation behavior with backtesting.</p>
 </span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown indicator: </span><span class="si">{</span><span class="n">ind_cfg</span><span class="o">.</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a>
 </span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a>        <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ind_cfg</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
-</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a>        <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="fm">__init__</span><span class="p">)</span>
+</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a>        <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
 </span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a>
 </span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a>        <span class="c1"># First pass: identify indicator_class params and their linked kwargs</span>
 </span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a>        <span class="n">indicator_class_params</span> <span class="o">=</span> <span class="p">{}</span>
