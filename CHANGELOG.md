@@ -1,3 +1,7 @@
+## v0.72.0
+- feat: add per-indicator global defaults and fix explorer priority bug
+- refactor: separate presets from secmaster.db into dedicated presets.db
+
 ## v0.71.4
 - fix: move condition preset row above controls and fix Add button styling in explorer
 
