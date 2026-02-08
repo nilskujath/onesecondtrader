@@ -9,7 +9,7 @@ import inspect
 
 from fastapi import APIRouter
 
-from onesecondtrader.indicators.base import get_registered_indicators
+from onesecondtrader.dashboard.indicators_util import get_registered_indicators
 
 router = APIRouter(prefix="/api", tags=["indicators"])
 

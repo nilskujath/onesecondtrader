@@ -62,7 +62,7 @@ def _instantiate_indicators(
     indicator_configs: list[IndicatorConfig],
 ) -> list:
     """Instantiate indicator objects from config, resolving classes and enums."""
-    from onesecondtrader.indicators.base import get_registered_indicators
+    from onesecondtrader.dashboard.indicators_util import get_registered_indicators
 
     registry = get_registered_indicators()
     instances = []
@@ -73,7 +73,7 @@ def _instantiate_indicators(
             raise ValueError(f"Unknown indicator: {ind_cfg.class_name}")
 
         params = dict(ind_cfg.params)
-        sig = inspect.signature(cls.__init__)
+        sig = inspect.signature(cls)
 
         # First pass: identify indicator_class params and their linked kwargs
         indicator_class_params = {}

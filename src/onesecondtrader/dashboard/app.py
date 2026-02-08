@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from onesecondtrader.indicators.base import discover_indicators
+from onesecondtrader.dashboard.indicators_util import discover_indicators
 from onesecondtrader.strategies.base import discover_strategies
 
 from .db import connect_runs

@@ -56,7 +56,7 @@ def enqueue_exploration(request: ExploreRequest, run_id: str) -> None:
 
 def run_exploration(request: ExploreRequest, run_id: str) -> None:
     """Execute an exploration in a background thread."""
-    from onesecondtrader.indicators.base import get_registered_indicators
+    from onesecondtrader.dashboard.indicators_util import get_registered_indicators
     from onesecondtrader.models import BarPeriod
     from onesecondtrader import events
 
@@ -109,7 +109,7 @@ def run_exploration(request: ExploreRequest, run_id: str) -> None:
             params = dict(ind_cfg.params)
             import inspect
 
-            sig = inspect.signature(cls.__init__)
+            sig = inspect.signature(cls)
             for pname, param in sig.parameters.items():
                 if pname not in params:
                     continue

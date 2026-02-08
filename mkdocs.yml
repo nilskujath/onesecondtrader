@@ -33,6 +33,7 @@ nav:
     - Db: reference/dashboard/db.md
     - Explore: reference/dashboard/explore.md
     - Explorer: reference/dashboard/explorer.md
+    - Indicators Util: reference/dashboard/indicators_util.md
     - Layout: reference/dashboard/layout.md
     - Pages: reference/dashboard/pages.md
     - Presets: reference/dashboard/presets.md
