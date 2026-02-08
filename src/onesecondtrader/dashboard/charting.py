@@ -526,6 +526,7 @@ def generate_chart_image(
     pnl: float,
     chart_type: str = "c_bars",
     chart_settings: dict | None = None,
+    context: int = 100,
 ) -> bytes:
     """
     Generate a PNG chart image for a round-trip trade.
@@ -562,7 +563,7 @@ def generate_chart_image(
     with conn_ctx as conn:
         cursor = conn.cursor()
 
-        padding_bars = 100
+        padding_bars = context
 
         cursor.execute(
             """

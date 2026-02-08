@@ -32,6 +32,7 @@ async def api_run_chart_image(
     direction: str,
     pnl: float,
     chart_type: str = "c_bars",
+    context: int = 100,
 ) -> Response:
     """Return a PNG chart image for a round-trip trade."""
     strategy_key = get_strategy_key(run_id)
@@ -45,6 +46,7 @@ async def api_run_chart_image(
         pnl,
         chart_type,
         chart_settings=chart_settings,
+        context=context,
     )
     return Response(content=image_bytes, media_type="image/png")
 

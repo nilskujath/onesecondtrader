@@ -10,7 +10,7 @@ from onesecondtrader.indicators.base import discover_indicators
 from onesecondtrader.strategies.base import discover_strategies
 
 from .db import connect_runs
-from .pages import backtest_page, chart_page, explorer_page, performance_page
+from .pages import backtest_page, explorer_page
 from .routers import (
     runs_router,
     strategies_router,
@@ -88,19 +88,9 @@ async def backtest():
     return backtest_page()
 
 
-@app.get("/performance", response_class=HTMLResponse)
-async def performance():
-    return performance_page()
-
-
 @app.get("/explorer", response_class=HTMLResponse)
 async def explorer():
     return explorer_page()
-
-
-@app.get("/chart", response_class=HTMLResponse)
-async def chart():
-    return chart_page()
 
 
 @app.get("/health")

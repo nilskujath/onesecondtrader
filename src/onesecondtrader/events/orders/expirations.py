@@ -8,7 +8,7 @@ from onesecondtrader.events.orders.base import OrderBase
 @dataclasses.dataclass(kw_only=True, frozen=True, slots=True)
 class OrderExpired(OrderBase):
     """
-    Event indicating that the order is no longer active at the venue due to expiration according to brokers- or venue-specific rules (e.g. time-in-force constraints).
+    Event indicating that the order is no longer active at the venue due to expiration according to broker- or venue-specific rules (e.g. time-in-force constraints).
 
     | Field                 | Type            | Semantics                                                                          |
     |-----------------------|-----------------|------------------------------------------------------------------------------------|

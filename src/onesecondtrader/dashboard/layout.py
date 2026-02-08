@@ -17,16 +17,8 @@ SIDEBAR_HTML = """
             Explorer
         </a>
         <a href="/backtest" class="{backtest_active}">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            Backtest
-        </a>
-        <a href="/performance" class="{performance_active}">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-            Performance
-        </a>
-        <a href="/chart" class="{chart_active}">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
-            Chart
+            Backtest
         </a>
     </nav>
 </aside>
@@ -47,8 +39,6 @@ def render_sidebar(active: str = "") -> str:
     return SIDEBAR_HTML.format(
         explorer_active="active" if active == "explorer" else "",
         backtest_active="active" if active == "backtest" else "",
-        performance_active="active" if active == "performance" else "",
-        chart_active="active" if active == "chart" else "",
     )
 
 

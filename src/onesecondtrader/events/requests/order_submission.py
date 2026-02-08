@@ -10,23 +10,23 @@ from onesecondtrader.events.requests.base import RequestBase
 @dataclasses.dataclass(kw_only=True, frozen=True, slots=True)
 class OrderSubmissionRequest(RequestBase):
     """
-    Event representing a request to submit a new order to a brokers.
+    Event representing a request to submit a new order to a broker.
 
     The `system_order_id` is a unique identifier assigned by the system to the order submission request by default at object creation.
 
-    | Field             | Type                       | Semantics                                                                  |
-    |-------------------|----------------------------|----------------------------------------------------------------------------|
-    | `ts_event_ns`     | `int`                      | Time at which the submission request was issued, as UTC epoch nanoseconds. |
-    | `ts_created_ns`   | `int`                      | Time at which the event object was created, as UTC epoch nanoseconds.      |
-    | `system_order_id` | `uuid.UUID`                | System-assigned unique identifier for the order submission.                |
-    | `symbol`          | `str`                      | Identifier of the traded instrument.                                       |
-    | `order_type`      | `models.OrderType`         | Execution constraint of the order.                                         |
-    | `side`            | `models.TradeSide`         | Direction of the trade.                                                    |
-    | `quantity`        | `float`                    | Requested order quantity.                                                  |
-    | `limit_price`     | `float` or `None`          | Limit price, if applicable to the order type.                              |
-    | `stop_price`      | `float` or `None`          | Stop price, if applicable to the order type.                               |
+    | Field             | Type                          | Semantics                                                                  |
+    |-------------------|-------------------------------|----------------------------------------------------------------------------|
+    | `ts_event_ns`     | `int`                         | Time at which the submission request was issued, as UTC epoch nanoseconds. |
+    | `ts_created_ns`   | `int`                         | Time at which the event object was created, as UTC epoch nanoseconds.      |
+    | `system_order_id` | `uuid.UUID`                   | System-assigned unique identifier for the order submission.                |
+    | `symbol`          | `str`                         | Identifier of the traded instrument.                                       |
+    | `order_type`      | `models.OrderType`            | Execution constraint of the order.                                         |
+    | `side`            | `models.TradeSide`            | Direction of the trade.                                                    |
+    | `quantity`        | `float`                       | Requested order quantity.                                                  |
+    | `limit_price`     | `float` or `None`             | Limit price, if applicable to the order type.                              |
+    | `stop_price`      | `float` or `None`             | Stop price, if applicable to the order type.                               |
     | `action`          | `models.ActionType` or `None` | Intent of the order from the strategy's perspective (e.g., entry, exit).   |
-    | `signal`          | `str` or `None`            | Optional signal name or identifier that triggered this order.              |
+    | `signal`          | `str` or `None`               | Optional signal name or identifier that triggered this order.              |
     """
 
     system_order_id: uuid.UUID = dataclasses.field(default_factory=uuid.uuid4)
