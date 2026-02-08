@@ -1,3 +1,7 @@
+## v0.71.1
+- fix: five dashboard UI fixes for explorer and backtest pages
+- refactor: move indicator discovery utilities to dashboard package
+
 ## v0.71.0
 - feat: collapsible sidebar with session-scoped persistence
 
