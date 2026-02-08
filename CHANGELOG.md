@@ -1,3 +1,6 @@
+## v0.71.4
+- fix: move condition preset row above controls and fix Add button styling in explorer
+
 ## v0.71.3
 - fix: reset indicator dropdown and add button after adding indicator in explorer
 
