@@ -1,3 +1,6 @@
+## v0.71.3
+- fix: reset indicator dropdown and add button after adding indicator in explorer
+
 ## v0.71.2
 - fix: prevent BarField enum mutation breaking JSON serialization in explorer
 
