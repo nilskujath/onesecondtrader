@@ -1,3 +1,7 @@
+## v0.69.0
+- feat: modified messaging to prevent race condition
+- feat: Added Explorer Tab with Conditional Filter
+
 ## v0.68.0
 - feat: Filter per condition in chart dashboard
 
