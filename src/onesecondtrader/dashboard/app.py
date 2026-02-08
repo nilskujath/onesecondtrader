@@ -27,6 +27,7 @@ from .routers import (
     bars_router,
     chart_settings_router,
 )
+from .chart_settings import ensure_indicator_defaults_table
 from .routers.presets import ensure_presets_table
 from .routers.explore import (
     ensure_explore_presets_table,
@@ -75,6 +76,7 @@ async def startup():
     ensure_presets_table()
     ensure_explore_presets_table()
     ensure_condition_presets_table()
+    ensure_indicator_defaults_table()
     _cleanup_stale_runs()
 
 

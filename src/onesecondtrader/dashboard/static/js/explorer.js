@@ -39,6 +39,7 @@ let activeExploreRunId = null;
 let indicatorNames = [];
 let chartSettingsData = {};
 let _settingsVersion = 0;
+let indicatorDefaultsData = {};
 
 const RTYPE_LABELS = {32: 'Second', 33: 'Minute', 34: 'Hour', 35: 'Day'};
 const CONDITION_BAR_FIELDS = ['OPEN', 'HIGH', 'LOW', 'CLOSE', 'VOLUME'];
@@ -727,7 +728,11 @@ async function onExplorationComplete(runId) {
         chartSettingsData = {indicators: {}, fill_between: [], chart_type: chartType, overlap: chartOverlap};
         const assignedPanels = {};
         indicatorNames.forEach(function(name, idx) {
-            if (idx < selectedIndicators.length && selectedIndicators[idx].chart) {
+            if (indicatorDefaultsData.indicators && indicatorDefaultsData.indicators[name]) {
+                var saved = indicatorDefaultsData.indicators[name];
+                var panel = saved.panel !== undefined ? saved.panel : getDefaultPanel(name, assignedPanels);
+                chartSettingsData.indicators[name] = {panel: panel, below_price: saved.below_price !== undefined ? saved.below_price : true, style: saved.style || 'line', color: saved.color || 'black', width: saved.width || 'normal', visible: saved.visible !== undefined ? saved.visible : true};
+            } else if (idx < selectedIndicators.length && selectedIndicators[idx].chart) {
                 chartSettingsData.indicators[name] = {...selectedIndicators[idx].chart};
             } else {
                 const panel = getDefaultPanel(name, assignedPanels);
@@ -787,6 +792,9 @@ function onIndicatorChartSettingChange(idx, field, value) {
     if (field === 'below_price') value = value === true || value === 'true';
     if (field === 'visible') value = value === true || value === 'true';
     chartSettingsData.indicators[name][field] = value;
+    saveIndicatorDefault(name, chartSettingsData.indicators[name]);
+    if (!indicatorDefaultsData.indicators) indicatorDefaultsData.indicators = {};
+    indicatorDefaultsData.indicators[name] = {...chartSettingsData.indicators[name]};
     if (field === 'panel') renderIndicatorChartTable();
     saveChartSettings();
 }
@@ -894,15 +902,38 @@ async function saveChartSettings() {
     }
 }
 
+async function loadIndicatorDefaults() {
+    try {
+        var res = await fetch('/api/indicator-defaults');
+        indicatorDefaultsData = await res.json();
+    } catch (e) { indicatorDefaultsData = {}; }
+}
+
+function saveIndicatorDefault(name, settings) {
+    fetch('/api/indicator-defaults/' + encodeURIComponent(name), {
+        method: 'PUT', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(settings)
+    }).catch(function(e) { console.error('Failed to save indicator default', e); });
+}
+
+function saveGlobalDefaults(data) {
+    fetch('/api/indicator-defaults', {
+        method: 'PUT', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    }).catch(function(e) { console.error('Failed to save global defaults', e); });
+}
+
 function onOverlapChange(value) {
     chartOverlap = parseInt(value) || 0;
     saveChartSettings();
+    saveGlobalDefaults({overlap: chartOverlap});
     if (activeExploreRunId) loadChartData();
 }
 
 function onChartTypeChange(value) {
     chartType = value;
     saveChartSettings();
+    saveGlobalDefaults({chart_type: chartType});
     if (activeExploreRunId) loadChartData();
 }
 
@@ -1257,4 +1288,16 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCondPresets();
     renderIndicatorList();
     updateButtonStates();
+    loadIndicatorDefaults().then(function() {
+        if (indicatorDefaultsData.chart_type) {
+            chartType = indicatorDefaultsData.chart_type;
+            var sel = document.getElementById('chart-type-select');
+            if (sel) sel.value = chartType;
+        }
+        if (indicatorDefaultsData.overlap !== undefined) {
+            chartOverlap = indicatorDefaultsData.overlap;
+            var inp = document.getElementById('overlap-input');
+            if (inp) inp.value = chartOverlap;
+        }
+    });
 });

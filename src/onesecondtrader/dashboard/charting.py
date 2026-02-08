@@ -22,6 +22,7 @@ from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle
 import pandas as pd
 
+from .chart_settings import load_indicator_defaults
 from .db import connect_runs
 
 _dash_patterns = {
@@ -99,6 +100,15 @@ def _get_indicator_setting(
             if "below_price" not in cfg:
                 cfg["below_price"] = True
             return cfg
+    # Check per-indicator global defaults from presets.db
+    defaults = load_indicator_defaults()
+    ind_defaults = defaults.get("indicators", {})
+    if name in ind_defaults:
+        cfg = dict(ind_defaults[name])
+        cfg.setdefault("panel", _default_panel(name, assigned or {}))
+        cfg.setdefault("below_price", True)
+        cfg.setdefault("visible", True)
+        return cfg
     panel = _default_panel(name, assigned or {})
     return {
         "panel": panel,

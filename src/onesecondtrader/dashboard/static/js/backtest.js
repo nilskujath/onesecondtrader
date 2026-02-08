@@ -666,6 +666,7 @@ let chartContext = 100;
 let indicatorNames = [];
 let chartSettingsData = {};
 let _settingsVersion = 0;
+let indicatorDefaultsData = {};
 const chartCache = {};
 
 const VALID_STYLES = ['line', 'histogram', 'dots', 'dash1', 'dash2', 'dash3', 'background1', 'background2'];
@@ -1090,20 +1091,33 @@ async function loadIndicatorSettings(runId) {
         chartSettingsData = settingsJson || {};
         if (!chartSettingsData.indicators) chartSettingsData.indicators = {};
         if (!chartSettingsData.fill_between) chartSettingsData.fill_between = [];
-        chartType = chartSettingsData.chart_type || 'c_bars';
+        chartType = chartSettingsData.chart_type || (indicatorDefaultsData.chart_type || 'c_bars');
         const assignedPanels = {};
         indicatorNames.forEach((name, idx) => {
             if (!chartSettingsData.indicators[name]) {
-                const panel = getDefaultPanel(name, assignedPanels);
-                chartSettingsData.indicators[name] = {
-                    panel: panel,
-                    below_price: true,
-                    style: 'line',
-                    color: 'black',
-                    width: 'normal',
-                    visible: true
-                };
-                assignedPanels[name] = panel;
+                if (indicatorDefaultsData.indicators && indicatorDefaultsData.indicators[name]) {
+                    const saved = indicatorDefaultsData.indicators[name];
+                    const panel = saved.panel !== undefined ? saved.panel : getDefaultPanel(name, assignedPanels);
+                    chartSettingsData.indicators[name] = {
+                        panel: panel,
+                        below_price: saved.below_price !== undefined ? saved.below_price : true,
+                        style: saved.style || 'line',
+                        color: saved.color || 'black',
+                        width: saved.width || 'normal',
+                        visible: saved.visible !== undefined ? saved.visible : true
+                    };
+                } else {
+                    const panel = getDefaultPanel(name, assignedPanels);
+                    chartSettingsData.indicators[name] = {
+                        panel: panel,
+                        below_price: true,
+                        style: 'line',
+                        color: 'black',
+                        width: 'normal',
+                        visible: true
+                    };
+                }
+                assignedPanels[name] = chartSettingsData.indicators[name].panel;
             } else {
                 const cfg = chartSettingsData.indicators[name];
                 if (cfg.panel < 0 && cfg.below_price === undefined) {
@@ -1142,6 +1156,27 @@ async function saveIndicatorSettings() {
     }
 }
 
+async function loadIndicatorDefaults() {
+    try {
+        const res = await fetch('/api/indicator-defaults');
+        indicatorDefaultsData = await res.json();
+    } catch (e) { indicatorDefaultsData = {}; }
+}
+
+function saveIndicatorDefault(name, settings) {
+    fetch('/api/indicator-defaults/' + encodeURIComponent(name), {
+        method: 'PUT', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(settings)
+    }).catch(e => console.error('Failed to save indicator default', e));
+}
+
+function saveGlobalDefaults(data) {
+    fetch('/api/indicator-defaults', {
+        method: 'PUT', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    }).catch(e => console.error('Failed to save global defaults', e));
+}
+
 function onIndSettingChange(name, field, value) {
     if (!chartSettingsData.indicators) chartSettingsData.indicators = {};
     if (!chartSettingsData.indicators[name]) chartSettingsData.indicators[name] = {};
@@ -1154,6 +1189,7 @@ function onIndSettingChange(name, field, value) {
     if (field === 'below_price') value = value === true || value === 'true';
     if (field === 'visible') value = value === true || value === 'true';
     chartSettingsData.indicators[name][field] = value;
+    saveIndicatorDefault(name, chartSettingsData.indicators[name]);
     saveIndicatorSettings();
     if (field === 'panel') renderIndicatorSettings();
 }
@@ -1161,6 +1197,7 @@ function onIndSettingChange(name, field, value) {
 function onChartTypeChange(value) {
     chartType = value;
     saveIndicatorSettings();
+    saveGlobalDefaults({chart_type: chartType});
 }
 
 function onFillBetweenChange(idx, field, value) {
@@ -1281,4 +1318,5 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDbRuns();
     restoreActiveRuns();
     loadCompletedRuns();
+    loadIndicatorDefaults();
 });

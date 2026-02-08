@@ -19,7 +19,9 @@ async def api_strategies() -> dict:
     strategies = registry.get_strategies()
     return {
         "strategies": [
-            {"id": name, "name": cls.name} for name, cls in strategies.items()
+            {"id": name, "name": cls.name}
+            for name, cls in strategies.items()
+            if name != "IndicatorExplorer"
         ]
     }
 

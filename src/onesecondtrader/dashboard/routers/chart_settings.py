@@ -10,7 +10,13 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from ..db import get_strategy_key
-from ..chart_settings import load_chart_settings, save_chart_settings
+from ..chart_settings import (
+    load_chart_settings,
+    save_chart_settings,
+    load_indicator_defaults,
+    save_indicator_default,
+    save_global_defaults,
+)
 
 router = APIRouter(prefix="/api", tags=["chart-settings"])
 
@@ -45,4 +51,48 @@ async def api_put_chart_settings(run_id: str, request: ChartSettingsRequest) -> 
     if request.overlap is not None:
         settings["overlap"] = request.overlap
     save_chart_settings(strategy_key, settings)
+    return {"status": "ok"}
+
+
+# ── Per-indicator global defaults ──
+
+
+@router.get("/indicator-defaults")
+async def api_get_indicator_defaults() -> dict:
+    """Return all saved indicator visual defaults."""
+    return load_indicator_defaults()
+
+
+class IndicatorDefaultRequest(BaseModel):
+    """Request model for saving a single indicator's visual defaults."""
+
+    panel: int | None = None
+    below_price: bool | None = None
+    style: str | None = None
+    color: str | None = None
+    width: str | None = None
+    visible: bool | None = None
+
+
+@router.put("/indicator-defaults/{name}")
+async def api_put_indicator_default(
+    name: str, request: IndicatorDefaultRequest
+) -> dict:
+    """Save visual defaults for a single indicator by name."""
+    settings = {k: v for k, v in request.model_dump().items() if v is not None}
+    save_indicator_default(name, settings)
+    return {"status": "ok"}
+
+
+class GlobalDefaultsRequest(BaseModel):
+    """Request model for saving global chart defaults."""
+
+    chart_type: str | None = None
+    overlap: int | None = None
+
+
+@router.put("/indicator-defaults")
+async def api_put_global_defaults(request: GlobalDefaultsRequest) -> dict:
+    """Save global chart defaults (chart_type, overlap)."""
+    save_global_defaults(chart_type=request.chart_type, overlap=request.overlap)
     return {"status": "ok"}
