@@ -90,7 +90,12 @@ class EventBus:
 
         This method delegates to each subscriber's `wait_until_idle` method and returns only after all subscribers have completed any pending work.
         """
-        with self._lock:
-            subscribers = self._subscribers.copy()
-        for subscriber in subscribers:
-            subscriber.wait_until_idle()
+        while True:
+            with self._lock:
+                subscribers = self._subscribers.copy()
+            for subscriber in subscribers:
+                subscriber.wait_until_idle()
+            with self._lock:
+                subscribers = self._subscribers.copy()
+            if all(subscriber.is_idle for subscriber in subscribers):
+                break

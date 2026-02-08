@@ -58,6 +58,10 @@ class Subscriber(abc.ABC):
 
         self._queue.join()
 
+    @property
+    def is_idle(self) -> bool:
+        return self._queue.unfinished_tasks == 0
+
     def shutdown(self) -> None:
         """
         Shut down the subscriber and stop event processing.
