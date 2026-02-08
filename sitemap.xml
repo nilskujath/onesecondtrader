@@ -193,10 +193,6 @@
          <lastmod>2026-02-08</lastmod>
     </url>
     <url>
-         <loc>https://www.onesecondtrader.com/reference/indicators/period_extreme/</loc>
-         <lastmod>2026-02-08</lastmod>
-    </url>
-    <url>
          <loc>https://www.onesecondtrader.com/reference/indicators/averages/simple_moving_average/</loc>
          <lastmod>2026-02-08</lastmod>
     </url>
@@ -210,6 +206,10 @@
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/indicators/bollinger/bollinger_upper/</loc>
+         <lastmod>2026-02-08</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/indicators/misc/period_extreme/</loc>
          <lastmod>2026-02-08</lastmod>
     </url>
     <url>
@@ -290,6 +290,10 @@
     </url>
     <url>
          <loc>https://www.onesecondtrader.com/reference/orchestrator/runs_schema/</loc>
+         <lastmod>2026-02-08</lastmod>
+    </url>
+    <url>
+         <loc>https://www.onesecondtrader.com/reference/secmaster/continuous/</loc>
          <lastmod>2026-02-08</lastmod>
     </url>
     <url>
