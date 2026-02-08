@@ -1,3 +1,6 @@
+## v0.71.0
+- feat: collapsible sidebar with session-scoped persistence
+
 ## v0.70.0
 - feat: consolidated dashboard tabs
 
