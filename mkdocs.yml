@@ -77,13 +77,14 @@ nav:
   - Indicators:
     - Base: reference/indicators/base.md
     - Market Fields: reference/indicators/market_fields.md
-    - Period Extreme: reference/indicators/period_extreme.md
     - Averages:
       - Simple Moving Average: reference/indicators/averages/simple_moving_average.md
     - Bollinger:
       - Bollinger Bandwidth: reference/indicators/bollinger/bollinger_bandwidth.md
       - Bollinger Lower: reference/indicators/bollinger/bollinger_lower.md
       - Bollinger Upper: reference/indicators/bollinger/bollinger_upper.md
+    - Misc:
+      - Period Extreme: reference/indicators/misc/period_extreme.md
     - Oscillators:
       - Detrend: reference/indicators/oscillators/detrend.md
       - Roc: reference/indicators/oscillators/roc.md

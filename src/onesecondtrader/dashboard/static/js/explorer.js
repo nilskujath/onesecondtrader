@@ -483,8 +483,22 @@ async function loadAvailableIndicators() {
 function renderIndicatorSelector() {
     const sel = document.getElementById('indicator-class');
     sel.innerHTML = '<option value="">-- Select Indicator --</option>';
+    const groups = {};
     availableIndicators.forEach(function(ind) {
-        sel.innerHTML += '<option value="' + ind.class_name + '">' + ind.class_name + '</option>';
+        const pkg = ind.package || 'Other';
+        if (!groups[pkg]) groups[pkg] = [];
+        groups[pkg].push(ind);
+    });
+    Object.keys(groups).sort().forEach(function(pkg) {
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = pkg;
+        groups[pkg].forEach(function(ind) {
+            const option = document.createElement('option');
+            option.value = ind.class_name;
+            option.textContent = ind.class_name;
+            optgroup.appendChild(option);
+        });
+        sel.appendChild(optgroup);
     });
 }
 

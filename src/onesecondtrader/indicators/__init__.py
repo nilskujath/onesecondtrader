@@ -8,7 +8,7 @@ from .market_fields import Open, High, Low, Close, Volume
 from .bollinger import BollingerLower, BollingerUpper, BollingerBandwidth
 from .wilders import RSI, ADX, ATR, MinusDI, ParabolicSAR, PlusDI
 from .oscillators import ROC, DetrendOscillator
-from .period_extreme import PeriodExtreme
+from .misc import PeriodExtreme
 
 __all__ = [
     "IndicatorBase",

@@ -16,6 +16,13 @@ router = APIRouter(prefix="/api", tags=["indicators"])
 SKIP_PARAMS = {"self", "max_history", "kwargs"}
 
 
+def _get_package_label(cls: type) -> str:
+    """Derive a display group name from the indicator's module path."""
+    parts = cls.__module__.split(".")
+    raw = parts[parts.index("indicators") + 1]
+    return raw.replace("_", " ").title()
+
+
 def _build_param_specs(cls, class_name, registry, *, _nested=False):
     """Build parameter spec dicts for an indicator class.
 
@@ -118,6 +125,13 @@ async def api_indicators() -> dict:
     indicators = []
     for class_name, cls in sorted(registry.items()):
         params = _build_param_specs(cls, class_name, registry)
-        indicators.append({"class_name": class_name, "params": params})
+        indicators.append(
+            {
+                "class_name": class_name,
+                "package": _get_package_label(cls),
+                "params": params,
+            }
+        )
 
+    indicators.sort(key=lambda x: (x["package"], x["class_name"]))
     return {"indicators": indicators}

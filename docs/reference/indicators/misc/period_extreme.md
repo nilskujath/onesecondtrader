@@ -1,6 +1,6 @@
 # Period Extreme
 
-::: onesecondtrader.indicators.period_extreme
+::: onesecondtrader.indicators.misc.period_extreme
     options:
       show_root_heading: False
       show_source: true
