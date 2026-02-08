@@ -10,7 +10,6 @@ from __future__ import annotations
 import io
 import json
 import math
-import os
 import re
 import sqlite3
 from typing import Any
@@ -23,7 +22,7 @@ from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle
 import pandas as pd
 
-from .db import get_runs_db_path
+from .db import connect_runs
 
 _dash_patterns = {
     "dash1": (2, 2),  # short/dense dashes
@@ -58,8 +57,8 @@ _OVERLAY_PATTERNS = [
     re.compile(r"^BB_UPPER_", re.IGNORECASE),
     re.compile(r"^BB_LOWER_", re.IGNORECASE),
     re.compile(r"^PSAR_", re.IGNORECASE),
-    re.compile(r"PERIOD HIGH", re.IGNORECASE),
-    re.compile(r"PERIOD LOW", re.IGNORECASE),
+    re.compile(r"PERIOD.*HIGH", re.IGNORECASE),
+    re.compile(r"PERIOD.*LOW", re.IGNORECASE),
 ]
 _ADX_GROUP_PREFIXES = ("ADX_", "PLUS_DI_", "MINUS_DI_")
 
@@ -234,119 +233,24 @@ def _draw_ohlc_bars(
             ax.plot([x, x], [low, h], color="black", linewidth=0.8, alpha=0.7)
 
 
-def generate_chart_image(
-    run_id: str,
-    symbol: str,
-    start_ns: int,
-    end_ns: int,
-    direction: str,
-    pnl: float,
-    chart_type: str = "c_bars",
-    chart_settings: dict | None = None,
-) -> bytes:
+def _parse_indicators(
+    data: pd.DataFrame,
+    chart_settings: dict | None,
+) -> tuple[
+    dict[str, list[float]],
+    dict[str, int],
+    dict[str, str],
+    dict[str, str],
+    dict[str, str],
+    list[dict],
+]:
     """
-    Generate a PNG chart image for a round-trip trade.
-
-    Renders a multi-panel chart showing:
-    - P&L panel with unrealized P&L range and high/low watermarks
-    - Price panel with OHLC bars, overlay indicators, and fill markers
-    - Additional panels for non-overlay indicators grouped by tag
-
-    Parameters:
-        run_id:
-            Unique identifier of the backtest run.
-        symbol:
-            Instrument symbol for the trade.
-        start_ns:
-            Entry timestamp in nanoseconds.
-        end_ns:
-            Exit timestamp in nanoseconds.
-        direction:
-            Trade direction, either "LONG" or "SHORT".
-        pnl:
-            Net profit/loss for the trade.
-        chart_type:
-            OHLC rendering style: 'candlestick', 'oc_bars', 'c_bars', or 'bars'.
+    Parse indicator JSON from bar data rows and build display metadata.
 
     Returns:
-        PNG image bytes, or empty bytes if no data is available.
+        Tuple of (indicator_series, indicator_tags, indicator_styles,
+                  indicator_colors, indicator_widths, fill_between_specs).
     """
-    db_path = get_runs_db_path()
-    if not os.path.exists(db_path):
-        return b""
-
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-
-    padding_bars = 100
-
-    cursor.execute(
-        """
-        SELECT ts_event_ns, open, high, low, close, bar_period, indicators
-        FROM bars_processed
-        WHERE run_id = ? AND symbol = ? AND ts_event_ns < ?
-        ORDER BY ts_event_ns DESC
-        LIMIT ?
-        """,
-        (run_id, symbol, start_ns, padding_bars),
-    )
-    before_rows = cursor.fetchall()[::-1]
-
-    cursor.execute(
-        """
-        SELECT ts_event_ns, open, high, low, close, bar_period, indicators
-        FROM bars_processed
-        WHERE run_id = ? AND symbol = ? AND ts_event_ns >= ? AND ts_event_ns <= ?
-        ORDER BY ts_event_ns
-        """,
-        (run_id, symbol, start_ns, end_ns),
-    )
-    trade_rows = cursor.fetchall()
-
-    cursor.execute(
-        """
-        SELECT ts_event_ns, open, high, low, close, bar_period, indicators
-        FROM bars_processed
-        WHERE run_id = ? AND symbol = ? AND ts_event_ns > ?
-        ORDER BY ts_event_ns
-        LIMIT ?
-        """,
-        (run_id, symbol, end_ns, padding_bars),
-    )
-    after_rows = cursor.fetchall()
-
-    bar_rows = before_rows + trade_rows + after_rows
-    bar_period = bar_rows[0][5] if bar_rows else "DAY"
-
-    cursor.execute(
-        """
-        SELECT ts_broker_ns, side, quantity_filled, fill_price
-        FROM fills
-        WHERE run_id = ? AND symbol = ? AND ts_broker_ns >= ? AND ts_broker_ns <= ?
-        ORDER BY ts_broker_ns
-        """,
-        (run_id, symbol, start_ns, end_ns),
-    )
-    fill_rows = cursor.fetchall()
-    conn.close()
-
-    if not bar_rows:
-        return b""
-
-    data = pd.DataFrame(
-        bar_rows,
-        columns=[
-            "ts_event",
-            "open",
-            "high",
-            "low",
-            "close",
-            "bar_period",
-            "indicators",
-        ],
-    )
-    data["ts_event"] = pd.to_datetime(data["ts_event"], unit="ns")
-
     indicator_series: dict[str, list[float]] = {}
     indicator_tags: dict[str, int] = {}
     indicator_styles: dict[str, str] = {}
@@ -397,6 +301,30 @@ def generate_chart_image(
                 }
             )
 
+    return (
+        indicator_series,
+        indicator_tags,
+        indicator_styles,
+        indicator_colors,
+        indicator_widths,
+        fill_between_specs,
+    )
+
+
+def _classify_panels(
+    indicator_series: dict[str, list[float]],
+    indicator_tags: dict[str, int],
+) -> tuple[
+    dict[str, list[float]],
+    list[int],
+    dict[int, dict[str, list[float]]],
+]:
+    """
+    Classify indicators into overlay, above-price, and below-price panels.
+
+    Returns:
+        Tuple of (overlay_indicators, subplot_tags, subplot_indicators).
+    """
     overlay_indicators = {
         k: v for k, v in indicator_series.items() if indicator_tags.get(k, 99) == 0
     }
@@ -407,6 +335,316 @@ def generate_chart_image(
         tag: {k: v for k, v in indicator_series.items() if indicator_tags.get(k) == tag}
         for tag in subplot_tags
     }
+    return overlay_indicators, subplot_tags, subplot_indicators
+
+
+def _setup_x_axis(
+    data: pd.DataFrame,
+    bar_period: str,
+) -> tuple[Any, Any, bool]:
+    """
+    Configure x-axis values and bar width based on bar period.
+
+    Returns:
+        Tuple of (x_values, bar_width, use_time_axis).
+    """
+    use_time_axis = bar_period in ("HOUR", "MINUTE", "SECOND")
+    if use_time_axis:
+        x_values = data["ts_event"].values
+        bar_width = (
+            pd.Timedelta(minutes=1)
+            if bar_period == "MINUTE"
+            else (
+                pd.Timedelta(seconds=1)
+                if bar_period == "SECOND"
+                else pd.Timedelta(hours=1)
+            )
+        )
+    else:
+        x_values = list(range(len(data)))  # type: ignore[assignment]
+        bar_width = 0.8  # type: ignore[assignment]
+    return x_values, bar_width, use_time_axis
+
+
+def _render_indicators_on_axis(
+    ax: Axes,
+    x_values: Any,
+    bar_width: Any,
+    indicators_dict: dict[str, list[float]],
+    indicator_colors: dict[str, str],
+    indicator_styles: dict[str, str],
+    indicator_widths: dict[str, str],
+) -> None:
+    """
+    Render indicator series on a single axis using the appropriate style dispatch.
+
+    Handles histogram, dots, dash, and line styles. Adds a legend if any
+    indicators were rendered.
+    """
+    rendered = False
+    for idx, (name, values) in enumerate(indicators_dict.items()):
+        color = indicator_colors.get(name, "black")
+        style = indicator_styles.get(name, "line")
+        lw, dot_s, hist_alpha = _width_params.get(
+            indicator_widths.get(name, "normal"), (1.2, 10, 0.6)
+        )
+        if style in ("background1", "background2"):
+            continue
+        rendered = True
+        if style == "histogram":
+            ax.bar(
+                x_values,
+                values,
+                label=name,
+                alpha=hist_alpha,
+                color=color,
+                width=bar_width,
+            )
+        elif style == "dots":
+            ax.scatter(
+                x_values,
+                values,
+                label=name,
+                alpha=0.8,
+                color=color,
+                s=dot_s,
+            )
+        elif style in _dash_patterns:
+            ax.plot(
+                x_values,
+                values,
+                label=name,
+                linewidth=lw,
+                alpha=0.8,
+                color=color,
+                linestyle="--",
+                dashes=_dash_patterns[style],
+            )
+        else:
+            ax.plot(
+                x_values,
+                values,
+                label=name,
+                linewidth=lw,
+                alpha=0.8,
+                color=color,
+            )
+    if rendered:
+        ax.legend(loc="upper left", fontsize=8)
+
+
+def _apply_background_and_fills(
+    all_axes: list[Axes],
+    tag_to_ax: dict[int, Axes],
+    x_values: Any,
+    bar_width: Any,
+    indicator_series: dict[str, list[float]],
+    indicator_tags: dict[str, int],
+    indicator_styles: dict[str, str],
+    indicator_colors: dict[str, str],
+    fill_between_specs: list[dict],
+    ax_main: Axes,
+) -> None:
+    """
+    Apply background shading and fill_between regions to axes.
+
+    Wraps ``_render_background_shading`` and adds the fill_between loop.
+    """
+    _render_background_shading(
+        all_axes,
+        tag_to_ax,
+        x_values,
+        bar_width,
+        indicator_series,
+        indicator_tags,
+        indicator_styles,
+        indicator_colors,
+    )
+    for fb in fill_between_specs:
+        upper_series = indicator_series.get(fb["upper"])
+        lower_series = indicator_series.get(fb["lower"])
+        if upper_series is not None and lower_series is not None:
+            tag = indicator_tags.get(fb["upper"], 0)
+            target_ax = tag_to_ax.get(tag, ax_main)
+            target_ax.fill_between(
+                x_values,
+                lower_series,
+                upper_series,
+                color=fb["color"],
+                alpha=fb["alpha"],
+            )
+
+
+def _format_axes(
+    all_axes: list[Axes],
+    data: pd.DataFrame,
+    use_time_axis: bool,
+    date_format: str = "%m/%d %H:%M",
+) -> None:
+    """
+    Apply date formatting, tick positions, and rotation to all axes.
+    """
+    if use_time_axis:
+        import matplotlib.dates as mdates
+
+        for ax in all_axes:
+            ax.xaxis.set_major_formatter(mdates.DateFormatter(date_format))
+            ax.xaxis.set_major_locator(mdates.AutoDateLocator())
+    else:
+        num_bars = len(data)
+        tick_interval = max(1, num_bars // 10)
+        tick_positions = list(range(0, num_bars, tick_interval))
+        tick_labels = [
+            data["ts_event"].iloc[i].strftime(date_format) for i in tick_positions
+        ]
+        for ax in all_axes:
+            ax.set_xticks(tick_positions)
+            ax.set_xticklabels(tick_labels)
+
+    for ax in all_axes:
+        for label in ax.get_xticklabels():
+            label.set_rotation(45)
+            label.set_fontsize(9)
+
+
+def _export_png(fig: Figure) -> bytes:
+    """
+    Render figure to PNG bytes.
+    """
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=500, bbox_inches="tight")
+    buf.seek(0)
+    return buf.read()
+
+
+def generate_chart_image(
+    run_id: str,
+    symbol: str,
+    start_ns: int,
+    end_ns: int,
+    direction: str,
+    pnl: float,
+    chart_type: str = "c_bars",
+    chart_settings: dict | None = None,
+) -> bytes:
+    """
+    Generate a PNG chart image for a round-trip trade.
+
+    Renders a multi-panel chart showing:
+    - P&L panel with unrealized P&L range and high/low watermarks
+    - Price panel with OHLC bars, overlay indicators, and fill markers
+    - Additional panels for non-overlay indicators grouped by tag
+
+    Parameters:
+        run_id:
+            Unique identifier of the backtest run.
+        symbol:
+            Instrument symbol for the trade.
+        start_ns:
+            Entry timestamp in nanoseconds.
+        end_ns:
+            Exit timestamp in nanoseconds.
+        direction:
+            Trade direction, either "LONG" or "SHORT".
+        pnl:
+            Net profit/loss for the trade.
+        chart_type:
+            OHLC rendering style: 'candlestick', 'oc_bars', 'c_bars', or 'bars'.
+
+    Returns:
+        PNG image bytes, or empty bytes if no data is available.
+    """
+    try:
+        conn_ctx = connect_runs()
+    except FileNotFoundError:
+        return b""
+
+    with conn_ctx as conn:
+        cursor = conn.cursor()
+
+        padding_bars = 100
+
+        cursor.execute(
+            """
+            SELECT ts_event_ns, open, high, low, close, bar_period, indicators
+            FROM bars_processed
+            WHERE run_id = ? AND symbol = ? AND ts_event_ns < ?
+            ORDER BY ts_event_ns DESC
+            LIMIT ?
+            """,
+            (run_id, symbol, start_ns, padding_bars),
+        )
+        before_rows = cursor.fetchall()[::-1]
+
+        cursor.execute(
+            """
+            SELECT ts_event_ns, open, high, low, close, bar_period, indicators
+            FROM bars_processed
+            WHERE run_id = ? AND symbol = ? AND ts_event_ns >= ? AND ts_event_ns <= ?
+            ORDER BY ts_event_ns
+            """,
+            (run_id, symbol, start_ns, end_ns),
+        )
+        trade_rows = cursor.fetchall()
+
+        cursor.execute(
+            """
+            SELECT ts_event_ns, open, high, low, close, bar_period, indicators
+            FROM bars_processed
+            WHERE run_id = ? AND symbol = ? AND ts_event_ns > ?
+            ORDER BY ts_event_ns
+            LIMIT ?
+            """,
+            (run_id, symbol, end_ns, padding_bars),
+        )
+        after_rows = cursor.fetchall()
+
+        bar_rows = before_rows + trade_rows + after_rows
+        bar_period = bar_rows[0][5] if bar_rows else "DAY"
+
+        cursor.execute(
+            """
+            SELECT ts_broker_ns, side, quantity_filled, fill_price
+            FROM fills
+            WHERE run_id = ? AND symbol = ? AND ts_broker_ns >= ? AND ts_broker_ns <= ?
+            ORDER BY ts_broker_ns
+            """,
+            (run_id, symbol, start_ns, end_ns),
+        )
+        fill_rows = cursor.fetchall()
+
+    if not bar_rows:
+        return b""
+
+    data = pd.DataFrame(
+        bar_rows,
+        columns=[
+            "ts_event",
+            "open",
+            "high",
+            "low",
+            "close",
+            "bar_period",
+            "indicators",
+        ],
+    )
+    data["ts_event"] = pd.to_datetime(data["ts_event"], unit="ns")
+
+    (
+        indicator_series,
+        indicator_tags,
+        indicator_styles,
+        indicator_colors,
+        indicator_widths,
+        fill_between_specs,
+    ) = _parse_indicators(data, chart_settings)
+
+    overlay_indicators, subplot_tags, subplot_indicators = _classify_panels(
+        indicator_series, indicator_tags
+    )
+
+    above_tags = sorted(set(t for t in indicator_tags.values() if -98 <= t <= -1))
+    below_tags = sorted(set(t for t in indicator_tags.values() if 1 <= t <= 98))
 
     entry_time = pd.to_datetime(start_ns, unit="ns")
     exit_time = pd.to_datetime(end_ns, unit="ns")
@@ -454,21 +692,7 @@ def generate_chart_image(
     ax_below = list(axes[2 + len(above_tags) :])
     ax_indicators = ax_above + ax_below
 
-    use_time_axis = bar_period in ("HOUR", "MINUTE", "SECOND")
-    if use_time_axis:
-        x_values = data["ts_event"].values
-        bar_width = (
-            pd.Timedelta(minutes=1)
-            if bar_period == "MINUTE"
-            else (
-                pd.Timedelta(seconds=1)
-                if bar_period == "SECOND"
-                else pd.Timedelta(hours=1)
-            )
-        )
-    else:
-        x_values = list(range(len(data)))  # type: ignore[assignment]
-        bar_width = 0.8  # type: ignore[assignment]
+    x_values, bar_width, use_time_axis = _setup_x_axis(data, bar_period)
 
     entry_price = fills[0]["price"] if fills else 0
     fill_direction = fills[0]["side"] if fills else "BUY"
@@ -532,113 +756,36 @@ def generate_chart_image(
 
     _draw_ohlc_bars(ax_main, data, x_values, chart_type, bar_width)
 
-    for idx, (name, values) in enumerate(overlay_indicators.items()):
-        color = indicator_colors.get(name, "black")
-        style = indicator_styles.get(name, "line")
-        lw, dot_s, hist_alpha = _width_params.get(
-            indicator_widths.get(name, "normal"), (1.2, 10, 0.6)
-        )
-        if style in ("background1", "background2"):
-            continue
-        if style == "histogram":
-            ax_main.bar(
-                x_values,
-                values,
-                label=name,
-                alpha=hist_alpha,
-                color=color,
-                width=bar_width,
-            )
-        elif style == "dots":
-            ax_main.scatter(
-                x_values,
-                values,
-                label=name,
-                alpha=0.8,
-                color=color,
-                s=dot_s,
-            )
-        elif style in _dash_patterns:
-            ax_main.plot(
-                x_values,
-                values,
-                label=name,
-                linewidth=lw,
-                alpha=0.8,
-                color=color,
-                linestyle="--",
-                dashes=_dash_patterns[style],
-            )
-        else:
-            ax_main.plot(
-                x_values,
-                values,
-                label=name,
-                linewidth=lw,
-                alpha=0.8,
-                color=color,
-            )
-    if overlay_indicators:
-        ax_main.legend(loc="upper left", fontsize=8)
+    _render_indicators_on_axis(
+        ax_main,
+        x_values,
+        bar_width,
+        overlay_indicators,
+        indicator_colors,
+        indicator_styles,
+        indicator_widths,
+    )
 
     for ax_idx, tag in enumerate(subplot_tags):
         ax = ax_indicators[ax_idx]
         tag_indicators = subplot_indicators[tag]
-        for idx, (name, values) in enumerate(tag_indicators.items()):
-            color = indicator_colors.get(name, "black")
-            style = indicator_styles.get(name, "line")
-            lw, dot_s, hist_alpha = _width_params.get(
-                indicator_widths.get(name, "normal"), (1.2, 10, 0.6)
-            )
-            if style in ("background1", "background2"):
-                continue
-            if style == "histogram":
-                ax.bar(
-                    x_values,
-                    values,
-                    label=name,
-                    alpha=hist_alpha,
-                    color=color,
-                    width=bar_width,
-                )
-            elif style == "dots":
-                ax.scatter(
-                    x_values,
-                    values,
-                    label=name,
-                    alpha=0.8,
-                    color=color,
-                    s=dot_s,
-                )
-            elif style in _dash_patterns:
-                ax.plot(
-                    x_values,
-                    values,
-                    label=name,
-                    linewidth=lw,
-                    alpha=0.8,
-                    color=color,
-                    linestyle="--",
-                    dashes=_dash_patterns[style],
-                )
-            else:
-                ax.plot(
-                    x_values,
-                    values,
-                    label=name,
-                    linewidth=lw,
-                    alpha=0.8,
-                    color=color,
-                )
+        _render_indicators_on_axis(
+            ax,
+            x_values,
+            bar_width,
+            tag_indicators,
+            indicator_colors,
+            indicator_styles,
+            indicator_widths,
+        )
         ax.set_ylabel(f"Panel {tag}", fontsize=10)
         ax.grid(True, alpha=0.3)
-        ax.legend(loc="upper left", fontsize=8)
 
     all_axes = [ax_pnl, ax_main] + ax_indicators
     tag_to_ax: dict[int, Axes] = {0: ax_main}
     for ax_idx, tag in enumerate(subplot_tags):
         tag_to_ax[tag] = ax_indicators[ax_idx]
-    _render_background_shading(
+    _apply_background_and_fills(
         all_axes,
         tag_to_ax,
         x_values,
@@ -647,20 +794,9 @@ def generate_chart_image(
         indicator_tags,
         indicator_styles,
         indicator_colors,
+        fill_between_specs,
+        ax_main,
     )
-    for fb in fill_between_specs:
-        upper_series = indicator_series.get(fb["upper"])
-        lower_series = indicator_series.get(fb["lower"])
-        if upper_series is not None and lower_series is not None:
-            tag = indicator_tags.get(fb["upper"], 0)
-            target_ax = tag_to_ax.get(tag, ax_main)
-            target_ax.fill_between(
-                x_values,
-                lower_series,
-                upper_series,
-                color=fb["color"],
-                alpha=fb["alpha"],
-            )
 
     if 0 <= highlight_start < len(data) and 0 <= highlight_end < len(data):
         highlight_x_start = x_values[highlight_start]
@@ -732,34 +868,11 @@ def generate_chart_image(
         fontsize=14,
     )
 
-    if use_time_axis:
-        import matplotlib.dates as mdates
+    _format_axes(all_axes, data, use_time_axis, date_format="%m/%d %H:%M")
 
-        for ax in all_axes:
-            ax.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d %H:%M"))
-            ax.xaxis.set_major_locator(mdates.AutoDateLocator())
-    else:
-        num_bars = len(data)
-        tick_interval = max(1, num_bars // 10)
-        tick_positions = list(range(0, num_bars, tick_interval))
-        tick_labels = [
-            data["ts_event"].iloc[i].strftime("%m/%d") for i in tick_positions
-        ]
-        for ax in all_axes:
-            ax.set_xticks(tick_positions)
-            ax.set_xticklabels(tick_labels)
-
-    for ax in all_axes:
-        for label in ax.get_xticklabels():
-            label.set_rotation(45)
-            label.set_fontsize(9)
     fig.tight_layout(rect=(0, 0, 1, 0.96))
 
-    buf = io.BytesIO()
-    fig.savefig(buf, format="png", dpi=500, bbox_inches="tight")
-    buf.seek(0)
-
-    return buf.read()
+    return _export_png(fig)
 
 
 def generate_segment_chart_image(
@@ -800,24 +913,23 @@ def generate_segment_chart_image(
     Returns:
         PNG image bytes, or empty bytes if no data is available.
     """
-    db_path = get_runs_db_path()
-    if not os.path.exists(db_path):
+    try:
+        conn_ctx = connect_runs()
+    except FileNotFoundError:
         return b""
 
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-
-    cursor.execute(
-        """
-        SELECT ts_event_ns, open, high, low, close, bar_period, indicators
-        FROM bars_processed
-        WHERE run_id = ? AND symbol = ? AND ts_event_ns >= ? AND ts_event_ns <= ?
-        ORDER BY ts_event_ns
-        """,
-        (run_id, symbol, start_ns, end_ns),
-    )
-    bar_rows = cursor.fetchall()
-    conn.close()
+    with conn_ctx as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT ts_event_ns, open, high, low, close, bar_period, indicators
+            FROM bars_processed
+            WHERE run_id = ? AND symbol = ? AND ts_event_ns >= ? AND ts_event_ns <= ?
+            ORDER BY ts_event_ns
+            """,
+            (run_id, symbol, start_ns, end_ns),
+        )
+        bar_rows = cursor.fetchall()
 
     if not bar_rows:
         return b""
@@ -838,66 +950,21 @@ def generate_segment_chart_image(
     )
     data["ts_event"] = pd.to_datetime(data["ts_event"], unit="ns")
 
-    indicator_series: dict[str, list[float]] = {}
-    indicator_tags: dict[str, int] = {}
-    indicator_styles: dict[str, str] = {}
-    indicator_colors: dict[str, str] = {}
-    indicator_widths: dict[str, str] = {}
-    fill_between_specs: list[dict] = []
-    _color_idx = 0
-    _assigned_panels: dict[str, int] = {}
-    for idx in range(len(data)):
-        row = data.iloc[idx]
-        indicators = json.loads(row["indicators"]) if row["indicators"] else {}
-        for name, value in indicators.items():
-            if name not in indicator_series:
-                indicator_series[name] = [math.nan] * len(data)
-                cfg = _get_indicator_setting(
-                    chart_settings, name, _color_idx, _assigned_panels
-                )
-                _color_idx += 1
-                if not cfg.get("visible", True):
-                    indicator_tags[name] = 99
-                else:
-                    raw_panel = cfg.get("panel", 0)
-                    below_price = cfg.get("below_price", True)
-                    _assigned_panels[name] = raw_panel
-                    if raw_panel == 0:
-                        indicator_tags[name] = 0
-                    elif below_price:
-                        indicator_tags[name] = raw_panel
-                    else:
-                        indicator_tags[name] = -raw_panel
-                indicator_styles[name] = cfg.get("style", "line")
-                indicator_colors[name] = _color_name_to_matplotlib.get(
-                    cfg.get("color", "black"), "black"
-                )
-                indicator_widths[name] = cfg.get("width", "normal")
-            indicator_series[name][idx] = value if value == value else math.nan
+    (
+        indicator_series,
+        indicator_tags,
+        indicator_styles,
+        indicator_colors,
+        indicator_widths,
+        fill_between_specs,
+    ) = _parse_indicators(data, chart_settings)
 
-    if chart_settings:
-        for fb in chart_settings.get("fill_between", []):
-            fill_between_specs.append(
-                {
-                    "upper": fb["upper"],
-                    "lower": fb["lower"],
-                    "color": _color_name_to_matplotlib.get(
-                        fb.get("color", "blue"), "blue"
-                    ),
-                    "alpha": fb.get("alpha", 0.15),
-                }
-            )
+    overlay_indicators, subplot_tags, subplot_indicators = _classify_panels(
+        indicator_series, indicator_tags
+    )
 
-    overlay_indicators = {
-        k: v for k, v in indicator_series.items() if indicator_tags.get(k, 99) == 0
-    }
     above_tags = sorted(set(t for t in indicator_tags.values() if -98 <= t <= -1))
     below_tags = sorted(set(t for t in indicator_tags.values() if 1 <= t <= 98))
-    subplot_tags = above_tags + below_tags
-    subplot_indicators = {
-        tag: {k: v for k, v in indicator_series.items() if indicator_tags.get(k) == tag}
-        for tag in subplot_tags
-    }
 
     # Layout: [above panels...] [Price] [below panels...]
     num_subplots = 1 + len(above_tags) + len(below_tags)
@@ -917,125 +984,34 @@ def generate_segment_chart_image(
     ax_below = list(axes[len(above_tags) + 1 :])
     ax_indicators = ax_above + ax_below
 
-    use_time_axis = bar_period in ("HOUR", "MINUTE", "SECOND")
-    if use_time_axis:
-        x_values = data["ts_event"].values
-        bar_width = (
-            pd.Timedelta(minutes=1)
-            if bar_period == "MINUTE"
-            else (
-                pd.Timedelta(seconds=1)
-                if bar_period == "SECOND"
-                else pd.Timedelta(hours=1)
-            )
-        )
-    else:
-        x_values = list(range(len(data)))  # type: ignore[assignment]
-        bar_width = 0.8  # type: ignore[assignment]
+    x_values, bar_width, use_time_axis = _setup_x_axis(data, bar_period)
 
     _draw_ohlc_bars(ax_main, data, x_values, chart_type, bar_width)
 
-    for idx, (name, values) in enumerate(overlay_indicators.items()):
-        color = indicator_colors.get(name, "black")
-        style = indicator_styles.get(name, "line")
-        lw, dot_s, hist_alpha = _width_params.get(
-            indicator_widths.get(name, "normal"), (1.2, 10, 0.6)
-        )
-        if style in ("background1", "background2"):
-            continue
-        if style == "histogram":
-            ax_main.bar(
-                x_values,
-                values,
-                label=name,
-                alpha=hist_alpha,
-                color=color,
-                width=bar_width,
-            )
-        elif style == "dots":
-            ax_main.scatter(
-                x_values,
-                values,
-                label=name,
-                alpha=0.8,
-                color=color,
-                s=dot_s,
-            )
-        elif style in _dash_patterns:
-            ax_main.plot(
-                x_values,
-                values,
-                label=name,
-                linewidth=lw,
-                alpha=0.8,
-                color=color,
-                linestyle="--",
-                dashes=_dash_patterns[style],
-            )
-        else:
-            ax_main.plot(
-                x_values,
-                values,
-                label=name,
-                linewidth=lw,
-                alpha=0.8,
-                color=color,
-            )
-    if overlay_indicators:
-        ax_main.legend(loc="upper left", fontsize=8)
+    _render_indicators_on_axis(
+        ax_main,
+        x_values,
+        bar_width,
+        overlay_indicators,
+        indicator_colors,
+        indicator_styles,
+        indicator_widths,
+    )
 
     for ax_idx, tag in enumerate(subplot_tags):
         ax = ax_indicators[ax_idx]
         tag_indicators = subplot_indicators[tag]
-        for idx, (name, values) in enumerate(tag_indicators.items()):
-            color = indicator_colors.get(name, "black")
-            style = indicator_styles.get(name, "line")
-            lw, dot_s, hist_alpha = _width_params.get(
-                indicator_widths.get(name, "normal"), (1.2, 10, 0.6)
-            )
-            if style in ("background1", "background2"):
-                continue
-            if style == "histogram":
-                ax.bar(
-                    x_values,
-                    values,
-                    label=name,
-                    alpha=hist_alpha,
-                    color=color,
-                    width=bar_width,
-                )
-            elif style == "dots":
-                ax.scatter(
-                    x_values,
-                    values,
-                    label=name,
-                    alpha=0.8,
-                    color=color,
-                    s=dot_s,
-                )
-            elif style in _dash_patterns:
-                ax.plot(
-                    x_values,
-                    values,
-                    label=name,
-                    linewidth=lw,
-                    alpha=0.8,
-                    color=color,
-                    linestyle="--",
-                    dashes=_dash_patterns[style],
-                )
-            else:
-                ax.plot(
-                    x_values,
-                    values,
-                    label=name,
-                    linewidth=lw,
-                    alpha=0.8,
-                    color=color,
-                )
+        _render_indicators_on_axis(
+            ax,
+            x_values,
+            bar_width,
+            tag_indicators,
+            indicator_colors,
+            indicator_styles,
+            indicator_widths,
+        )
         ax.set_ylabel(f"Panel {tag}", fontsize=10)
         ax.grid(True, alpha=0.3)
-        ax.legend(loc="upper left", fontsize=8)
 
     ax_main.set_ylabel("Price", fontsize=10)
     ax_main.grid(True, alpha=0.3)
@@ -1051,7 +1027,7 @@ def generate_segment_chart_image(
     tag_to_ax: dict[int, Axes] = {0: ax_main}
     for ax_idx, tag in enumerate(subplot_tags):
         tag_to_ax[tag] = ax_indicators[ax_idx]
-    _render_background_shading(
+    _apply_background_and_fills(
         all_axes,
         tag_to_ax,
         x_values,
@@ -1060,20 +1036,9 @@ def generate_segment_chart_image(
         indicator_tags,
         indicator_styles,
         indicator_colors,
+        fill_between_specs,
+        ax_main,
     )
-    for fb in fill_between_specs:
-        upper_series = indicator_series.get(fb["upper"])
-        lower_series = indicator_series.get(fb["lower"])
-        if upper_series is not None and lower_series is not None:
-            tag = indicator_tags.get(fb["upper"], 0)
-            target_ax = tag_to_ax.get(tag, ax_main)
-            target_ax.fill_between(
-                x_values,
-                lower_series,
-                upper_series,
-                color=fb["color"],
-                alpha=fb["alpha"],
-            )
 
     if highlight_start_ns is not None and highlight_end_ns is not None:
         hl_start_time = pd.to_datetime(highlight_start_ns, unit="ns")
@@ -1127,11 +1092,7 @@ def generate_segment_chart_image(
             label.set_fontsize(9)
     fig.tight_layout(rect=(0, 0, 1, 0.96))
 
-    buf = io.BytesIO()
-    fig.savefig(buf, format="png", dpi=500, bbox_inches="tight")
-    buf.seek(0)
-
-    return buf.read()
+    return _export_png(fig)
 
 
 def _compute_trade_journey_data(
@@ -1150,13 +1111,24 @@ def _compute_trade_journey_data(
     Returns:
         List of dictionaries with max_positive_pts, max_negative_pts, exit_pts, is_winner, and duration_bars.
     """
-    db_path = get_runs_db_path()
-    if not os.path.exists(db_path):
+    try:
+        conn_ctx = connect_runs()
+    except FileNotFoundError:
         return []
 
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
+    with conn_ctx as conn:
+        cursor = conn.cursor()
 
+        journey_data = _compute_journey_data_inner(cursor, run_id, roundtrips)
+
+    return journey_data
+
+
+def _compute_journey_data_inner(
+    cursor: sqlite3.Cursor,
+    run_id: str,
+    roundtrips: list[dict],
+) -> list[dict]:
     journey_data = []
     for rt in roundtrips:
         symbol = rt["symbol"]
@@ -1258,7 +1230,6 @@ def _compute_trade_journey_data(
             }
         )
 
-    conn.close()
     return journey_data
 
 

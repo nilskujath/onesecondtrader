@@ -100,7 +100,7 @@ class TestSubmitOrder:
             quantity=25.0,
             limit_price=100.0,
             stop_price=95.0,
-            action=models.ActionType.ADD,
+            action=models.ActionType.ADD_LONG,
             signal="add_to_position",
         )
 
@@ -109,7 +109,7 @@ class TestSubmitOrder:
         request = recorder.requests[0]
         assert request.limit_price == 100.0
         assert request.stop_price == 95.0
-        assert request.action == models.ActionType.ADD
+        assert request.action == models.ActionType.ADD_LONG
         assert request.signal == "add_to_position"
 
         strategy.shutdown()

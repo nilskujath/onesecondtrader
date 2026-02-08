@@ -5,12 +5,12 @@ import enum
 
 class ExtremeType(enum.Enum):
     """
-    Enumeration of extreme types for n-period extreme calculations.
+    Enumeration of extreme types.
 
-    | Value | Semantics                          |
-    |-------|-------------------------------------|
-    | `MIN` | Minimum value over the period.      |
-    | `MAX` | Maximum value over the period.      |
+    | Value | Semantics           |
+    |-------|---------------------|
+    | `MIN` | Minimum value.      |
+    | `MAX` | Maximum value.      |
     """
 
     MIN = enum.auto()

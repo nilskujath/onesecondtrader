@@ -31,16 +31,25 @@ nav:
     - Charting: reference/dashboard/charting.md
     - Cli: reference/dashboard/cli.md
     - Db: reference/dashboard/db.md
+    - Explore: reference/dashboard/explore.md
+    - Explorer: reference/dashboard/explorer.md
     - Layout: reference/dashboard/layout.md
     - Pages: reference/dashboard/pages.md
+    - Presets: reference/dashboard/presets.md
     - Registry: reference/dashboard/registry.md
     - Roundtrips: reference/dashboard/roundtrips.md
-    - Styles: reference/dashboard/styles.md
     - Routers:
       - Backtest: reference/dashboard/routers/backtest.md
+      - Bars: reference/dashboard/routers/bars.md
+      - Chart Settings: reference/dashboard/routers/chart_settings.md
+      - Charts: reference/dashboard/routers/charts.md
+      - Explore: reference/dashboard/routers/explore.md
+      - Explorer: reference/dashboard/routers/explorer.md
+      - Indicators: reference/dashboard/routers/indicators.md
       - Presets: reference/dashboard/routers/presets.md
       - Runs: reference/dashboard/routers/runs.md
       - Secmaster: reference/dashboard/routers/secmaster.md
+      - Segments: reference/dashboard/routers/segments.md
       - Strategies: reference/dashboard/routers/strategies.md
   - Datafeeds:
     - Base: reference/datafeeds/base.md
@@ -91,7 +100,6 @@ nav:
     - Action Types: reference/models/action_types.md
     - Bar Fields: reference/models/bar_fields.md
     - Bar Period: reference/models/bar_period.md
-    - Chart Type: reference/models/chart_type.md
     - Extreme Type: reference/models/extreme_type.md
     - Order Types: reference/models/order_types.md
     - Rejection Reasons: reference/models/rejection_reasons.md
@@ -107,6 +115,7 @@ nav:
   - Strategies:
     - Base: reference/strategies/base.md
     - Examples: reference/strategies/examples.md
+    - Indicator Explorer: reference/strategies/indicator_explorer.md
 hooks:
 - docs/hooks.py
 theme:

@@ -7,54 +7,52 @@ Provides CRUD endpoints for managing saved symbol presets in the security master
 from __future__ import annotations
 
 import json
-import os
 import sqlite3
 
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from ..db import get_secmaster_path
+from ..db import connect_secmaster
 
 router = APIRouter(prefix="/api/presets", tags=["presets"])
 
 
 def ensure_presets_table() -> None:
     """Create the symbol_presets table if it does not already exist."""
-    db_path = get_secmaster_path()
-    if not os.path.exists(db_path):
+    try:
+        conn_ctx = connect_secmaster()
+    except FileNotFoundError:
         return
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS symbol_presets (
-            name TEXT PRIMARY KEY,
-            rtype INTEGER NOT NULL,
-            publisher_name TEXT NOT NULL,
-            publisher_id INTEGER NOT NULL,
-            symbols TEXT NOT NULL
+    with conn_ctx as conn:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS symbol_presets (
+                name TEXT PRIMARY KEY,
+                rtype INTEGER NOT NULL,
+                publisher_name TEXT NOT NULL,
+                publisher_id INTEGER NOT NULL,
+                symbols TEXT NOT NULL
+            )
+            """
         )
-        """
-    )
-    conn.commit()
-    conn.close()
+        conn.commit()
 
 
 @router.get("")
 async def list_presets() -> dict:
     """Return list of all preset objects."""
-    db_path = get_secmaster_path()
-    if not os.path.exists(db_path):
+    try:
+        conn_ctx = connect_secmaster()
+    except FileNotFoundError:
         return {"presets": []}
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    cursor.execute(
-        "SELECT name, rtype, publisher_name, publisher_id, symbols "
-        "FROM symbol_presets ORDER BY name"
-    )
-    rows = cursor.fetchall()
-    conn.close()
+    with conn_ctx as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT name, rtype, publisher_name, publisher_id, symbols "
+            "FROM symbol_presets ORDER BY name"
+        )
+        rows = cursor.fetchall()
     presets = [
         {
             "name": row["name"],
@@ -71,19 +69,19 @@ async def list_presets() -> dict:
 @router.get("/{name}")
 async def get_preset(name: str) -> dict:
     """Return all fields for a specific preset."""
-    db_path = get_secmaster_path()
-    if not os.path.exists(db_path):
+    try:
+        conn_ctx = connect_secmaster()
+    except FileNotFoundError:
         return {"error": "Preset not found"}
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    cursor.execute(
-        "SELECT name, rtype, publisher_name, publisher_id, symbols "
-        "FROM symbol_presets WHERE name = ?",
-        (name,),
-    )
-    row = cursor.fetchone()
-    conn.close()
+    with conn_ctx as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT name, rtype, publisher_name, publisher_id, symbols "
+            "FROM symbol_presets WHERE name = ?",
+            (name,),
+        )
+        row = cursor.fetchone()
     if row is None:
         return {"error": "Preset not found"}
     return {
@@ -122,54 +120,45 @@ class PresetRequest(BaseModel):
 @router.post("")
 async def create_preset(request: PresetRequest) -> dict:
     """Create a new symbol preset."""
-    db_path = get_secmaster_path()
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO symbol_presets (name, rtype, publisher_name, publisher_id, symbols) "
-        "VALUES (?, ?, ?, ?, ?)",
-        (
-            request.name,
-            request.rtype,
-            request.publisher_name,
-            request.publisher_id,
-            json.dumps(request.symbols),
-        ),
-    )
-    conn.commit()
-    conn.close()
+    with connect_secmaster() as conn:
+        conn.execute(
+            "INSERT INTO symbol_presets (name, rtype, publisher_name, publisher_id, symbols) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (
+                request.name,
+                request.rtype,
+                request.publisher_name,
+                request.publisher_id,
+                json.dumps(request.symbols),
+            ),
+        )
+        conn.commit()
     return {"status": "created", "name": request.name}
 
 
 @router.put("/{name}")
 async def update_preset(name: str, request: PresetRequest) -> dict:
     """Update an existing symbol preset."""
-    db_path = get_secmaster_path()
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute(
-        "UPDATE symbol_presets SET rtype = ?, publisher_name = ?, publisher_id = ?, "
-        "symbols = ? WHERE name = ?",
-        (
-            request.rtype,
-            request.publisher_name,
-            request.publisher_id,
-            json.dumps(request.symbols),
-            name,
-        ),
-    )
-    conn.commit()
-    conn.close()
+    with connect_secmaster() as conn:
+        conn.execute(
+            "UPDATE symbol_presets SET rtype = ?, publisher_name = ?, publisher_id = ?, "
+            "symbols = ? WHERE name = ?",
+            (
+                request.rtype,
+                request.publisher_name,
+                request.publisher_id,
+                json.dumps(request.symbols),
+                name,
+            ),
+        )
+        conn.commit()
     return {"status": "updated", "name": name}
 
 
 @router.delete("/{name}")
 async def delete_preset(name: str) -> dict:
     """Delete a symbol preset."""
-    db_path = get_secmaster_path()
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM symbol_presets WHERE name = ?", (name,))
-    conn.commit()
-    conn.close()
+    with connect_secmaster() as conn:
+        conn.execute("DELETE FROM symbol_presets WHERE name = ?", (name,))
+        conn.commit()
     return {"status": "deleted", "name": name}

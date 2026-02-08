@@ -7,7 +7,7 @@ import time
 @dataclasses.dataclass(kw_only=True, frozen=True, slots=True)
 class EventBase:
     """
-    Base class for immutable event message objects, using Unix epoch nanoseconds.
+    Base class for immutable event message objects, using UTC Unix epoch nanoseconds.
 
     | Field           | Type   | Semantics                                                              |
     |-----------------|--------|------------------------------------------------------------------------|

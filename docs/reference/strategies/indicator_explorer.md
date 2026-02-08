@@ -1,6 +1,6 @@
-# Chart Type
+# Indicator Explorer
 
-::: onesecondtrader.models.chart_type
+::: onesecondtrader.strategies.indicator_explorer
     options:
       show_root_heading: False
       show_source: true

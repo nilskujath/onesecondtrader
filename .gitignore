@@ -33,3 +33,4 @@ runs.db-wal
 /indicators/
 /research/
 .claude/
+/workflow.md

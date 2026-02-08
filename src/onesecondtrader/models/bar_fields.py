@@ -5,7 +5,7 @@ import enum
 
 class BarField(enum.Enum):
     """
-    Enumeration of bar fields used as indicator inputs.
+    Enumeration of data fields in OHLCV bars of market data.
 
     | Value    | Semantics                          |
     |----------|------------------------------------|
@@ -20,4 +20,5 @@ class BarField(enum.Enum):
     HIGH = enum.auto()
     LOW = enum.auto()
     CLOSE = enum.auto()
+
     VOLUME = enum.auto()

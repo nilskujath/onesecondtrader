@@ -6,7 +6,7 @@ from .base import IndicatorBase, discover_indicators, get_registered_indicators
 from .averages import SimpleMovingAverage
 from .market_fields import Open, High, Low, Close, Volume
 from .bollinger import BollingerLower, BollingerUpper, BollingerBandwidth
-from .wilders import RSI
+from .wilders import RSI, ADX, ATR, MinusDI, ParabolicSAR, PlusDI
 from .oscillators import ROC, DetrendOscillator
 from .period_extreme import PeriodExtreme
 
@@ -24,6 +24,11 @@ __all__ = [
     "BollingerUpper",
     "BollingerBandwidth",
     "RSI",
+    "ADX",
+    "ATR",
+    "MinusDI",
+    "ParabolicSAR",
+    "PlusDI",
     "ROC",
     "DetrendOscillator",
     "PeriodExtreme",

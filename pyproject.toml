@@ -24,7 +24,7 @@ onesecondtrader = "onesecondtrader.dashboard.cli:main"
 
 [tool.poetry]
 packages = [{include = "onesecondtrader", from = "src"}]
-include = ["src/onesecondtrader/**/*.sql"]
+include = ["src/onesecondtrader/**/*.sql", "src/onesecondtrader/**/*.css", "src/onesecondtrader/**/*.js"]
 
 
 [tool.poetry.group.dev.dependencies]

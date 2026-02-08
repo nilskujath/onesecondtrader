@@ -30,7 +30,7 @@ class SMACrossover(StrategyBase):
                 models.OrderType.MARKET,
                 models.TradeSide.BUY,
                 self.quantity,  # type: ignore[attr-defined]
-                action=models.ActionType.ENTRY,
+                action=models.ActionType.ENTRY_LONG,
                 signal="sma_crossover_up",
             )
 
@@ -43,6 +43,6 @@ class SMACrossover(StrategyBase):
                 models.OrderType.MARKET,
                 models.TradeSide.SELL,
                 self.quantity,  # type: ignore[attr-defined]
-                action=models.ActionType.EXIT,
+                action=models.ActionType.EXIT_LONG,
                 signal="sma_crossover_down",
             )

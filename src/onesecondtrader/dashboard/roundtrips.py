@@ -7,10 +7,9 @@ high watermark, and maximum drawdown metrics.
 
 from __future__ import annotations
 
-import os
 import sqlite3
 
-from .db import get_runs_db_path
+from .db import connect_runs
 
 
 def compute_watermarks_and_drawdown(
@@ -116,10 +115,16 @@ def get_roundtrips(run_id: str) -> list[dict]:
         high_watermark, max_drawdown, pnl_before_commission, pnl_after_commission,
         entry_ts, and exit_ts.
     """
-    db_path = get_runs_db_path()
-    if not os.path.exists(db_path):
+    try:
+        conn_ctx = connect_runs()
+    except FileNotFoundError:
         return []
-    conn = sqlite3.connect(db_path)
+    with conn_ctx as conn:
+        roundtrips = _compute_roundtrips(conn, run_id)
+    return roundtrips
+
+
+def _compute_roundtrips(conn: sqlite3.Connection, run_id: str) -> list[dict]:
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -223,5 +228,4 @@ def get_roundtrips(run_id: str) -> list[dict]:
                     )
                     position = 0.0
 
-    conn.close()
     return roundtrips

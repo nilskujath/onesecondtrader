@@ -8,7 +8,6 @@ backtests from the dashboard UI.
 from __future__ import annotations
 
 import enum
-import sqlite3
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -17,7 +16,7 @@ from typing import Any
 import pandas as pd
 from pydantic import BaseModel
 
-from .db import get_runs_db_path, get_secmaster_path
+from .db import get_runs_db_path, get_secmaster_path, connect_secmaster
 from . import registry
 
 _executor = ThreadPoolExecutor(max_workers=1)
@@ -93,13 +92,14 @@ def _ensure_db_status(db_run_id: str | None, status: str) -> None:
     if not db_run_id:
         return
     try:
-        conn = sqlite3.connect(get_runs_db_path())
-        conn.execute(
-            "UPDATE runs SET status = ?, ts_end = ? WHERE run_id = ? AND status = 'running'",
-            (status, time.time_ns(), db_run_id),
-        )
-        conn.commit()
-        conn.close()
+        from .db import connect_runs
+
+        with connect_runs() as conn:
+            conn.execute(
+                "UPDATE runs SET status = ?, ts_end = ? WHERE run_id = ? AND status = 'running'",
+                (status, time.time_ns(), db_run_id),
+            )
+            conn.commit()
     except Exception:
         pass
 
@@ -200,14 +200,13 @@ def run_backtest(request: BacktestRequest, run_id: str) -> None:
         )
 
         db_path = get_secmaster_path()
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT name, dataset FROM publishers WHERE publisher_id = ?",
-            (request.publisher_id,),
-        )
-        row = cursor.fetchone()
-        conn.close()
+        with connect_secmaster() as sm_conn:
+            cursor = sm_conn.cursor()
+            cursor.execute(
+                "SELECT name, dataset FROM publishers WHERE publisher_id = ?",
+                (request.publisher_id,),
+            )
+            row = cursor.fetchone()
         if not row:
             with _jobs_lock:
                 running_jobs[run_id] = (

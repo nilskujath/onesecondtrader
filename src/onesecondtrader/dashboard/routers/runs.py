@@ -9,11 +9,9 @@ from __future__ import annotations
 import asyncio
 import json as json_module
 import logging
-import os
 import sqlite3
 
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import Response
 from pydantic import BaseModel
 
 from ..backtest import (
@@ -22,44 +20,10 @@ from ..backtest import (
     _orchestrator_refs,
     _jobs_lock,
 )
-from ..db import get_runs_db_path, get_runs, CHILD_TABLES
+from ..db import get_runs, connect_runs, CHILD_TABLES
 from ..roundtrips import get_roundtrips
-from ..chart_settings import load_chart_settings, save_chart_settings
-from ..charting import (
-    generate_chart_image,
-    generate_segment_chart_image,
-    generate_trade_journey_chart,
-    generate_pnl_summary_chart,
-)
 
 logger = logging.getLogger(__name__)
-
-
-def _get_strategy_key(run_id: str) -> str:
-    """Derive a strategy class key from a run's config for settings persistence.
-
-    Queries the runs table, extracts ``config["strategies"]``, and returns
-    a deterministic comma-joined sorted string.  Falls back to *run_id*
-    when no strategies list is found.
-    """
-    db_path = get_runs_db_path()
-    if not os.path.exists(db_path):
-        return run_id
-    try:
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        cursor.execute("SELECT config FROM runs WHERE run_id = ?", (run_id,))
-        row = cursor.fetchone()
-        conn.close()
-        if row and row[0]:
-            config = json_module.loads(row[0])
-            strategies = config.get("strategies")
-            if strategies and isinstance(strategies, list):
-                return ",".join(sorted(strategies))
-    except Exception:
-        pass
-    return run_id
-
 
 router = APIRouter(prefix="/api", tags=["runs"])
 
@@ -90,9 +54,6 @@ async def api_delete_runs(request: DeleteRunsRequest) -> dict:
     Cancels any running/queued backtests for the requested run IDs first,
     then deletes the data with a generous busy-timeout.
     """
-    db_path = get_runs_db_path()
-    if not os.path.exists(db_path):
-        return {"deleted": 0}
     if not request.run_ids:
         return {"deleted": 0}
 
@@ -122,22 +83,23 @@ async def api_delete_runs(request: DeleteRunsRequest) -> dict:
         await asyncio.sleep(1)
 
     try:
-        conn = sqlite3.connect(db_path, timeout=10)
-        cursor = conn.cursor()
-        placeholders = ",".join("?" for _ in request.run_ids)
-        for table in CHILD_TABLES:
+        with connect_runs(timeout=10) as conn:
+            cursor = conn.cursor()
+            placeholders = ",".join("?" for _ in request.run_ids)
+            for table in CHILD_TABLES:
+                cursor.execute(
+                    f"DELETE FROM {table} WHERE run_id IN ({placeholders})",
+                    request.run_ids,
+                )
             cursor.execute(
-                f"DELETE FROM {table} WHERE run_id IN ({placeholders})",
+                f"DELETE FROM runs WHERE run_id IN ({placeholders})",
                 request.run_ids,
             )
-        cursor.execute(
-            f"DELETE FROM runs WHERE run_id IN ({placeholders})",
-            request.run_ids,
-        )
-        deleted = cursor.rowcount
-        conn.commit()
-        conn.close()
-        return {"deleted": deleted}
+            deleted = cursor.rowcount
+            conn.commit()
+            return {"deleted": deleted}
+    except FileNotFoundError:
+        return {"deleted": 0}
     except sqlite3.OperationalError as exc:
         logger.warning("delete runs failed: %s", exc)
         raise HTTPException(
@@ -159,601 +121,46 @@ async def api_run_roundtrips(run_id: str) -> dict:
     return {"roundtrips": roundtrips}
 
 
-@router.get("/runs/{run_id}/chart.png")
-async def api_run_chart_image(
-    run_id: str,
-    symbol: str,
-    start_ns: int,
-    end_ns: int,
-    direction: str,
-    pnl: float,
-    chart_type: str = "c_bars",
-) -> Response:
-    """Return a PNG chart image for a round-trip trade."""
-    strategy_key = _get_strategy_key(run_id)
-    chart_settings = load_chart_settings(strategy_key) or None
-    image_bytes = generate_chart_image(
-        run_id,
-        symbol,
-        start_ns,
-        end_ns,
-        direction,
-        pnl,
-        chart_type,
-        chart_settings=chart_settings,
-    )
-    return Response(content=image_bytes, media_type="image/png")
-
-
-@router.get("/runs/{run_id}/trade-journey.png")
-async def api_trade_journey_chart(run_id: str, symbol: str | None = None) -> Response:
-    """Return a Trade Journey chart image for round-trip trades in a run, optionally filtered by symbol."""
-    roundtrips = get_roundtrips(run_id)
-    if symbol:
-        roundtrips = [rt for rt in roundtrips if rt["symbol"] == symbol]
-    image_bytes = generate_trade_journey_chart(run_id, roundtrips)
-    return Response(content=image_bytes, media_type="image/png")
-
-
-@router.get("/runs/{run_id}/pnl-summary.png")
-async def api_pnl_summary_chart(run_id: str, symbol: str | None = None) -> Response:
-    """Return a PnL Summary chart image for round-trip trades in a run, optionally filtered by symbol."""
-    roundtrips = get_roundtrips(run_id)
-    if symbol:
-        roundtrips = [rt for rt in roundtrips if rt["symbol"] == symbol]
-    image_bytes = generate_pnl_summary_chart(roundtrips)
-    return Response(content=image_bytes, media_type="image/png")
-
-
-TIME_PERIOD_NS = {
-    "year": 365 * 24 * 60 * 60 * 1_000_000_000,
-    "quarter": 91 * 24 * 60 * 60 * 1_000_000_000,
-    "month": 30 * 24 * 60 * 60 * 1_000_000_000,
-    "week": 7 * 24 * 60 * 60 * 1_000_000_000,
-    "day": 24 * 60 * 60 * 1_000_000_000,
-    "4hour": 4 * 60 * 60 * 1_000_000_000,
-    "hour": 60 * 60 * 1_000_000_000,
-    "15min": 15 * 60 * 1_000_000_000,
-    "5min": 5 * 60 * 1_000_000_000,
-    "1min": 60 * 1_000_000_000,
-}
-
-
-def _split_by_bars(
-    cursor, run_id: str, symbol: str, segment_size: int, overlap: int
-) -> list[dict]:
-    cursor.execute(
-        """
-        SELECT ts_event_ns
-        FROM bars_processed
-        WHERE run_id = ? AND symbol = ?
-        ORDER BY ts_event_ns
-        """,
-        (run_id, symbol),
-    )
-    all_ts = [row[0] for row in cursor.fetchall()]
-    if not all_ts:
-        return []
-    segments = []
-    step = max(1, segment_size - overlap)
-    segment_num = 1
-    start_idx = 0
-    while start_idx < len(all_ts):
-        end_idx = min(start_idx + segment_size, len(all_ts))
-        segments.append(
-            {
-                "symbol": symbol,
-                "segment_num": segment_num,
-                "start_ts": str(all_ts[start_idx]),
-                "end_ts": str(all_ts[end_idx - 1]),
-                "bar_count": end_idx - start_idx,
-            }
-        )
-        segment_num += 1
-        start_idx += step
-        if end_idx >= len(all_ts):
-            break
-    return segments
-
-
-def _get_period_boundary(ts_ns: int, time_period: str) -> int:
-    from datetime import datetime, timezone
-
-    dt = datetime.fromtimestamp(ts_ns / 1_000_000_000, tz=timezone.utc)
-    if time_period == "year":
-        boundary = datetime(dt.year, 1, 1, tzinfo=timezone.utc)
-    elif time_period == "quarter":
-        quarter_month = ((dt.month - 1) // 3) * 3 + 1
-        boundary = datetime(dt.year, quarter_month, 1, tzinfo=timezone.utc)
-    elif time_period == "month":
-        boundary = datetime(dt.year, dt.month, 1, tzinfo=timezone.utc)
-    elif time_period == "week":
-        days_since_monday = dt.weekday()
-        boundary = datetime(dt.year, dt.month, dt.day, tzinfo=timezone.utc)
-        boundary = boundary.replace(hour=0, minute=0, second=0, microsecond=0)
-        boundary = datetime.fromtimestamp(
-            boundary.timestamp() - days_since_monday * 86400, tz=timezone.utc
-        )
-    elif time_period == "day":
-        boundary = datetime(dt.year, dt.month, dt.day, tzinfo=timezone.utc)
-    elif time_period == "4hour":
-        hour_block = (dt.hour // 4) * 4
-        boundary = datetime(dt.year, dt.month, dt.day, hour_block, tzinfo=timezone.utc)
-    elif time_period == "hour":
-        boundary = datetime(dt.year, dt.month, dt.day, dt.hour, tzinfo=timezone.utc)
-    elif time_period == "15min":
-        min_block = (dt.minute // 15) * 15
-        boundary = datetime(
-            dt.year, dt.month, dt.day, dt.hour, min_block, tzinfo=timezone.utc
-        )
-    elif time_period == "5min":
-        min_block = (dt.minute // 5) * 5
-        boundary = datetime(
-            dt.year, dt.month, dt.day, dt.hour, min_block, tzinfo=timezone.utc
-        )
-    elif time_period == "1min":
-        boundary = datetime(
-            dt.year, dt.month, dt.day, dt.hour, dt.minute, tzinfo=timezone.utc
-        )
-    else:
-        boundary = datetime(dt.year, dt.month, dt.day, tzinfo=timezone.utc)
-    return int(boundary.timestamp() * 1_000_000_000)
-
-
-def _split_by_time(
-    cursor, run_id: str, symbol: str, time_period: str, overlap: int
-) -> list[dict]:
-    period_ns = TIME_PERIOD_NS.get(time_period, TIME_PERIOD_NS["day"])
-    cursor.execute(
-        """
-        SELECT ts_event_ns
-        FROM bars_processed
-        WHERE run_id = ? AND symbol = ?
-        ORDER BY ts_event_ns
-        """,
-        (run_id, symbol),
-    )
-    all_ts = [row[0] for row in cursor.fetchall()]
-    if not all_ts:
-        return []
-    segments = []
-    segment_num = 1
-    idx = 0
-    while idx < len(all_ts):
-        period_start = _get_period_boundary(all_ts[idx], time_period)
-        period_end = period_start + period_ns - 1
-        start_idx = idx
-        end_idx = idx
-        while end_idx + 1 < len(all_ts) and all_ts[end_idx + 1] <= period_end:
-            end_idx += 1
-        actual_start_idx = max(0, start_idx - overlap) if overlap > 0 else start_idx
-        segments.append(
-            {
-                "symbol": symbol,
-                "segment_num": segment_num,
-                "start_ts": str(all_ts[actual_start_idx]),
-                "end_ts": str(all_ts[end_idx]),
-                "bar_count": end_idx - actual_start_idx + 1,
-                "period_start_ns": str(period_start),
-                "period_end_ns": str(period_end + 1),
-            }
-        )
-        segment_num += 1
-        idx = end_idx + 1
-    return segments
-
-
-BAR_FIELDS = {"open", "high", "low", "close", "volume"}
-
-
-def _get_bar_field_value(bar_dict: dict, field_name: str) -> float | None:
-    """Return a value from OHLCV columns or the indicator JSON."""
-    lower = field_name.lower()
-    if lower in BAR_FIELDS:
-        return bar_dict.get(lower)
-    indicators = bar_dict.get("indicators", {})
-    return indicators.get(field_name)
-
-
-def _evaluate_condition(left: float | None, op: str, right: float | None) -> bool:
-    """Evaluate left {op} right, returning False if either is NaN/None."""
-    if left is None or right is None:
-        return False
-    import math as _math
-
-    if _math.isnan(left) or _math.isnan(right):
-        return False
-    if op == "<=":
-        return left <= right
-    elif op == ">=":
-        return left >= right
-    elif op == "<":
-        return left < right
-    elif op == ">":
-        return left > right
-    elif op == "==":
-        return left == right
-    elif op == "!=":
-        return left != right
-    return False
-
-
-def _find_conditional_segments(
-    cursor,
-    run_id: str,
-    symbol: str,
-    left_field: str,
-    operator: str,
-    right_field: str | None,
-    right_value: float | None,
-    context_bars: int,
-    gap_tolerance: int,
-) -> list[dict]:
-    cursor.execute(
-        """
-        SELECT ts_event_ns, open, high, low, close, volume, indicators
-        FROM bars_processed
-        WHERE run_id = ? AND symbol = ?
-        ORDER BY ts_event_ns
-        """,
-        (run_id, symbol),
-    )
-    rows = cursor.fetchall()
-    if not rows:
-        return []
-
-    bars = []
-    for row in rows:
-        indicators = json_module.loads(row[6]) if row[6] else {}
-        bars.append(
-            {
-                "ts": row[0],
-                "open": row[1],
-                "high": row[2],
-                "low": row[3],
-                "close": row[4],
-                "volume": row[5],
-                "indicators": indicators,
-            }
-        )
-
-    # Evaluate condition per bar
-    condition_flags = []
-    for bar in bars:
-        left_val = _get_bar_field_value(bar, left_field)
-        if right_field:
-            right_val = _get_bar_field_value(bar, right_field)
-        else:
-            right_val = right_value
-        condition_flags.append(_evaluate_condition(left_val, operator, right_val))
-
-    # Group consecutive True bars into raw regions
-    raw_regions = []
-    i = 0
-    n = len(condition_flags)
-    while i < n:
-        if condition_flags[i]:
-            start = i
-            while i < n and condition_flags[i]:
-                i += 1
-            raw_regions.append((start, i - 1))
-        else:
-            i += 1
-
-    if not raw_regions:
-        return []
-
-    # Merge regions separated by <= gap_tolerance False bars
-    merged = [raw_regions[0]]
-    for region in raw_regions[1:]:
-        prev_end = merged[-1][1]
-        gap = region[0] - prev_end - 1
-        if gap <= gap_tolerance:
-            merged[-1] = (merged[-1][0], region[1])
-        else:
-            merged.append(region)
-
-    # Build segments with context
-    segments = []
-    total_bars = len(bars)
-    for seg_num, (cond_start, cond_end) in enumerate(merged, 1):
-        ctx_start = max(0, cond_start - context_bars)
-        ctx_end = min(total_bars - 1, cond_end + context_bars)
-        segments.append(
-            {
-                "symbol": symbol,
-                "segment_num": seg_num,
-                "start_ts": str(bars[ctx_start]["ts"]),
-                "end_ts": str(bars[ctx_end]["ts"]),
-                "condition_start_ts": str(bars[cond_start]["ts"]),
-                "condition_end_ts": str(bars[cond_end]["ts"]),
-                "bar_count": ctx_end - ctx_start + 1,
-                "condition_bar_count": cond_end - cond_start + 1,
-            }
-        )
-
-    return segments
-
-
-@router.get("/runs/{run_id}/conditional-segments")
-async def api_conditional_segments(
-    run_id: str,
-    left_field: str,
-    operator: str,
-    right_field: str | None = None,
-    right_value: float | None = None,
-    context_bars: int = 50,
-    gap_tolerance: int = 0,
-) -> dict:
-    """Return conditional chart segments for a run."""
-    if operator not in ("<=", ">=", "<", ">", "==", "!="):
-        raise HTTPException(status_code=400, detail=f"Invalid operator: {operator}")
-    db_path = get_runs_db_path()
-    if not os.path.exists(db_path):
-        return {"segments": []}
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute(
-        """
-        SELECT DISTINCT symbol FROM bars_processed WHERE run_id = ? ORDER BY symbol
-        """,
-        (run_id,),
-    )
-    symbols = [row[0] for row in cursor.fetchall()]
-    segments = []
-    for symbol in symbols:
-        segments.extend(
-            _find_conditional_segments(
-                cursor,
-                run_id,
-                symbol,
-                left_field,
-                operator,
-                right_field,
-                right_value,
-                context_bars,
-                gap_tolerance,
-            )
-        )
-    conn.close()
-    return {"segments": segments}
-
-
-@router.get("/runs/{run_id}/chart-segments")
-async def api_chart_segments(
-    run_id: str,
-    mode: str = "bars",
-    bars_per_chart: int = 500,
-    overlap: int = 100,
-    time_period: str = "day",
-) -> dict:
-    """Return chart segment metadata for a run."""
-    from ..db import get_runs_db_path
-
-    db_path = get_runs_db_path()
-    if not os.path.exists(db_path):
-        return {"segments": [], "bar_period": None}
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute(
-        """
-        SELECT DISTINCT bar_period FROM bars_processed WHERE run_id = ? LIMIT 1
-        """,
-        (run_id,),
-    )
-    bar_period_row = cursor.fetchone()
-    bar_period = bar_period_row[0] if bar_period_row else None
-    cursor.execute(
-        """
-        SELECT DISTINCT symbol FROM bars_processed WHERE run_id = ? ORDER BY symbol
-        """,
-        (run_id,),
-    )
-    symbols = [row[0] for row in cursor.fetchall()]
-    segments = []
-    for symbol in symbols:
-        if mode == "time":
-            segments.extend(
-                _split_by_time(cursor, run_id, symbol, time_period, overlap)
-            )
-        else:
-            segments.extend(
-                _split_by_bars(cursor, run_id, symbol, bars_per_chart, overlap)
-            )
-    conn.close()
-    return {"segments": segments, "bar_period": bar_period}
-
-
-@router.get("/runs/{run_id}/segment-chart.png")
-async def api_segment_chart_image(
-    run_id: str,
-    symbol: str,
-    start_ns: int,
-    end_ns: int,
-    period_start_ns: int | None = None,
-    period_end_ns: int | None = None,
-    chart_type: str = "c_bars",
-    highlight_start_ns: int | None = None,
-    highlight_end_ns: int | None = None,
-) -> Response:
-    """Return a PNG chart image for a bar segment."""
-    strategy_key = _get_strategy_key(run_id)
-    chart_settings = load_chart_settings(strategy_key) or None
-    image_bytes = generate_segment_chart_image(
-        run_id,
-        symbol,
-        start_ns,
-        end_ns,
-        period_start_ns,
-        period_end_ns,
-        chart_type,
-        chart_settings=chart_settings,
-        highlight_start_ns=highlight_start_ns,
-        highlight_end_ns=highlight_end_ns,
-    )
-    return Response(content=image_bytes, media_type="image/png")
-
-
 @router.get("/runs/{run_id}/symbols")
 async def api_run_symbols(run_id: str) -> dict:
     """Return list of symbols available in a run."""
-    db_path = get_runs_db_path()
-    if not os.path.exists(db_path):
+    try:
+        conn_ctx = connect_runs()
+    except FileNotFoundError:
         return {"symbols": []}
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute(
-        """
-        SELECT DISTINCT symbol FROM bars_processed WHERE run_id = ? ORDER BY symbol
-        """,
-        (run_id,),
-    )
-    symbols = [row[0] for row in cursor.fetchall()]
-    conn.close()
+    with conn_ctx as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT DISTINCT symbol FROM bars_processed WHERE run_id = ? ORDER BY symbol
+            """,
+            (run_id,),
+        )
+        symbols = [row[0] for row in cursor.fetchall()]
     return {"symbols": symbols}
 
 
 @router.get("/runs/{run_id}/indicators")
 async def api_run_indicators(run_id: str) -> dict:
     """Return list of indicator names present in a run."""
-    import json as json_module
-
-    db_path = get_runs_db_path()
-    if not os.path.exists(db_path):
+    try:
+        conn_ctx = connect_runs()
+    except FileNotFoundError:
         return {"indicators": []}
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute(
-        """
-        SELECT indicators FROM bars_processed
-        WHERE run_id = ?
-        LIMIT 10
-        """,
-        (run_id,),
-    )
-    rows = cursor.fetchall()
-    conn.close()
+    with conn_ctx as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT indicators FROM bars_processed
+            WHERE run_id = ?
+            LIMIT 10
+            """,
+            (run_id,),
+        )
+        rows = cursor.fetchall()
     names: set[str] = set()
     for (indicators_json,) in rows:
         if indicators_json:
             indicators = json_module.loads(indicators_json)
             names.update(indicators.keys())
     return {"indicators": sorted(names)}
-
-
-@router.get("/runs/{run_id}/chart-settings")
-async def api_get_chart_settings(run_id: str) -> dict:
-    """Return saved chart settings for a run (keyed by strategy class)."""
-    strategy_key = _get_strategy_key(run_id)
-    return load_chart_settings(strategy_key)
-
-
-class ChartSettingsRequest(BaseModel):
-    """Request model for saving chart settings."""
-
-    indicators: dict | None = None
-    fill_between: list | None = None
-    chart_type: str | None = None
-    overlap: int | None = None
-
-
-@router.put("/runs/{run_id}/chart-settings")
-async def api_put_chart_settings(run_id: str, request: ChartSettingsRequest) -> dict:
-    """Save chart settings for a run (keyed by strategy class)."""
-    strategy_key = _get_strategy_key(run_id)
-    settings: dict = {}
-    if request.indicators is not None:
-        settings["indicators"] = request.indicators
-    if request.fill_between is not None:
-        settings["fill_between"] = request.fill_between
-    if request.chart_type is not None:
-        settings["chart_type"] = request.chart_type
-    if request.overlap is not None:
-        settings["overlap"] = request.overlap
-    save_chart_settings(strategy_key, settings)
-    return {"status": "ok"}
-
-
-@router.get("/runs/{run_id}/bar-timestamps")
-async def api_run_bar_timestamps(run_id: str, symbol: str) -> dict:
-    """Return list of bar timestamps for a run and symbol."""
-    db_path = get_runs_db_path()
-    if not os.path.exists(db_path):
-        return {"timestamps": []}
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute(
-        """
-        SELECT ts_event_ns FROM bars_processed
-        WHERE run_id = ? AND symbol = ?
-        ORDER BY ts_event_ns
-        """,
-        (run_id, symbol),
-    )
-    timestamps = [row[0] for row in cursor.fetchall()]
-    conn.close()
-    return {"timestamps": timestamps}
-
-
-@router.get("/runs/{run_id}/bars")
-async def api_run_bars(run_id: str, symbol: str) -> dict:
-    """Return bar data for a run and symbol in lightweight-charts format with indicators."""
-    from ..charting import _get_indicator_setting
-
-    db_path = get_runs_db_path()
-    if not os.path.exists(db_path):
-        return {"bars": [], "indicators": {}}
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute(
-        """
-        SELECT ts_event_ns, open, high, low, close, volume, indicators
-        FROM bars_processed
-        WHERE run_id = ? AND symbol = ?
-        ORDER BY ts_event_ns
-        """,
-        (run_id, symbol),
-    )
-    rows = cursor.fetchall()
-    conn.close()
-
-    strategy_key = _get_strategy_key(run_id)
-    chart_settings = load_chart_settings(strategy_key) or None
-
-    bars = []
-    indicator_series: dict[str, list[dict]] = {}
-    indicator_meta: dict[str, dict] = {}
-    _color_idx = 0
-    for row in rows:
-        ts_seconds = row[0] // 1_000_000_000
-        bars.append(
-            {
-                "time": ts_seconds,
-                "open": row[1],
-                "high": row[2],
-                "low": row[3],
-                "close": row[4],
-                "volume": row[5],
-            }
-        )
-        indicators = json_module.loads(row[6]) if row[6] else {}
-        for name, value in indicators.items():
-            if name not in indicator_series:
-                indicator_series[name] = []
-                cfg = _get_indicator_setting(chart_settings, name, _color_idx)
-                _color_idx += 1
-                indicator_meta[name] = {
-                    "panel": cfg.get("panel", 0),
-                    "style": cfg.get("style", "line"),
-                    "color": cfg.get("color", "black"),
-                    "display_name": name,
-                    "visible": cfg.get("visible", True),
-                }
-            if value is not None and value == value:
-                indicator_series[name].append({"time": ts_seconds, "value": value})
-    indicators_out = {
-        name: {"data": data, "meta": indicator_meta[name]}
-        for name, data in indicator_series.items()
-        if indicator_meta[name].get("visible", True)
-    }
-    return {"bars": bars, "indicators": indicators_out}

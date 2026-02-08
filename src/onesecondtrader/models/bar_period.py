@@ -18,4 +18,5 @@ class BarPeriod(enum.Enum):
     SECOND = enum.auto()
     MINUTE = enum.auto()
     HOUR = enum.auto()
+
     DAY = enum.auto()

@@ -1,0 +1,88 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #0d1117;
+    color: #e6edf3;
+    min-height: 100vh;
+    display: flex;
+}
+.sidebar {
+    width: 220px;
+    background: #161b22;
+    border-right: 1px solid #30363d;
+    min-height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+}
+.sidebar-header {
+    padding: 20px 16px;
+    border-bottom: 1px solid #30363d;
+}
+.sidebar-header h1 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #e6edf3;
+}
+.sidebar-nav {
+    padding: 12px 8px;
+    flex: 1;
+}
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    color: #8b949e;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+}
+.sidebar-nav a:hover {
+    background: #21262d;
+    color: #e6edf3;
+}
+.sidebar-nav a.active {
+    background: #21262d;
+    color: #e6edf3;
+}
+.sidebar-nav svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+.main-content {
+    margin-left: 220px;
+    flex: 1;
+    min-height: 100vh;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+}
+.card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 16px;
+}
+.card h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #e6edf3;
+}
+.empty-state {
+    text-align: center;
+    padding: 48px;
+    color: #8b949e;
+}
+.empty-state p {
+    margin-top: 8px;
+    font-size: 14px;
+}

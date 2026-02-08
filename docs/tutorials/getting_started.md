@@ -304,7 +304,7 @@ class MySimpleStrategy(strategies.StrategyBase):
                 models.OrderType.MARKET,
                 models.TradeSide.BUY,
                 self.quantity,
-                action=models.ActionType.ENTRY,
+                action=models.ActionType.ENTRY_LONG,
                 signal="price_up",
             )
 
@@ -316,7 +316,7 @@ class MySimpleStrategy(strategies.StrategyBase):
                 models.OrderType.MARKET,
                 models.TradeSide.SELL,
                 self.quantity,
-                action=models.ActionType.EXIT,
+                action=models.ActionType.EXIT_LONG,
                 signal="price_down",
             )
 

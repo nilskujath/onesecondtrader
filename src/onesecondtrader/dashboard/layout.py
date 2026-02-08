@@ -6,14 +6,16 @@ All dashboard pages are rendered through `render_page` which wraps content in th
 standard layout with navigation and base styles.
 """
 
-from .styles import BASE_CSS
-
 SIDEBAR_HTML = """
 <aside class="sidebar">
     <div class="sidebar-header">
         <h1>OneSecondTrader</h1>
     </div>
     <nav class="sidebar-nav">
+        <a href="/explorer" class="{explorer_active}">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            Explorer
+        </a>
         <a href="/backtest" class="{backtest_active}">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
             Backtest
@@ -43,6 +45,7 @@ def render_sidebar(active: str = "") -> str:
         HTML string for the sidebar.
     """
     return SIDEBAR_HTML.format(
+        explorer_active="active" if active == "explorer" else "",
         backtest_active="active" if active == "backtest" else "",
         performance_active="active" if active == "performance" else "",
         chart_active="active" if active == "chart" else "",
@@ -69,7 +72,7 @@ def render_page(title: str, content: str, active: str = "") -> str:
 <html>
 <head>
     <title>{title} - OneSecondTrader</title>
-    <style>{BASE_CSS}</style>
+    <link rel="stylesheet" href="/static/css/base.css">
 </head>
 <body>
     {sidebar}
