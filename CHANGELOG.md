@@ -1,3 +1,6 @@
+## v0.73.0
+- feat: make Bar Fields (OHLCV) selectable in the Explorer
+
 ## v0.72.0
 - feat: add per-indicator global defaults and fix explorer priority bug
 - refactor: separate presets from secmaster.db into dedicated presets.db
