@@ -13,7 +13,6 @@ from onesecondtrader.dashboard.indicators_util import get_registered_indicators
 
 router = APIRouter(prefix="/api", tags=["indicators"])
 
-OHLCV_NAMES = {"Open", "High", "Low", "Close", "Volume"}
 SKIP_PARAMS = {"self", "max_history", "kwargs"}
 
 
@@ -118,9 +117,6 @@ async def api_indicators() -> dict:
     registry = get_registered_indicators()
     indicators = []
     for class_name, cls in sorted(registry.items()):
-        if class_name in OHLCV_NAMES:
-            continue
-
         params = _build_param_specs(cls, class_name, registry)
         indicators.append({"class_name": class_name, "params": params})
 
