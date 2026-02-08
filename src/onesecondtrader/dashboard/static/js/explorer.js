@@ -602,6 +602,9 @@ function addIndicator() {
     indicatorsCalculated = false;
     renderIndicatorList();
     updateButtonStates();
+    document.getElementById('indicator-class').value = '';
+    document.getElementById('indicator-params').innerHTML = '';
+    document.querySelector('.indicator-add-row .btn-add').classList.remove('active');
 }
 
 function removeIndicator(idx) {
