@@ -116,6 +116,8 @@ def _instantiate_indicators(
             kw_dict = params.get(kw_name)
             if not isinstance(kw_dict, dict) or not kw_dict:
                 continue
+            kw_dict = dict(kw_dict)
+            params[kw_name] = kw_dict
             source_cls = params.get(ic_pname)
             if source_cls is None or not callable(source_cls):
                 continue
@@ -132,6 +134,7 @@ def _instantiate_indicators(
         # Handle legacy source_kwargs for indicators that use **source_kwargs
         source_kw = params.pop("source_kwargs", None)
         if isinstance(source_kw, dict) and source_kw:
+            source_kw = dict(source_kw)
             # Find the indicator_class param to resolve enums in source_kw
             source_cls = None
             for ic_pname in indicator_class_params:
