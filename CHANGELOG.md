@@ -1,3 +1,6 @@
+## v0.75.0
+- feat: added new UI, backtest tab missing
+
 ## v0.74.0
 - feat: add continuous contract symbology and integrate into dashboard
 - feat: group Explorer indicator dropdown by package
