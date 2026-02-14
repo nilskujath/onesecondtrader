@@ -18,6 +18,7 @@ from ..charting import (
     generate_trade_journey_chart,
     generate_pnl_summary_chart,
 )
+from ..explorer import get_session_run_ids
 from ..roundtrips import get_roundtrips
 
 router = APIRouter(prefix="/api", tags=["charts"])
@@ -72,7 +73,7 @@ async def api_pnl_summary_chart(run_id: str, symbol: str | None = None) -> Respo
 
 
 @router.get("/runs/{run_id}/segment-chart.png")
-async def api_segment_chart_image(
+def api_segment_chart_image(
     run_id: str,
     symbol: str,
     start_ns: int,
@@ -97,5 +98,47 @@ async def api_segment_chart_image(
         chart_settings=chart_settings,
         highlight_start_ns=highlight_start_ns,
         highlight_end_ns=highlight_end_ns,
+    )
+    return Response(content=image_bytes, media_type="image/png")
+
+
+@router.get("/sessions/{session_id}/segment-chart.png")
+def api_session_segment_chart_image(
+    session_id: str,
+    symbol: str,
+    start_ns: int,
+    end_ns: int,
+    period_start_ns: int | None = None,
+    period_end_ns: int | None = None,
+    chart_type: str = "c_bars",
+    highlight_start_ns: int | None = None,
+    highlight_end_ns: int | None = None,
+    run_ids: str | None = None,
+) -> Response:
+    """Return a PNG segment chart merging indicators from all session runs."""
+    if run_ids is not None:
+        run_id_list = [r for r in run_ids.split(",") if r]
+    else:
+        run_id_list = []
+    if not run_id_list:
+        run_id_list = get_session_run_ids(session_id)
+    if not run_id_list:
+        return Response(content=b"", media_type="image/png")
+    primary_run_id = run_id_list[0]
+    extra_run_ids = run_id_list[1:] if len(run_id_list) > 1 else None
+    strategy_key = f"session:{session_id}"
+    chart_settings = load_chart_settings(strategy_key) or None
+    image_bytes = generate_segment_chart_image(
+        primary_run_id,
+        symbol,
+        start_ns,
+        end_ns,
+        period_start_ns,
+        period_end_ns,
+        chart_type,
+        chart_settings=chart_settings,
+        highlight_start_ns=highlight_start_ns,
+        highlight_end_ns=highlight_end_ns,
+        extra_run_ids=extra_run_ids,
     )
     return Response(content=image_bytes, media_type="image/png")

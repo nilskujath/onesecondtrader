@@ -98,7 +98,7 @@
 .indicator-settings-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .indicator-settings-table th { padding: 8px 10px; text-align: left; color: #8b949e; font-weight: 500; border-bottom: 1px solid #30363d; }
 .indicator-settings-table td { padding: 6px 10px; border-bottom: 1px solid #21262d; color: #e6edf3; }
-.indicator-settings-table select { padding: 4px 8px; background: #161b22; border: 1px solid #30363d; border-radius: 4px; color: #e6edf3; font-size: 12px; cursor: pointer; }
+.indicator-settings-table select { padding: 5px 24px 5px 8px; background: #161b22; border: 1px solid #30363d; border-radius: 4px; color: #e6edf3; font-size: 13px; cursor: pointer; min-width: 100px; }
 .indicator-settings-table select:focus { outline: none; border-color: #58a6ff; }
 .indicator-settings-table input[type="checkbox"] { cursor: pointer; }
 .indicator-settings-table input[type="number"] { width: 50px; padding: 4px 6px; background: #161b22; border: 1px solid #30363d; border-radius: 4px; color: #e6edf3; font-size: 12px; }

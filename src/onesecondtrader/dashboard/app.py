@@ -9,8 +9,8 @@ from fastapi.staticfiles import StaticFiles
 from onesecondtrader.dashboard.indicators_util import discover_indicators
 from onesecondtrader.strategies.base import discover_strategies
 
-from .db import connect_runs
-from .pages import backtest_page, explorer_page
+from .db import connect_runs, ensure_explorer_sessions_table, ensure_data_splits_table
+from .pages import backtest_page, explorer_page, splits_page
 from .routers import (
     runs_router,
     strategies_router,
@@ -26,6 +26,7 @@ from .routers import (
     segments_router,
     bars_router,
     chart_settings_router,
+    splits_router,
 )
 from .chart_settings import ensure_indicator_defaults_table
 from .routers.presets import ensure_presets_table
@@ -56,6 +57,7 @@ app.include_router(charts_router)
 app.include_router(segments_router)
 app.include_router(bars_router)
 app.include_router(chart_settings_router)
+app.include_router(splits_router)
 
 
 def _cleanup_stale_runs() -> None:
@@ -77,12 +79,14 @@ async def startup():
     ensure_explore_presets_table()
     ensure_condition_presets_table()
     ensure_indicator_defaults_table()
+    ensure_explorer_sessions_table()
+    ensure_data_splits_table()
     _cleanup_stale_runs()
 
 
 @app.get("/", response_class=RedirectResponse)
 async def index():
-    return RedirectResponse(url="/backtest", status_code=302)
+    return RedirectResponse(url="/explorer", status_code=302)
 
 
 @app.get("/backtest", response_class=HTMLResponse)
@@ -93,6 +97,11 @@ async def backtest():
 @app.get("/explorer", response_class=HTMLResponse)
 async def explorer():
     return explorer_page()
+
+
+@app.get("/splits", response_class=HTMLResponse)
+async def splits():
+    return splits_page()
 
 
 @app.get("/health")

@@ -10,6 +10,8 @@ from __future__ import annotations
 import io
 import json
 import math
+
+import numpy as np
 import re
 import sqlite3
 from typing import Any
@@ -55,8 +57,8 @@ _color_name_to_matplotlib: dict[str, str] = {
 
 _OVERLAY_PATTERNS = [
     re.compile(r"^SMA_", re.IGNORECASE),
-    re.compile(r"^BB_UPPER_", re.IGNORECASE),
-    re.compile(r"^BB_LOWER_", re.IGNORECASE),
+    re.compile(r"(^BB_UPPER_|^Upper Bollinger Band)", re.IGNORECASE),
+    re.compile(r"(^BB_LOWER_|^Lower Bollinger Band)", re.IGNORECASE),
     re.compile(r"^PSAR_", re.IGNORECASE),
     re.compile(r"PERIOD.*HIGH", re.IGNORECASE),
     re.compile(r"PERIOD.*LOW", re.IGNORECASE),
@@ -100,6 +102,15 @@ def _get_indicator_setting(
             if "below_price" not in cfg:
                 cfg["below_price"] = True
             return cfg
+        # Indicator not in saved settings → treat as hidden
+        return {
+            "visible": False,
+            "panel": 0,
+            "below_price": True,
+            "style": "line",
+            "color": "black",
+            "width": "normal",
+        }
     # Check per-indicator global defaults from presets.db
     defaults = load_indicator_defaults()
     ind_defaults = defaults.get("indicators", {})
@@ -305,6 +316,12 @@ def _parse_indicators(
                 indicator_widths[name] = cfg.get("width", "normal")
             indicator_series[name][idx] = value if value == value else math.nan
 
+    for field in ("open", "high", "low", "close"):
+        key = field.upper()
+        if key not in indicator_series:
+            indicator_series[key] = data[field].tolist()
+            indicator_tags[key] = 99
+
     if chart_settings:
         for fb in chart_settings.get("fill_between", []):
             fill_between_specs.append(
@@ -485,8 +502,8 @@ def _apply_background_and_fills(
             target_ax = tag_to_ax.get(tag, ax_main)
             target_ax.fill_between(
                 x_values,
-                lower_series,
-                upper_series,
+                np.array(lower_series, dtype=np.float64),
+                np.array(upper_series, dtype=np.float64),
                 color=fb["color"],
                 alpha=fb["alpha"],
             )
@@ -904,6 +921,7 @@ def generate_segment_chart_image(
     chart_settings: dict | None = None,
     highlight_start_ns: int | None = None,
     highlight_end_ns: int | None = None,
+    extra_run_ids: list[str] | None = None,
 ) -> bytes:
     """
     Generate a PNG chart image for a bar segment.
@@ -948,6 +966,29 @@ def generate_segment_chart_image(
             (run_id, symbol, start_ns, end_ns),
         )
         bar_rows = cursor.fetchall()
+
+        # Merge indicators from extra runs
+        if extra_run_ids and bar_rows:
+            ts_to_idx = {row[0]: i for i, row in enumerate(bar_rows)}
+            bar_rows = [list(row) for row in bar_rows]
+            for extra_id in extra_run_ids:
+                cursor.execute(
+                    """
+                    SELECT ts_event_ns, indicators
+                    FROM bars_processed
+                    WHERE run_id = ? AND symbol = ? AND ts_event_ns >= ? AND ts_event_ns <= ?
+                    ORDER BY ts_event_ns
+                    """,
+                    (extra_id, symbol, start_ns, end_ns),
+                )
+                for ts_ns, extra_ind_json in cursor.fetchall():
+                    idx = ts_to_idx.get(ts_ns)
+                    if idx is not None and extra_ind_json:
+                        existing = (
+                            json.loads(bar_rows[idx][6]) if bar_rows[idx][6] else {}
+                        )
+                        existing.update(json.loads(extra_ind_json))
+                        bar_rows[idx][6] = json.dumps(existing)
 
     if not bar_rows:
         return b""

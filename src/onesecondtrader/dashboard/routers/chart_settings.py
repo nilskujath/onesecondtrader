@@ -96,3 +96,32 @@ async def api_put_global_defaults(request: GlobalDefaultsRequest) -> dict:
     """Save global chart defaults (chart_type, overlap)."""
     save_global_defaults(chart_type=request.chart_type, overlap=request.overlap)
     return {"status": "ok"}
+
+
+# ── Session-based chart settings ──
+
+
+@router.get("/sessions/{session_id}/chart-settings")
+async def api_get_session_chart_settings(session_id: str) -> dict:
+    """Return saved chart settings for a session."""
+    key = f"session:{session_id}"
+    return load_chart_settings(key)
+
+
+@router.put("/sessions/{session_id}/chart-settings")
+async def api_put_session_chart_settings(
+    session_id: str, request: ChartSettingsRequest
+) -> dict:
+    """Save chart settings for a session."""
+    key = f"session:{session_id}"
+    settings: dict = {}
+    if request.indicators is not None:
+        settings["indicators"] = request.indicators
+    if request.fill_between is not None:
+        settings["fill_between"] = request.fill_between
+    if request.chart_type is not None:
+        settings["chart_type"] = request.chart_type
+    if request.overlap is not None:
+        settings["overlap"] = request.overlap
+    save_chart_settings(key, settings)
+    return {"status": "ok"}

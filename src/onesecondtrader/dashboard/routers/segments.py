@@ -8,13 +8,28 @@ time period, or conditional indicator logic.
 from __future__ import annotations
 
 import json as json_module
+import threading
+import time
+import uuid
+from concurrent.futures import ThreadPoolExecutor
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from ..db import connect_runs
+from ..explorer import get_session_run_ids as _get_session_run_ids
 
 router = APIRouter(prefix="/api", tags=["segments"])
+
+# GIL yield: release every N bars so the event-loop thread can run
+_YIELD_BATCH = 2000
+
+# Bounded executor for background filter jobs (matches explorer.py pattern)
+_filter_executor = ThreadPoolExecutor(max_workers=1)
+
+# Background filter job tracking
+_filter_jobs: dict = {}  # filter_id → {status, progress, segments, cancel_event, error}
+_filter_lock = threading.Lock()
 
 TIME_PERIOD_NS = {
     "year": 365 * 24 * 60 * 60 * 1_000_000_000,
@@ -221,6 +236,7 @@ class ConditionalSegmentsRequest(BaseModel):
     conditions: list[ConditionSpec]
     context_bars: int = 50
     gap_tolerance: int = 0
+    run_ids: list[str] | None = None
 
 
 BAR_FIELDS = {"open", "high", "low", "close", "volume"}
@@ -314,7 +330,7 @@ def _build_segments_from_flags(
     return segments
 
 
-def _load_bars(cursor, run_id: str, symbol: str) -> list[dict]:
+def _load_bars(cursor, run_id: str, symbol: str, cancel_event=None) -> list[dict]:
     """Load bars from bars_processed for a given run and symbol."""
     cursor.execute(
         """
@@ -327,7 +343,7 @@ def _load_bars(cursor, run_id: str, symbol: str) -> list[dict]:
     )
     rows = cursor.fetchall()
     bars = []
-    for row in rows:
+    for i, row in enumerate(rows):
         indicators = json_module.loads(row[6]) if row[6] else {}
         bars.append(
             {
@@ -340,6 +356,45 @@ def _load_bars(cursor, run_id: str, symbol: str) -> list[dict]:
                 "indicators": indicators,
             }
         )
+        if (i + 1) % _YIELD_BATCH == 0:
+            time.sleep(0)
+            if cancel_event is not None and cancel_event.is_set():
+                return bars
+    return bars
+
+
+def _load_bars_merged(
+    cursor, run_ids: list[str], symbol: str, cancel_event=None
+) -> list[dict]:
+    """Load bars from the first run_id, then merge indicators from additional runs."""
+    if not run_ids:
+        return []
+    bars = _load_bars(cursor, run_ids[0], symbol, cancel_event=cancel_event)
+    if not bars or len(run_ids) <= 1:
+        return bars
+    # Build ts -> bar index lookup
+    ts_to_idx = {bar["ts"]: i for i, bar in enumerate(bars)}
+    for extra_run_id in run_ids[1:]:
+        if cancel_event is not None and cancel_event.is_set():
+            return bars
+        cursor.execute(
+            """
+            SELECT ts_event_ns, indicators
+            FROM bars_processed
+            WHERE run_id = ? AND symbol = ?
+            ORDER BY ts_event_ns
+            """,
+            (extra_run_id, symbol),
+        )
+        for i, row in enumerate(cursor.fetchall()):
+            idx = ts_to_idx.get(row[0])
+            if idx is not None:
+                extra_indicators = json_module.loads(row[1]) if row[1] else {}
+                bars[idx]["indicators"].update(extra_indicators)
+            if (i + 1) % _YIELD_BATCH == 0:
+                time.sleep(0)
+                if cancel_event is not None and cancel_event.is_set():
+                    return bars
     return bars
 
 
@@ -357,7 +412,7 @@ def _find_multi_conditional_segments(
         return []
 
     condition_flags = []
-    for bar in bars:
+    for j, bar in enumerate(bars):
         all_true = True
         for cond in conditions:
             left_val = _get_bar_field_value(bar, cond.left_field)
@@ -369,6 +424,8 @@ def _find_multi_conditional_segments(
                 all_true = False
                 break
         condition_flags.append(all_true)
+        if (j + 1) % _YIELD_BATCH == 0:
+            time.sleep(0)
 
     return _build_segments_from_flags(
         bars, condition_flags, context_bars, gap_tolerance, symbol
@@ -392,13 +449,15 @@ def _find_conditional_segments(
 
     # Evaluate condition per bar
     condition_flags = []
-    for bar in bars:
+    for j, bar in enumerate(bars):
         left_val = _get_bar_field_value(bar, left_field)
         if right_field:
             right_val = _get_bar_field_value(bar, right_field)
         else:
             right_val = right_value
         condition_flags.append(_evaluate_condition(left_val, operator, right_val))
+        if (j + 1) % _YIELD_BATCH == 0:
+            time.sleep(0)
 
     return _build_segments_from_flags(
         bars, condition_flags, context_bars, gap_tolerance, symbol
@@ -406,7 +465,7 @@ def _find_conditional_segments(
 
 
 @router.get("/runs/{run_id}/conditional-segments")
-async def api_conditional_segments(
+def api_conditional_segments(
     run_id: str,
     left_field: str,
     operator: str,
@@ -450,7 +509,7 @@ async def api_conditional_segments(
 
 
 @router.post("/runs/{run_id}/conditional-segments")
-async def api_conditional_segments_multi(
+def api_conditional_segments_multi(
     run_id: str,
     request: ConditionalSegmentsRequest,
 ) -> dict:
@@ -513,7 +572,7 @@ async def api_conditional_segments_multi(
 
 
 @router.get("/runs/{run_id}/chart-segments")
-async def api_chart_segments(
+def api_chart_segments(
     run_id: str,
     mode: str = "bars",
     bars_per_chart: int = 500,
@@ -551,3 +610,310 @@ async def api_chart_segments(
                     _split_by_bars(cursor, run_id, symbol, bars_per_chart, overlap)
                 )
     return {"segments": segments, "bar_period": bar_period}
+
+
+@router.get("/sessions/{session_id}/chart-segments")
+def api_session_chart_segments(
+    session_id: str,
+    mode: str = "bars",
+    bars_per_chart: int = 500,
+    overlap: int = 100,
+    time_period: str = "day",
+    run_ids: str | None = None,
+) -> dict:
+    """Return chart segments using the first completed run_id from a session."""
+    if run_ids is not None:
+        run_id_list = [r for r in run_ids.split(",") if r]
+    else:
+        run_id_list = []
+    if not run_id_list:
+        run_id_list = _get_session_run_ids(session_id)
+    if not run_id_list:
+        return {"segments": [], "bar_period": None}
+    run_id = run_id_list[0]
+    try:
+        conn_ctx = connect_runs()
+    except FileNotFoundError:
+        return {"segments": [], "bar_period": None}
+    with conn_ctx as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT DISTINCT bar_period FROM bars_processed WHERE run_id = ? LIMIT 1",
+            (run_id,),
+        )
+        bar_period_row = cursor.fetchone()
+        bar_period = bar_period_row[0] if bar_period_row else None
+        cursor.execute(
+            "SELECT DISTINCT symbol FROM bars_processed WHERE run_id = ? ORDER BY symbol",
+            (run_id,),
+        )
+        symbols = [row[0] for row in cursor.fetchall()]
+        segments = []
+        for symbol in symbols:
+            if mode == "time":
+                segments.extend(_split_by_time(cursor, run_id, symbol, time_period))
+            else:
+                segments.extend(
+                    _split_by_bars(cursor, run_id, symbol, bars_per_chart, overlap)
+                )
+    return {"segments": segments, "bar_period": bar_period}
+
+
+@router.post("/sessions/{session_id}/conditional-segments")
+def api_session_conditional_segments(
+    session_id: str,
+    request: ConditionalSegmentsRequest,
+) -> dict:
+    """Return conditional segments using merged indicator data from all session runs."""
+    if request.run_ids:
+        run_ids = request.run_ids
+    else:
+        run_ids = _get_session_run_ids(session_id)
+    if not run_ids:
+        return {"segments": []}
+    valid_ops = ("<=", ">=", "<", ">", "==", "!=")
+    for cond in request.conditions:
+        if cond.operator not in valid_ops:
+            from fastapi import HTTPException
+
+            raise HTTPException(
+                status_code=400, detail=f"Invalid operator: {cond.operator}"
+            )
+    try:
+        conn_ctx = connect_runs()
+    except FileNotFoundError:
+        return {"segments": []}
+    with conn_ctx as conn:
+        cursor = conn.cursor()
+        # Get symbols from first run
+        cursor.execute(
+            "SELECT DISTINCT symbol FROM bars_processed WHERE run_id = ? ORDER BY symbol",
+            (run_ids[0],),
+        )
+        symbols = [row[0] for row in cursor.fetchall()]
+        segments = []
+        if not request.conditions:
+            for symbol in symbols:
+                cursor.execute(
+                    "SELECT MIN(ts_event_ns), MAX(ts_event_ns), COUNT(*) FROM bars_processed"
+                    " WHERE run_id = ? AND symbol = ?",
+                    (run_ids[0], symbol),
+                )
+                row = cursor.fetchone()
+                if row and row[2] > 0:
+                    segments.append(
+                        {
+                            "symbol": symbol,
+                            "segment_num": 1,
+                            "start_ts": str(row[0]),
+                            "end_ts": str(row[1]),
+                            "condition_start_ts": None,
+                            "condition_end_ts": None,
+                            "bar_count": row[2],
+                            "condition_bar_count": 0,
+                        }
+                    )
+        else:
+            for symbol in symbols:
+                bars = _load_bars_merged(cursor, run_ids, symbol)
+                if not bars:
+                    continue
+                condition_flags = []
+                for j, bar in enumerate(bars):
+                    all_true = True
+                    for cond in request.conditions:
+                        left_val = _get_bar_field_value(bar, cond.left_field)
+                        if cond.right_field:
+                            right_val = _get_bar_field_value(bar, cond.right_field)
+                        else:
+                            right_val = cond.right_value
+                        if not _evaluate_condition(left_val, cond.operator, right_val):
+                            all_true = False
+                            break
+                    condition_flags.append(all_true)
+                    if (j + 1) % _YIELD_BATCH == 0:
+                        time.sleep(0)
+                segments.extend(
+                    _build_segments_from_flags(
+                        bars,
+                        condition_flags,
+                        request.context_bars,
+                        request.gap_tolerance,
+                        symbol,
+                    )
+                )
+    return {"segments": segments}
+
+
+def _run_filter_job(
+    filter_id: str,
+    session_id: str,
+    request: ConditionalSegmentsRequest,
+) -> None:
+    """Background thread target for a filter job."""
+    job = _filter_jobs[filter_id]
+    try:
+        if request.run_ids:
+            run_ids = request.run_ids
+        else:
+            run_ids = _get_session_run_ids(session_id)
+        if not run_ids:
+            with _filter_lock:
+                job["status"] = "completed"
+                job["progress"] = 1.0
+                job["segments"] = []
+            return
+
+        conn_ctx = connect_runs()
+        with conn_ctx as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT DISTINCT symbol FROM bars_processed WHERE run_id = ? ORDER BY symbol",
+                (run_ids[0],),
+            )
+            symbols = [row[0] for row in cursor.fetchall()]
+            segments: list[dict] = []
+
+            if not request.conditions:
+                for i, symbol in enumerate(symbols):
+                    if job["cancel_event"].is_set():
+                        with _filter_lock:
+                            job["status"] = "cancelled"
+                        return
+                    cursor.execute(
+                        "SELECT MIN(ts_event_ns), MAX(ts_event_ns), COUNT(*) "
+                        "FROM bars_processed WHERE run_id = ? AND symbol = ?",
+                        (run_ids[0], symbol),
+                    )
+                    row = cursor.fetchone()
+                    if row and row[2] > 0:
+                        segments.append(
+                            {
+                                "symbol": symbol,
+                                "segment_num": 1,
+                                "start_ts": str(row[0]),
+                                "end_ts": str(row[1]),
+                                "condition_start_ts": None,
+                                "condition_end_ts": None,
+                                "bar_count": row[2],
+                                "condition_bar_count": 0,
+                            }
+                        )
+                    with _filter_lock:
+                        job["progress"] = (i + 1) / len(symbols)
+            else:
+                for i, symbol in enumerate(symbols):
+                    if job["cancel_event"].is_set():
+                        with _filter_lock:
+                            job["status"] = "cancelled"
+                        return
+                    bars = _load_bars_merged(
+                        cursor,
+                        run_ids,
+                        symbol,
+                        cancel_event=job["cancel_event"],
+                    )
+                    if job["cancel_event"].is_set():
+                        with _filter_lock:
+                            job["status"] = "cancelled"
+                        return
+                    if not bars:
+                        with _filter_lock:
+                            job["progress"] = (i + 1) / len(symbols)
+                        continue
+                    condition_flags = []
+                    cancel_ev = job["cancel_event"]
+                    for j, bar in enumerate(bars):
+                        all_true = True
+                        for cond in request.conditions:
+                            left_val = _get_bar_field_value(bar, cond.left_field)
+                            if cond.right_field:
+                                right_val = _get_bar_field_value(bar, cond.right_field)
+                            else:
+                                right_val = cond.right_value
+                            if not _evaluate_condition(
+                                left_val, cond.operator, right_val
+                            ):
+                                all_true = False
+                                break
+                        condition_flags.append(all_true)
+                        if (j + 1) % _YIELD_BATCH == 0:
+                            time.sleep(0)
+                            if cancel_ev.is_set():
+                                with _filter_lock:
+                                    job["status"] = "cancelled"
+                                return
+                    segments.extend(
+                        _build_segments_from_flags(
+                            bars,
+                            condition_flags,
+                            request.context_bars,
+                            request.gap_tolerance,
+                            symbol,
+                        )
+                    )
+                    with _filter_lock:
+                        job["progress"] = (i + 1) / len(symbols)
+
+        with _filter_lock:
+            job["status"] = "completed"
+            job["progress"] = 1.0
+            job["segments"] = segments
+    except Exception as exc:
+        with _filter_lock:
+            job["status"] = "error"
+            job["error"] = str(exc)
+
+
+@router.post("/sessions/{session_id}/start-filter")
+def api_start_filter(session_id: str, request: ConditionalSegmentsRequest) -> dict:
+    """Start a background filter job and return its ID immediately."""
+    valid_ops = ("<=", ">=", "<", ">", "==", "!=")
+    for cond in request.conditions:
+        if cond.operator not in valid_ops:
+            raise HTTPException(
+                status_code=400, detail=f"Invalid operator: {cond.operator}"
+            )
+    filter_id = uuid.uuid4().hex[:12]
+    job = {
+        "status": "running",
+        "progress": 0.0,
+        "segments": None,
+        "cancel_event": threading.Event(),
+        "error": None,
+    }
+    with _filter_lock:
+        _filter_jobs[filter_id] = job
+    _filter_executor.submit(_run_filter_job, filter_id, session_id, request)
+    return {"filter_id": filter_id}
+
+
+@router.get("/filter-status/{filter_id}")
+def api_filter_status(filter_id: str) -> dict:
+    """Poll the status/progress of a background filter job."""
+    with _filter_lock:
+        job = _filter_jobs.get(filter_id)
+    if not job:
+        return {"status": "unknown", "progress": 0}
+    result: dict = {"status": job["status"], "progress": job["progress"]}
+    if job["status"] == "completed":
+        result["segments"] = job["segments"] or []
+        with _filter_lock:
+            _filter_jobs.pop(filter_id, None)
+    elif job["status"] in ("cancelled", "error"):
+        if job["error"]:
+            result["error"] = job["error"]
+        with _filter_lock:
+            _filter_jobs.pop(filter_id, None)
+    return result
+
+
+@router.post("/cancel-filter/{filter_id}")
+def api_cancel_filter(filter_id: str) -> dict:
+    """Cancel a running filter job."""
+    with _filter_lock:
+        job = _filter_jobs.get(filter_id)
+    if not job:
+        return {"status": "not_found"}
+    job["cancel_event"].set()
+    return {"status": "cancelling"}

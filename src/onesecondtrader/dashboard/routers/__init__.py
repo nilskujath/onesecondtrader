@@ -17,6 +17,7 @@ from .charts import router as charts_router
 from .segments import router as segments_router
 from .bars import router as bars_router
 from .chart_settings import router as chart_settings_router
+from .splits import router as splits_router
 
 __all__ = [
     "runs_router",
@@ -33,4 +34,5 @@ __all__ = [
     "segments_router",
     "bars_router",
     "chart_settings_router",
+    "splits_router",
 ]

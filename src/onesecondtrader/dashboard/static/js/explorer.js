@@ -73,6 +73,12 @@ function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function humanizeClassName(name) {
+    return name
+        .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+        .replace(/([a-z])([A-Z])/g, '$1 $2');
+}
+
 function humanizeParam(name) {
     return name.split('_').map(function(w) {
         return w.charAt(0).toUpperCase() + w.slice(1);
@@ -547,7 +553,7 @@ function renderIndicatorSelector() {
         groups[pkg].forEach(function(ind) {
             const option = document.createElement('option');
             option.value = ind.class_name;
-            option.textContent = ind.class_name;
+            option.textContent = humanizeClassName(ind.class_name);
             optgroup.appendChild(option);
         });
         sel.appendChild(optgroup);
@@ -886,12 +892,23 @@ function removeFillBetween(idx) {
     saveChartSettings();
 }
 
+function formatParamName(name) {
+    var result = name.replace(/_/g, ' ');
+    result = result.replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2');
+    result = result.replace(/([a-z])([A-Z])/g, '$1 $2');
+    result = result.replace(/([a-zA-Z])(\d)/g, '$1 $2');
+    return result.split(' ').map(function(word) {
+        if (word === word.toUpperCase() && word.length > 1) return word;
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+}
+
 function renderIndicatorChartTable() {
     const container = document.getElementById('indicator-chart-table');
     if (!container) return;
-    const styleOptions = VALID_STYLES.map(function(s) { return '<option value="' + s + '">' + s + '</option>'; }).join('');
-    const colorOptions = VALID_COLORS.map(function(c) { return '<option value="' + c + '">' + c + '</option>'; }).join('');
-    const widthOptions = VALID_WIDTHS.map(function(w) { return '<option value="' + w + '">' + w.replace('_', ' ') + '</option>'; }).join('');
+    const styleOptions = VALID_STYLES.map(function(s) { return '<option value="' + s + '">' + formatParamName(s) + '</option>'; }).join('');
+    const colorOptions = VALID_COLORS.map(function(c) { return '<option value="' + c + '">' + formatParamName(c) + '</option>'; }).join('');
+    const widthOptions = VALID_WIDTHS.map(function(w) { return '<option value="' + w + '">' + formatParamName(w) + '</option>'; }).join('');
     const chartTypeOptions = CHART_TYPE_OPTIONS.map(function(o) {
         return '<option value="' + o.value + '"' + (chartType === o.value ? ' selected' : '') + '>' + o.label + '</option>';
     }).join('');
@@ -930,10 +947,13 @@ function renderIndicatorChartTable() {
     }
 
     // Fill Between
-    const indLabelOptions = indicatorNames.map(function(l) { return '<option value="' + l + '">' + l + '</option>'; }).join('');
     const fbRows = (chartSettingsData.fill_between || []).map(function(fb, idx) {
-        const upperOpts = indLabelOptions.replace('value="' + fb.upper + '"', 'value="' + fb.upper + '" selected');
-        const lowerOpts = indLabelOptions.replace('value="' + fb.lower + '"', 'value="' + fb.lower + '" selected');
+        const upperOpts = indicatorNames.map(function(l) {
+            return '<option value="' + l + '"' + (l === fb.upper ? ' selected' : '') + '>' + l + '</option>';
+        }).join('');
+        const lowerOpts = indicatorNames.map(function(l) {
+            return '<option value="' + l + '"' + (l === fb.lower ? ' selected' : '') + '>' + l + '</option>';
+        }).join('');
         const fbColorOpts = colorOptions.replace('value="' + fb.color + '"', 'value="' + fb.color + '" selected');
         return '<div class="fill-between-row">' +
             '<label>Upper:</label><select onchange="onFillBetweenChange(' + idx + ',\'upper\',this.value)">' + upperOpts + '</select>' +
@@ -962,8 +982,21 @@ async function saveChartSettings() {
         Object.keys(chartCache).forEach(function(k) { delete chartCache[k]; });
         document.querySelectorAll('.chart-row.expanded').forEach(function(row) {
             var idx = parseInt(row.id.replace('chart-row-', ''));
-            row.classList.remove('expanded');
-            toggleChart(idx);
+            var container = document.getElementById('chart-container-' + idx);
+            var seg = filteredConditionalSegments[idx];
+            if (!container || !seg) return;
+            container.innerHTML = '<div class="chart-loading">Loading chart...</div>';
+            var cacheKey = activeExploreRunId + '_' + chartMode + '_' + seg.symbol + '_' + seg.start_ts + '_' + seg.end_ts + '_' + chartType + '_v' + _settingsVersion;
+            var url = '/api/runs/' + activeExploreRunId + '/segment-chart.png?symbol=' + encodeURIComponent(seg.symbol) + '&start_ns=' + seg.start_ts + '&end_ns=' + seg.end_ts + '&chart_type=' + chartType;
+            if (seg.condition_start_ts && seg.condition_end_ts) {
+                url += '&highlight_start_ns=' + seg.condition_start_ts + '&highlight_end_ns=' + seg.condition_end_ts;
+            }
+            url += '&_v=' + _settingsVersion;
+            var img = new Image();
+            img.onload = function() { chartCache[cacheKey] = url; container.innerHTML = ''; container.appendChild(img); };
+            img.onerror = function() { container.innerHTML = '<div class="chart-loading">Failed to load chart</div>'; };
+            img.src = url;
+            img.alt = 'Chart';
         });
     } catch (e) {
         console.error('Failed to save chart settings', e);

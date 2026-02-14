@@ -51,6 +51,7 @@ nav:
       - Runs: reference/dashboard/routers/runs.md
       - Secmaster: reference/dashboard/routers/secmaster.md
       - Segments: reference/dashboard/routers/segments.md
+      - Splits: reference/dashboard/routers/splits.md
       - Strategies: reference/dashboard/routers/strategies.md
   - Datafeeds:
     - Base: reference/datafeeds/base.md

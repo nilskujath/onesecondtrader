@@ -50,7 +50,7 @@ class BollingerLower(indicators.IndicatorBase):
         Returns:
             Identifier encoding the indicator type, period, number of standard deviations, and bar field.
         """
-        return f"BB_LOWER_{self.period}_{self.num_std}_{self.bar_field.name}"
+        return f"Lower Bollinger Band ({self.period}, {self.num_std}, {self.bar_field.name})"
 
     def _compute_indicator(self, incoming_bar: events.market.BarReceived) -> float:
         """

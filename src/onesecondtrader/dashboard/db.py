@@ -102,6 +102,39 @@ def connect_presets(
         conn.close()
 
 
+def ensure_explorer_sessions_table() -> None:
+    """Create the explorer_sessions and session_indicators tables if they do not exist."""
+    with connect_presets() as conn:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS explorer_sessions (
+                session_id TEXT PRIMARY KEY,
+                publisher_id INTEGER NOT NULL,
+                rtype INTEGER NOT NULL,
+                symbols TEXT NOT NULL,
+                start_date TEXT,
+                end_date TEXT,
+                symbol_type TEXT NOT NULL DEFAULT 'raw_symbol',
+                created_at TEXT NOT NULL
+            )
+            """
+        )
+        conn.execute("DROP TABLE IF EXISTS session_indicators")
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS session_indicators (
+                run_id TEXT PRIMARY KEY,
+                session_id TEXT NOT NULL,
+                class_name TEXT NOT NULL,
+                params_canonical TEXT NOT NULL,
+                status TEXT NOT NULL,
+                indicator_name TEXT
+            )
+            """
+        )
+        conn.commit()
+
+
 def get_runs(limit: int = 50) -> list[dict]:
     """
     Fetch recent runs from the runs database.
@@ -183,6 +216,42 @@ def get_strategy_key(run_id: str) -> str:
     except Exception:
         pass
     return run_id
+
+
+def ensure_data_splits_table() -> None:
+    """Create the data_splits table if it does not exist."""
+    with connect_presets() as conn:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS data_splits (
+                split_id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                publisher_id INTEGER NOT NULL,
+                publisher_name TEXT NOT NULL,
+                rtype INTEGER NOT NULL,
+                symbols TEXT NOT NULL,
+                symbol_type TEXT NOT NULL DEFAULT 'raw_symbol',
+                total_start TEXT NOT NULL,
+                total_end TEXT NOT NULL,
+                train_pct INTEGER NOT NULL,
+                dev_pct INTEGER NOT NULL,
+                train_end TEXT NOT NULL,
+                dev_end TEXT NOT NULL,
+                train_bars INTEGER NOT NULL DEFAULT 0,
+                dev_bars INTEGER NOT NULL DEFAULT 0,
+                test_bars INTEGER NOT NULL DEFAULT 0
+            )
+            """
+        )
+        for col in ("train_bars", "dev_bars", "test_bars"):
+            try:
+                conn.execute(
+                    f"ALTER TABLE data_splits ADD COLUMN {col} INTEGER NOT NULL DEFAULT 0"
+                )
+            except Exception:
+                pass
+        conn.commit()
 
 
 CHILD_TABLES = [
